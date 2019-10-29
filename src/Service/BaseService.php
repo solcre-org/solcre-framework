@@ -48,14 +48,17 @@ abstract class BaseService
     public function getEntityName(): ?string
     {
         $namespaceName = (new ReflectionClass($this))->getNamespaceName();
-        $className = (new ReflectionClass($this))->getShortName();
-        $entityName = substr($className, 0, strpos($className, 'Service'));
-        $entityNamespace = str_replace('Service', 'Entity', $namespaceName);
-        $entityFull = $entityNamespace . '\\' . $entityName;
-        if (\class_exists($entityFull)) {
-            return $entityFull;
+        $className     = (new ReflectionClass($this))->getShortName();
+        if (substr_count($className, 'Service') > 1) {
+            $pos = strrpos($className, "Service");
+            if ($pos !== false) {
+                $entityName = substr_replace($className, '', $pos, strlen("Service"));
+            }
+        } else {
+            $entityName = substr($className, 0, strpos($className, "Service"));
         }
-        return null;
+        $entityNamespace = str_replace('Service', 'Entity', $namespaceName);
+        return $entityNamespace . '\\' . $entityName . "Entity";
     }
 
     public function getEntityManager(): EntityManager
