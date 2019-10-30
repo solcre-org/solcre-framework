@@ -2,12 +2,10 @@
 
 namespace Solcre\SolcreFramework2\Service;
 
+use Exception;
+use ReflectionClass;
 use Doctrine\ORM\EntityManager;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator;
-use Exception;
-use MegaPharma\V1\Domain\Common\Service\IdentityService;
-use MegaPharma\V1\Domain\Common\Strategy\NullIntegerType;
-use ReflectionClass;
 use Solcre\SolcreFramework2\Common\BaseRepository;
 use Solcre\SolcreFramework2\Entity\PaginatedResult;
 use Solcre\SolcreFramework2\Filter\FilterInterface;
@@ -16,12 +14,9 @@ use Zend\Paginator\Paginator;
 
 abstract class BaseService
 {
-
     protected $entityManager;
     protected $repository;
     protected $entityName;
-    protected $loggedUser;
-    protected $identityService;
     protected $currentPage = 1;
     protected $itemsCountPerPage = 50;
 
@@ -32,16 +27,15 @@ abstract class BaseService
      */
     protected $additionalAttributes;
 
-    public function __construct(EntityManager $entityManager, IdentityService $identityService = null)
+    public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
-        $this->identityService = $identityService;
         $this->entityName = $this->getEntityName();
+
         if ($this->entityName !== null) {
             $this->repository = $this->entityManager->getRepository($this->entityName);
         }
-        $this->loggedUser = null;
-        $this->entityManager->getFilters()->enable('soft-deleteable');
+
         $this->additionalAttributes = [];
     }
 
@@ -59,6 +53,31 @@ abstract class BaseService
         }
         $entityNamespace = str_replace('Service', 'Entity', $namespaceName);
         return $entityNamespace . '\\' . $entityName . "Entity";
+    }
+
+    
+    public function enableFilter($filterName): void
+    {
+        $filters = $this->entityManager->getFilters();
+
+        if ($filters != null) {
+            $filters->enable($filterName);
+        }
+    }
+
+    public function disableFilter($filterName): void
+    {
+        $filters = $this->entityManager->getFilters();
+
+        if ($filters != null && $filters->isEnabled($filterName)) {
+            $$filters->disable($filterName);
+        }
+    }
+
+    public function isEntityPersisted($entity): bool
+    {
+        $unitOfWork = $this->entityManager->getUnitOfWork();
+        return $unitOfWork->isEntityScheduled($entity);
     }
 
     public function getEntityManager(): EntityManager
@@ -191,7 +210,7 @@ abstract class BaseService
         $this->itemsCountPerPage = $itemsCountPerPage;
     }
 
-    public function delete($id, $entityObj = null): bool
+    public function delete($id, $entityObj = null)
     {
         try {
             if (empty($entityObj)) {
@@ -201,7 +220,7 @@ abstract class BaseService
             $this->entityManager->flush($entityObj);
             return true;
         } catch (Exception $e) {
-            return false;
+            throw $e;
         }
     }
 
