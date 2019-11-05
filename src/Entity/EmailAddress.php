@@ -4,9 +4,6 @@ namespace Solcre\SolcreFramework2\Entity;
 
 class EmailAddress
 {
-
-
-
     private $email;
     private $name;
     private $type;

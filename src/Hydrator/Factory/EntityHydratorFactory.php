@@ -9,8 +9,6 @@ use Zend\ServiceManager\Factory\FactoryInterface;
 
 class EntityHydratorFactory implements FactoryInterface
 {
-
-
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $doctrineService = $container->get(EntityManager::class);

@@ -7,7 +7,6 @@ use ZF\Hal\Plugin\Hal;
 
 class FieldsFilterService implements FilterInterface
 {
-
     const FILTER_PARAMETER = 'fields';
     const FILTER_NAME = 'fields.filter';
     const QUERY_FIELDS_SPLITTER = ',';

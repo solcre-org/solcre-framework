@@ -8,7 +8,6 @@ use ZF\Hal\Plugin\Hal;
 
 class ExpandFilterService implements FilterInterface
 {
-
     const FILTER_PARAMETER = 'expand';
     const FILTER_NAME = 'expand.filter';
     /**

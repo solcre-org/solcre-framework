@@ -12,7 +12,6 @@ use Solcre\SolcreFramework2\Filter\FilterInterface;
 
 class BaseRepository extends EntityRepository
 {
-
     private const NOT_NULL_FILTER = '!null';
     private const ORDER_BY_RELATION_SEPARATOR = '.';
     protected $filters = [];

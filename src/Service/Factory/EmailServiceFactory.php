@@ -11,7 +11,6 @@ use Zend\ServiceManager\Factory\FactoryInterface;
 
 class EmailServiceFactory implements FactoryInterface
 {
-
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $mailer = new PHPMailer();

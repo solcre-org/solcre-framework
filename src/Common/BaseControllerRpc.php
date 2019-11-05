@@ -7,7 +7,6 @@ use Zend\Mvc\Controller\AbstractActionController;
 
 class BaseControllerRpc extends AbstractActionController
 {
-
     protected $identityService;
 
     public function __construct(IdentityService $identityService = null)

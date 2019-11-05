@@ -48,7 +48,7 @@ class BaseResource extends AbstractResourceListener
             //Set page and size to the service
             $request = $event->getRequest();
             $page = $request->getQuery('page', 1);
-            $pageSize = $request->getQuery('size', 25);            
+            $pageSize = $request->getQuery('size', 25);
             $this->service->setCurrentPage($page);
             $this->service->setItemsCountPerPage($pageSize);
 
@@ -82,7 +82,7 @@ class BaseResource extends AbstractResourceListener
         }
         
         $loggedUserId = $this->getLoggedUserId($event);
-        if(empty($loggedUserId)){
+        if (empty($loggedUserId)) {
             //local access
             return true;
         }
@@ -99,8 +99,9 @@ class BaseResource extends AbstractResourceListener
         return self::PERMISSION_NAME;
     }
     
-    protected function normalizeQueryParams(ResourceEvent &$event = null){
-        if(empty($event)){
+    protected function normalizeQueryParams(ResourceEvent &$event = null)
+    {
+        if (empty($event)) {
             return;
         }
         
@@ -109,14 +110,14 @@ class BaseResource extends AbstractResourceListener
         /* @var $queryParams Parameters */
                 
         //Normalize
-        if(($queryParams instanceof Parameters) && $queryParams->count() > 0){
+        if (($queryParams instanceof Parameters) && $queryParams->count() > 0) {
             //Array for iteration
-            $qp = $queryParams->toArray();            
+            $qp = $queryParams->toArray();
             
             //For each qp
-            foreach($qp as $key => $value) {
+            foreach ($qp as $key => $value) {
                 //Check now()
-                if($value === "now()"){
+                if ($value === "now()") {
                     $queryParams->set($key, date("Y-m-d"));
                 }
             }
@@ -135,6 +136,5 @@ class BaseResource extends AbstractResourceListener
         } else {
             throw new Exception("Event or Route not found");
         }
-
     }
 }

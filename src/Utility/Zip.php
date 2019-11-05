@@ -4,7 +4,6 @@ namespace Solcre\SolcreFramework2\Utility;
 
 class Zip
 {
-
     public static function compressAndSend($dir, array $files, $zipname)
     {
         $file = tempnam("/tmp", "zip");
@@ -97,5 +96,4 @@ class Zip
         }
         return $file . $ext;
     }
-
 }

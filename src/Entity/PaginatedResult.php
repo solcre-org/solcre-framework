@@ -8,7 +8,6 @@ use Traversable;
 
 class PaginatedResult implements IteratorAggregate
 {
-
     protected $totalCount;
     protected $items;
 

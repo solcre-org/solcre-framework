@@ -9,7 +9,6 @@ use ReflectionProperty;
 
 class EntityHydrator extends DoctrineObject
 {
-
     protected function extractByValue($object)
     {
         $data = parent::extractByValue($object);
