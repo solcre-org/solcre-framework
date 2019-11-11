@@ -8,8 +8,8 @@ use ZF\Hal\Plugin\Hal;
 
 class ExpandFilterService implements FilterInterface
 {
-    const FILTER_PARAMETER = 'expand';
-    const FILTER_NAME = 'expand.filter';
+    public const FILTER_PARAMETER = 'expand';
+    public const FILTER_NAME = 'expand.filter';
     /**
      *
      * @var Hal
@@ -20,36 +20,18 @@ class ExpandFilterService implements FilterInterface
      * @var array
      */
     protected $options;
-    /**
-     *
-     * @var bool
-     */
-    protected $hasFilters;
 
     public function __construct(Hal $halPlugin)
     {
         $this->halPlugin = $halPlugin;
-        $this->hasFilters = [];
     }
 
-    public function prepareOptions($options)
-    {
-        if (array_key_exists(self::FILTER_PARAMETER, $options)) {
-            $this->setOptions($options[self::FILTER_PARAMETER]);
-        }
-    }
-
-    public function canFilter($options)
+    public function canFilter($options): bool
     {
         return array_key_exists(self::FILTER_PARAMETER, $options) && ! empty($options[self::FILTER_PARAMETER]);
     }
 
-    public function getName()
-    {
-        return self::FILTER_NAME;
-    }
-
-    public function filter($entity, $options = null)
+    public function filter($entity, $options = null): void
     {
         if (! empty($options)) {
             $this->setOptions($options);
@@ -85,7 +67,7 @@ class ExpandFilterService implements FilterInterface
         }
     }
 
-    public function removeFilter($entity)
+    public function removeFilter($entity): void
     {
         //Control entity
         if (\is_array($entity)) {
@@ -106,12 +88,24 @@ class ExpandFilterService implements FilterInterface
         }
     }
 
-    public function getOptions()
+    public function getOptions(): array
     {
         return $this->options;
     }
 
-    public function setOptions($expand)
+    public function getName(): string
+    {
+        return self::FILTER_NAME;
+    }
+
+    public function prepareOptions($options): void
+    {
+        if (array_key_exists(self::FILTER_PARAMETER, $options)) {
+            $this->setOptions($options[self::FILTER_PARAMETER]);
+        }
+    }
+
+    public function setOptions($expand): void
     {
         $this->options = $this->processOptions($expand);
     }
@@ -123,7 +117,7 @@ class ExpandFilterService implements FilterInterface
      *
      * @return array
      */
-    protected function processOptions($expand)
+    protected function processOptions($expand): array
     {
         $result = [];
         $optionsResult = [];
@@ -135,7 +129,7 @@ class ExpandFilterService implements FilterInterface
         if (! (\is_array($optionsResult[1]) && count($optionsResult[1]) > 0)
             || ! (\is_array($optionsResult[2]) && count($optionsResult[2]) > 0)
         ) {
-            return;
+            return [];
         }
 
         //Set vars

@@ -27,14 +27,14 @@ class PaginatedAdapter implements AdapterInterface
         $this->additionalAttributes = $paginatedResult->getAdditionalAttributes();
     }
 
-    public function count($mode = 'COUNT_NORMAL')
+    public function count($mode = 'COUNT_NORMAL'): int
     {
         return $this->paginatedResult->getTotalCount();
     }
 
-    public function getItems($offset, $itemCountPerPage)
+    public function getItems($offset, $itemCountPerPage): array
     {
-        return $this->paginatedResult;
+        return $this->paginatedResult->getItems();
     }
 
     /**

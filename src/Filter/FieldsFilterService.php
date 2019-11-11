@@ -7,26 +7,24 @@ use ZF\Hal\Plugin\Hal;
 
 class FieldsFilterService implements FilterInterface
 {
-    const FILTER_PARAMETER = 'fields';
-    const FILTER_NAME = 'fields.filter';
-    const QUERY_FIELDS_SPLITTER = ',';
-    public static $FILTER_FIXED_FIELDS = ["id"];
+    public const FILTER_PARAMETER = 'fields';
+    public const FILTER_NAME = 'fields.filter';
+    public const QUERY_FIELDS_SPLITTER = ',';
+    public const FILTER_FIXED_FIELDS = ['id'];
     protected $halPlugin;
     protected $options;
-    protected $hasFilters;
 
     public function __construct(Hal $halPlugin)
     {
         $this->halPlugin = $halPlugin;
-        $this->hasFilters = [];
     }
 
-    public function canFilter($options)
+    public function canFilter($options): bool
     {
         return (array_key_exists(self::FILTER_PARAMETER, $options) && ! empty($options[self::FILTER_PARAMETER]));
     }
 
-    public function filter($entity, $fields = null)
+    public function filter($entity, $fields = null): void
     {
         //@@TODO: support second level filter
         if (! empty($fields)) {
@@ -49,21 +47,17 @@ class FieldsFilterService implements FilterInterface
         }
 
         $fields = $this->getOptions();
-        $fixedFields = self::$FILTER_FIXED_FIELDS;
+        $fixedFields = self::FILTER_FIXED_FIELDS;
 
         $hydrator->addFilter(
             self::FILTER_NAME,
-            function ($fieldName) use ($fields, $fixedFields) {
-                if (empty($fields) || ! \is_array($fields) || ! count($fields) || ! (array_search($fieldName, $fields) === false) || ! (array_search($fieldName, $fixedFields) === false)
-                ) {
-                    return true;
-                }
-                return false;
+            static function ($fieldName) use ($fields, $fixedFields) {
+                return empty($fields) || ! \is_array($fields) || ! count($fields) || (bool)in_array($fieldName, $fields, true) || (bool)in_array($fieldName, $fixedFields, true);
             }
         );
     }
 
-    public function removeFilter($entity)
+    public function removeFilter($entity): void
     {
         if (\is_array($entity)) {
             $entity = array_pop($entity);
@@ -80,7 +74,7 @@ class FieldsFilterService implements FilterInterface
         return $this->options;
     }
 
-    public function setOptions($options)
+    public function setOptions($options): void
     {
         if (\is_string($options)) {
             $options = explode(self::QUERY_FIELDS_SPLITTER, $options);
@@ -89,12 +83,12 @@ class FieldsFilterService implements FilterInterface
         $this->options = $options;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return self::FILTER_NAME;
     }
 
-    public function prepareOptions($options)
+    public function prepareOptions($options): void
     {
         if (array_key_exists(self::FILTER_PARAMETER, $options)) {
             $this->setOptions($options[self::FILTER_PARAMETER]);

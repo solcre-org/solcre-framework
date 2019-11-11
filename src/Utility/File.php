@@ -268,7 +268,7 @@ class File
     {
         if (file_exists($path)) {
             if (! unlink($path)) {
-                throw new Exception('An error occurred deleting the file', 400);
+                throw new BaseException('An error occurred deleting the file', 400);
             }
             return true;
         }

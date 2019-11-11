@@ -2,32 +2,20 @@
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
-use Solcre\SolcreFramework2\Common\SearchFilter;
-use Solcre\SolcreFramework2\Filter\ExpandFilterService;
-use Solcre\SolcreFramework2\Filter\Factory\ExpandFilterServiceFactory;
-use Solcre\SolcreFramework2\Filter\Factory\FieldsFilterServiceFactory;
-use Solcre\SolcreFramework2\Filter\FieldsFilterService;
+use Solcre\SolcreFramework2\Filter;
+use Solcre\SolcreFramework2\Filter\Factory as FilterFactory;
 use Solcre\SolcreFramework2\Hydrator\EntityHydrator;
 use Solcre\SolcreFramework2\Hydrator\Factory\EntityHydratorFactory;
-use Solcre\SolcreFramework2\Service\EmailService;
-use Solcre\SolcreFramework2\Service\ExcelService;
-use Solcre\SolcreFramework2\Service\Factory\EmailServiceFactory;
-use Solcre\SolcreFramework2\Service\Factory\ExcelServiceFactory;
-use Solcre\SolcreFramework2\Service\Factory\ScheduleEmailServiceFactory;
-use Solcre\SolcreFramework2\Service\Factory\SendScheduleEmailServiceFactory;
-use Solcre\SolcreFramework2\Service\ScheduleEmailService;
-use Solcre\SolcreFramework2\Service\SendScheduleEmailService;
+use Solcre\SolcreFramework2\Service;
+use Solcre\SolcreFramework2\Service\Factory;
 use Zend\Hydrator\ArraySerializable;
 
 return [
     'service_manager' => [
         'factories' => [
-            EmailService::class             => EmailServiceFactory::class,
-            FieldsFilterService::class      => FieldsFilterServiceFactory::class,
-            ExpandFilterService::class      => ExpandFilterServiceFactory::class,
-            ScheduleEmailService::class     => ScheduleEmailServiceFactory::class,
-            SendScheduleEmailService::class => SendScheduleEmailServiceFactory::class
-
+            Filter\FieldsFilterService::class => FilterFactory\FieldsFilterServiceFactory::class,
+            Filter\ExpandFilterService::class => FilterFactory\ExpandFilterServiceFactory::class,
+            Service\IdentityService::class    => Factory\IdentityServiceFactory::class
         ],
     ],
     'zf-hal'          => [

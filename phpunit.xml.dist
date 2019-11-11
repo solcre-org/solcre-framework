@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+        colors="true"
+        bootstrap="./module/MegaPharma/src/V1/Domain/test/Bootstrap.php">
+    <testsuites>
+        <testsuite name="MegaPharma Test User Package">
+            <directory>./module/MegaPharma/src/V1/Domain/User/test/</directory>
+        </testsuite>
+    </testsuites>
+    <testsuites>
+        <testsuite name="Common Package">
+            <directory>./module/MegaPharma/src/V1/Domain/Common/test/</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
+
