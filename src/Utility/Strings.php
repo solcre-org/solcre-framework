@@ -59,7 +59,7 @@ class Strings
      *
      * @return String
      */
-    public static function default_text($variable, $default)
+    public static function defaultText($variable, $default): string
     {
         return empty($variable) ? $default : $variable;
     }

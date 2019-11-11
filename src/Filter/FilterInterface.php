@@ -4,7 +4,6 @@ namespace Solcre\SolcreFramework2\Filter;
 
 interface FilterInterface
 {
-
     public function getName();
     public function setOptions($options);
     public function prepareOptions($options);

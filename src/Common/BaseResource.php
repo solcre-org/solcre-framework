@@ -9,8 +9,9 @@
 namespace Solcre\SolcreFramework2\Common;
 
 use Exception;
+use Solcre\SolcreFramework2\Exception\BaseException;
 use Solcre\SolcreFramework2\Service\BaseService;
-use Solcre\Lms\Service\PermissionService;
+use Zend\Router\RouteMatch;
 use Zend\Stdlib\Parameters;
 use ZF\ApiProblem\ApiProblem;
 use ZF\Rest\AbstractResourceListener;
@@ -18,14 +19,13 @@ use ZF\Rest\ResourceEvent;
 
 class BaseResource extends AbstractResourceListener
 {
-
+    const PERMISSION_NAME = 'permission-undefined';
     /**
      *
      * @var BaseService
      */
     protected $service;
     protected $permissionService;
-    const PERMISSION_NAME = 'permission-undefined';
 
     public function __construct(BaseService $service, PermissionService $permissionService)
     {
@@ -39,16 +39,16 @@ class BaseResource extends AbstractResourceListener
             //Set event and check permissions
             $this->event = $event;
             $this->checkPermission($event);
-            
+
             //Normalized as array query params and adata
             $this->normalizeQueryParams($event);
-            $data = (array)$event->getParam('data', array());
+            $data = (array)$event->getParam('data', []);
             $event->setParam('data', $data);
-            
+
             //Set page and size to the service
             $request = $event->getRequest();
             $page = $request->getQuery('page', 1);
-            $pageSize = $request->getQuery('size', 25);            
+            $pageSize = $request->getQuery('size', 25);
             $this->service->setCurrentPage($page);
             $this->service->setItemsCountPerPage($pageSize);
 
@@ -63,78 +63,79 @@ class BaseResource extends AbstractResourceListener
         }
     }
 
-    public function getLoggedUserId($event = null)
-    {
-        if (!empty($event)) {
-            $identity = $event->getIdentity();
-        } else {
-            $identity = $this->getIdentity();
-        }
-        $identityData = $identity->getAuthenticationIdentity();
-        return $identityData['user_id'];
-    }
-
     public function checkPermission($event, $permissionName = null, $throwExceptions = true)
     {
         $permissionName = empty($permissionName) ? $this->getPermissionName() : $permissionName;
-        if ($permissionName == "permission-undefined") {
-            throw new Exception("Permission name not defined", 400);
+        if ($permissionName === 'permission-undefined') {
+            throw new BaseException('Permission name not defined', 400);
         }
-        
+
         $loggedUserId = $this->getLoggedUserId($event);
-        if(empty($loggedUserId)){
+        if (empty($loggedUserId)) {
             //local access
             return true;
         }
 
         $access = $this->permissionService->checkPermission($event->getName(), $loggedUserId, $permissionName);
-        if (!$access && $throwExceptions) {
-            throw new Exception('Method not allowed for current user', 400);
+        if (! $access && $throwExceptions) {
+            throw new BaseException('Method not allowed for current user', 400);
         }
         return $access;
     }
 
-    public function getPermissionName()
+    public function getPermissionName(): string
     {
         return self::PERMISSION_NAME;
     }
-    
-    protected function normalizeQueryParams(ResourceEvent &$event = null){
-        if(empty($event)){
+
+    public function getLoggedUserId($event = null)
+    {
+        $identity = $this->getIdentity();
+        if (! empty($event)) {
+            $identity = $event->getIdentity();
+        }
+
+        $identityData = $identity->getAuthenticationIdentity();
+        return $identityData['user_id'];
+    }
+
+    protected function normalizeQueryParams(ResourceEvent &$event = null): void
+    {
+        if ($event === null) {
             return;
         }
-        
+
         //Get event query params
         $queryParams = $event->getQueryParams() ?: [];
         /* @var $queryParams Parameters */
-                
+
         //Normalize
-        if(($queryParams instanceof Parameters) && $queryParams->count() > 0){
+        if (($queryParams instanceof Parameters) && $queryParams->count() > 0) {
             //Array for iteration
-            $qp = $queryParams->toArray();            
-            
+            $qp = $queryParams->toArray();
+
             //For each qp
-            foreach($qp as $key => $value) {
+            foreach ($qp as $key => $value) {
                 //Check now()
-                if($value === "now()"){
-                    $queryParams->set($key, date("Y-m-d"));
+                if ($value === 'now()') {
+                    $queryParams->set($key, date('Y-m-d'));
                 }
             }
+
+            $event->setQueryParams($queryParams);
         }
-        
-        //Set query params to event
-        $event->setQueryParams($queryParams);
     }
 
     public function getUriParam($key)
     {
-        $e = $this->getEvent();
-        $route = $e->getRouteMatch();
-        if (!empty($e) && !empty($route)) {
-            return $route->getParam($key);
-        } else {
-            throw new Exception("Event or Route not found");
+        $event = $this->getEvent();
+        if ($event instanceof ResourceEvent) {
+            $route = $event->getRouteMatch();
+            if ($route instanceof RouteMatch) {
+                return $route->getParam($key);
+            }
         }
 
+        return null;
     }
 }

@@ -9,13 +9,12 @@ namespace Solcre\SolcreFramework2\Utility;
 
 class Arrays
 {
-
-    public static function utf8_decode(Array $array = null)
+    public static function utf8Decode(array $array = null): array
     {
         if (count($array) > 0) {
             foreach ($array as &$elem) {
                 if (is_array($elem)) {
-                    $elem = self::utf8_decode($elem);
+                    $elem = self::utf8Decode($elem);
                 } else {
                     if (is_string($elem)) {
                         $elem = utf8_decode($elem);
@@ -26,12 +25,12 @@ class Arrays
         return $array;
     }
 
-    public static function utf8_encode(Array $array = null)
+    public static function utf8Encode(array $array = null): array
     {
         if (count($array) > 0) {
             foreach ($array as &$elem) {
                 if (is_array($elem)) {
-                    $elem = self::utf8_encode($elem);
+                    $elem = self::utf8Encode($elem);
                 } else {
                     if (is_string($elem)) {
                         $elem = utf8_encode($elem);
@@ -42,15 +41,15 @@ class Arrays
         return $array;
     }
 
-    public static function htmlentitiesUTF8(Array $array = null)
+    public static function htmlentitiesUTF8(array $array = null): array
     {
         if (count($array) > 0) {
             foreach ($array as &$elem) {
                 if (is_array($elem)) {
-                    $elem = self::htmlentities($elem);
+                    $elem = self::htmlentitiesUTF8($elem);
                 } else {
                     if (is_string($elem)) {
-                        $elem = htmlentities($elem, ENT_QUOTES | ENT_IGNORE, "UTF-8");
+                        $elem = htmlentities($elem, ENT_QUOTES | ENT_IGNORE, 'UTF-8');
                     }
                 }
             }
@@ -58,12 +57,12 @@ class Arrays
         return $array;
     }
 
-    public static function htmlentities(Array $array = null)
+    public static function htmlEntities(array $array = null): array
     {
         if (count($array) > 0) {
             foreach ($array as &$elem) {
                 if (is_array($elem)) {
-                    $elem = self::htmlentities($elem);
+                    $elem = self::htmlEntities($elem);
                 } else {
                     if (is_string($elem)) {
                         $elem = htmlentities($elem);
@@ -74,12 +73,12 @@ class Arrays
         return $array;
     }
 
-    public static function html_entity_decode(Array $array = null)
+    public static function htmlEntityDecode(array $array = null): array
     {
         if (count($array) > 0) {
             foreach ($array as &$elem) {
                 if (is_array($elem)) {
-                    $elem = self::html_entity_decode($elem);
+                    $elem = self::htmlEntityDecode($elem);
                 } else {
                     if (is_string($elem)) {
                         $elem = html_entity_decode($elem);
@@ -90,12 +89,12 @@ class Arrays
         return $array;
     }
 
-    public static function stripslashes(Array $array = null)
+    public static function stripSlashes(array $array = null): array
     {
         if (count($array) > 0) {
             foreach ($array as &$elem) {
                 if (is_array($elem)) {
-                    $elem = self::stripslashes($elem);
+                    $elem = self::stripSlashes($elem);
                 } else {
                     if (is_string($elem)) {
                         $elem = stripslashes($elem);
@@ -106,7 +105,7 @@ class Arrays
         return $array;
     }
 
-    public static function stripTags(Array $array = null)
+    public static function stripTags(array $array = null): array
     {
         if (count($array) > 0) {
             foreach ($array as &$elem) {
@@ -122,12 +121,12 @@ class Arrays
         return $array;
     }
 
-    public static function addslashes(Array $array = null)
+    public static function addSlashes(array $array = null): array
     {
         if (count($array) > 0) {
             foreach ($array as &$elem) {
                 if (is_array($elem)) {
-                    $elem = self::addslashes($elem);
+                    $elem = self::addSlashes($elem);
                 } else {
                     if (is_string($elem)) {
                         $elem = addslashes($elem);
@@ -138,60 +137,12 @@ class Arrays
         return $array;
     }
 
-    /**
-     * Converts an array to uppercase.
-     * @param $array Array Array to convert to uppercase.
-     * @author Matias Fuster
-     */
-    public static function fullUpper(Array $array = null)
-    {
-        return self::fullUpper_array($array);
-    }
-
-    /**
-     * Converts an array to uppercase.
-     * @deprecated Use fullUpper instead
-     * @param $array Array Array to convert to uppercase.
-     * @author Matias Fuster
-     */
-    public static function fullUpper_array(Array $array = null)
+    public static function funcOver($func, array $array = null): array
     {
         if (count($array) > 0) {
             foreach ($array as &$elem) {
                 if (is_array($elem)) {
-                    $elem = self::fullUpper_array($elem);
-                } else {
-                    if (is_string($elem)) {
-                        $elem = Strings::fullUpper($elem);
-                    }
-                }
-            }
-        }
-        return $array;
-    }
-
-    public static function clean_for_json(Array $array = null)
-    {
-        if (count($array) > 0) {
-            foreach ($array as &$elem) {
-                if (is_array($elem)) {
-                    $elem = self::clean_for_json($elem);
-                } else {
-                    if (is_string($elem)) {
-                        $elem = Strings::clean_for_json($elem);
-                    }
-                }
-            }
-        }
-        return $array;
-    }
-
-    public static function func_over($func, Array $array = null)
-    {
-        if (count($array) > 0) {
-            foreach ($array as &$elem) {
-                if (is_array($elem)) {
-                    $elem = self::func_overy($func, $elem);
+                    $elem = self::funcOver($func, $elem);
                 } else {
                     $elem = $func($elem);
                 }
@@ -200,61 +151,38 @@ class Arrays
         return $array;
     }
 
-    public static function html_entity_decode_array(Array $array = null)
+    public static function htmlEntityDecodeArray(array $array = null): array
     {
         if (count($array) > 0) {
             foreach ($array as &$elem) {
                 if (is_array($elem)) {
-                    $elem = self::html_entity_decode_array($elem);
-                } else {
-                    if (is_string($elem)) {
-                        $elem = html_entity_decode($elem);
-                    }
+                    $elem = self::htmlEntityDecodeArray($elem);
+                } elseif (is_string($elem)) {
+                    $elem = html_entity_decode($elem);
                 }
             }
         }
         return $array;
     }
 
-    public static function guion(Array $array = null)
+    public static function defaultText(array $array = null, $value = '-'): array
     {
         if (count($array) > 0) {
             foreach ($array as &$elem) {
                 if (is_array($elem)) {
-                    $elem = self::guion($elem);
+                    $elem = self::defaultText($elem, $value);
                 } else {
-                    if (is_string($elem)) {
-                        $elem = Strings::guion($elem);
-                    }
+                    $elem = Strings::defaultText($elem, $value);
                 }
             }
         }
         return $array;
-    }
-
-    public static function default_text(Array $array = null, $value = '-')
-    {
-        if (count($array) > 0) {
-            foreach ($array as &$elem) {
-                if (is_array($elem)) {
-                    $elem = self::default_text($elem, $value);
-                } else {
-                    $elem = Strings::default_text($elem, $value);
-                }
-            }
-        }
-        return $array;
-    }
-
-    private static function comparePropierty($array1, $array2, $propertyName)
-    {
-        return strnatcmp($array1[$propertyName], $array2[$propertyName]);
     }
 
     public static function sortArray($array, $propertyName)
     {
-// sort alphabetically by name
-        usort($array, function ($a, $b) use ($propertyName) {
+        // sort alphabetically by name
+        usort($array, static function ($a, $b) use ($propertyName) {
             $aProperty = '';
             $bProperty = '';
             if (is_object($a)) {
@@ -278,9 +206,9 @@ class Arrays
         return $array;
     }
 
-    public static function array_map_recursive($func, array $arr, $userData = null)
+    public static function arrayMapRecursive($func, array $arr, $userData = null): array
     {
-        array_walk_recursive($arr, function (&$v) use ($func, $userData) {
+        array_walk_recursive($arr, static function (&$v) use ($func, $userData) {
             if (is_array($func)) {
                 $v = $func[0]->$func[1]($userData);
             } else {
@@ -290,47 +218,45 @@ class Arrays
         return $arr;
     }
 
-    public static function only_digits(Array $array = null)
+    public static function onlyDigits(array $array = null): ?array
     {
         if (is_array($array)) {
             return array_filter($array, 'ctype_digit');
         }
     }
 
-    public static function array_depth($arr)
+    public static function arrayDepth($arr): int
     {
-        if (!is_array($arr)) {
+        if (! is_array($arr)) {
             return 0;
         }
-        $arr = json_encode($arr);
-        $varsum = 0;
+
+        $arr = \json_encode($arr, JSON_THROW_ON_ERROR, 512);
+        $sum = 0;
         $depth = 0;
-        for ($i = 0; $i < strlen($arr); $i++) {
-            $varsum += intval($arr[$i] == '[') - intval($arr[$i] == ']');
-            if ($varsum > $depth) {
-                $depth = $varsum;
+        $length = strlen($arr);
+        for ($i = 0; $i < $length; $i++) {
+            $sum += (int)($arr[$i] === '[') - (int)($arr[$i] === ']');
+            if ($sum > $depth) {
+                $depth = $sum;
             }
         }
         return $depth;
     }
 
-    public static function getValue($key, Array $array, $filters = null)
+    public static function getValue($key, array $array, $filters = null)
     {
         $value = null;
-        if (is_array($array) && (count($array) > 0) && array_key_exists($key, $array)) {
+        if (is_array($array) && \array_key_exists($key, $array) && (count($array) > 0)) {
             $value = $array[$key];
         }
-        if (!empty($filters) && is_string($filters) && !empty($value)) {
+        if (! empty($filters) && is_string($filters) && ! empty($value)) {
             if (strpos($filters, '|') !== false) {
-                $filters = split('|', $filters);
+                $filters = \explode('|', $filters);
             }
             if (Validators::valid_array($filters)) {
                 foreach ($filters as $filter) {
                     $value = self::applyFilter($filter, $value);
-                }
-            } else {
-                if (is_string($filters)) {
-                    $value = self::applyFilter($filters, $value);
                 }
             }
         }
@@ -351,23 +277,22 @@ class Arrays
         return $value;
     }
 
-    public static function object_to_array($obj)
+    public static function objectToArray($obj): array
     {
         $_arr = is_object($obj) ? get_object_vars($obj) : $obj;
+        $arr = [];
         foreach ($_arr as $key => $val) {
-            $val = (is_array($val) || is_object($val)) ? self::object_to_array($val) : $val;
+            $val = (is_array($val) || is_object($val)) ? self::objectToArray($val) : $val;
             $arr[$key] = $val;
         }
         return $arr;
     }
 
-    public static function trim_array($Input)
+    public static function trimArray($Input)
     {
-        if (!is_array($Input)) {
+        if (! is_array($Input)) {
             return trim($Input);
         }
         return array_map('self::trim_array', $Input);
     }
 }
-
-?>

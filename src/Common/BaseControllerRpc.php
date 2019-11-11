@@ -2,12 +2,11 @@
 
 namespace Solcre\SolcreFramework2\Common;
 
-use MegaPharma\V1\Domain\Common\Service\IdentityService;
+use Solcre\SolcreFramework2\Service\IdentityService;
 use Zend\Mvc\Controller\AbstractActionController;
 
 class BaseControllerRpc extends AbstractActionController
 {
-
     protected $identityService;
 
     public function __construct(IdentityService $identityService = null)
@@ -31,8 +30,7 @@ class BaseControllerRpc extends AbstractActionController
 
     protected function getParamFromRoute($paramName)
     {
-        return $this->params()->fromRoute($paramName) ?? null;
-        ;
+        return $this->params()->fromRoute($paramName);
     }
 
     protected function getParamFromQueryParams($paramName)
@@ -43,6 +41,5 @@ class BaseControllerRpc extends AbstractActionController
     protected function getParamFromBodyParams($paramName)
     {
         return $this->bodyParams()[$paramName] ?? null;
-        ;
     }
 }

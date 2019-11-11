@@ -2,15 +2,14 @@
 
 namespace Solcre\SolcreFramework2\Hydrator;
 
-use Doctrine\Common\Util\Inflector;
+use Doctrine\Common\Inflector\Inflector;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 use ReflectionClass;
 use ReflectionProperty;
 
 class EntityHydrator extends DoctrineObject
 {
-
-    protected function extractByValue($object)
+    protected function extractByValue($object): array
     {
         $data = parent::extractByValue($object);
         $entityFields = array_merge($this->metadata->getFieldNames(), $this->metadata->getAssociationNames());
@@ -21,7 +20,7 @@ class EntityHydrator extends DoctrineObject
             $getter = 'get' . Inflector::classify($fieldName);
             $dataFieldName = $this->computeExtractFieldName($fieldName);
 
-            if (\in_array($getter, $methods)) {
+            if (\in_array($getter, $methods, true)) {
                 $data[$dataFieldName] = $this->extractValue($fieldName, $object->$getter(), $object);
             }
         }

@@ -9,7 +9,6 @@ use Zend\Paginator\Paginator;
 
 class ExpandEmbeddedStrategy extends AbstractCollectionStrategy
 {
-
     protected $expand;
 
     public function getExpand()

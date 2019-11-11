@@ -4,42 +4,40 @@ namespace Solcre\SolcreFramework2\Utility;
 
 class Directory
 {
-    public static function addDirectory($path, $permissions = 0777)
+    public static function addDirectory($path, $permissions = 0777): bool
     {
-        return !is_dir($path) && mkdir($path, $permissions);
+        return ! is_dir($path) && ! mkdir($path, $permissions) && ! is_dir($path);
     }
 
-    public static function include_dir($path, $read = false)
+    public static function includeDir($path, $read = false): void
     {
         //separador de directorios
         $s = '/';
         //vemos si es la primera vez que usamos la funcion
-        if (!$read) {
+        if (! $read) {
             //obtenemos los dos ultimos caracteres
-            $tree = substr($path, -2);
-            if ($tree == '.*') {
+            $tree = \substr($path, -2);
+            if ($tree === '.*') {
                 //eliminamos el asterisco y activamos la recursividad
-                $path = preg_replace('!\.\*$!', '', $path);
+                $path = \preg_replace('!\.\*$!', '', $path);
                 $read = true;
             }
             //obtenemos el document_root del archivo en caso de usarse
-            $path = preg_replace('!^root\.!', $_SERVER['DOCUMENT_ROOT'] . $s, $path);
+            $path = \preg_replace('!^root\.!', $_SERVER['DOCUMENT_ROOT'] . $s, $path);
             //cambiamos el punto por el separador
             /* HOTFIX */
-            $path = str_replace('..', ',,', $path);
-            $path = str_replace('.', $s, $path);
-            $path = str_replace(',,', '..', $path);
+            $path = \str_replace(['..', '.', ',,'], [',,', $s, '..'], $path);
         }
         //abrimos el directorio
         if ($handle = opendir($path)) {
             while (false !== ($file = readdir($handle))) {
-                if ($file != "." && $file != "..") {
+                if ($file !== '.' && $file !== '..') {
                     //si es un directorio lo recorremos en caso de activar la recursividad
                     if (is_dir($path . $s . $file) and $read) {
-                        include_dir($path . $s . $file, true);
+                        self::includeDir($path . $s . $file, true);
                     } else {
-                        $ext = substr(strtolower($file), -3);
-                        if ($ext == 'php') {
+                        $ext = strtolower(substr($file, -3));
+                        if ($ext === 'php') {
                             include_once($path . $s . $file);
                         }
                     }
@@ -50,58 +48,16 @@ class Directory
         }
     }
 
-    public static function dir_contents($dir)
-    {
-        $files = scandir($dir);
-        unset($files[array_search('.', $files)]);
-        unset($files[array_search('..', $files)]);
-        return array_values($files);
-    }
-
-    public static function is_subdir($dir, $subdir)
-    {
-        $dir = realpath($dir);
-        $subdir = realpath($subdir);
-        return is_dir($dir) && is_dir($subdir) && (strpos($subdir, $dir) === 0);
-    }
-
-    public static function dir_subdirs($dir, $pattern = null)
-    {
-        $match = !empty($pattern);
-        $fulldirs = glob(Strings::remove_last_slashes($dir) . '/*', GLOB_ONLYDIR);
-        array_walk($fulldirs, function ($val, $key) use (&$fulldirs, $pattern, $match) {
-            if (!$match || ($match && preg_match($pattern, $val))) {
-                $fulldirs[$key] = basename($val);
-            } else {
-                unset($fulldirs[$key]);
-            }
-        });
-        return array_values($fulldirs);
-    }
-
-    public static function dir_subfiles($dir, $pattern = null)
-    {
-        $match = !empty($pattern);
-        $files = array_diff(self::dir_contents($dir), self::dir_subdirs($dir));
-        array_walk($files, function ($val, $key) use (&$files, $pattern, $match) {
-            if ($match && !preg_match($pattern, $val)) {
-                unset($files[$key]);
-            }
-        });
-        return array_values($files);
-    }
-
-    public static function dir_delete($dirname)
+    public static function dirDelete($dirname): bool
     {
         $retorno = false;
         if (is_dir($dirname)) {
-            $retorno = true;
-            $contents = self::dir_contents($dirname);
+            $contents = self::dirContents($dirname);
             $count = count($contents);
             for ($i = 0; $i < $count; $i++) {
                 $file = $contents[$i];
                 if (is_dir($dirname . "/" . $file)) {
-                    $retorno = self::dir_delete($dirname . '/' . $file);
+                    self::dirDelete($dirname . '/' . $file);
                 } else {
                     unlink($dirname . "/" . $file);
                 }
@@ -111,9 +67,16 @@ class Directory
         return $retorno;
     }
 
-    public static function getFolderSize($path)
+    public static function dirContents($dir): array
     {
-        if (!file_exists($path)) {
+        $files = scandir($dir);
+        unset($files[\array_search('.', $files, true)], $files[\array_search('..', $files, true)]);
+        return array_values($files);
+    }
+
+    public static function getFolderSize($path): int
+    {
+        if (! file_exists($path)) {
             return 0;
         }
         if (is_file($path)) {
@@ -126,11 +89,35 @@ class Directory
         return $ret;
     }
 
-    public static function getFolderName($name, $path)
+    public static function getFolderName($name, $path): string
     {
         $name = self::nameWithoutCommas($name);
         $name = self::nameWithoutSpaces($name);
         $name = self::uniqueNameFolder($name, $path);
+        return $name;
+    }
+
+    public static function nameWithoutCommas($name)
+    {
+        return str_replace("'", '', stripslashes($name));
+    }
+
+    public static function nameWithoutSpaces($name)
+    {
+        return str_replace(' ', '_', $name);
+    }
+
+    public static function uniqueNameFolder($name, $folder): string
+    {
+        if (! empty($name)) {
+            $resource = $folder . $name;
+            $i = 0;
+            while (is_dir($resource)) {
+                $i++;
+                $resource = $folder . $name . $i;
+                $name .= $i;
+            }
+        }
         return $name;
     }
 
@@ -139,39 +126,12 @@ class Directory
         return date('Y-m-d H:i:s', filemtime($path));
     }
 
-    public static function nameWithoutSpaces($name)
+    public static function renameDirectory($oldPath, $newPath): ?bool
     {
-        return str_replace(" ", "_", $name);
-    }
-
-    public static function nameWithoutCommas($name)
-    {
-        return str_replace("'", "", stripslashes($name));
-    }
-
-    public static function uniqueNameFolder($name, $folder)
-    {
-        if (!empty($name)) {
-            $resource = $folder . $name;
-            $i = 0;
-            while (is_dir($resource)) {
-                $i++;
-                $resource = $folder . $name . $i;
-                $name = $name . $i;
-            }
-        }
-        return $name;
-    }
-
-    public static function renameDirectory($oldPath, $newPath)
-    {
-        if (!is_dir($newPath)) {
+        if (! is_dir($newPath)) {
             return rename($oldPath, $newPath);
-        } else {
-            return false;
         }
+
+        return false;
     }
-
 }
-
-?>
