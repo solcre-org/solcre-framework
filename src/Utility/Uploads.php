@@ -4,7 +4,6 @@ namespace Solcre\SolcreFramework2\Utility;
 
 class Uploads
 {
-
     public static function validName($name, $folder)
     {
         $name = self::withoutCommas($name);
@@ -58,5 +57,3 @@ class Uploads
         return $name . $increment . '.' . $extension;
     }
 }
-
-?>

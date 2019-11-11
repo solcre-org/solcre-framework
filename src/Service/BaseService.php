@@ -2,10 +2,10 @@
 
 namespace Solcre\SolcreFramework2\Service;
 
-use Exception;
-use ReflectionClass;
 use Doctrine\ORM\EntityManager;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator;
+use Exception;
+use ReflectionClass;
 use Solcre\SolcreFramework2\Common\BaseRepository;
 use Solcre\SolcreFramework2\Entity\PaginatedResult;
 use Solcre\SolcreFramework2\Filter\FilterInterface;
@@ -42,25 +42,25 @@ abstract class BaseService
     public function getEntityName(): ?string
     {
         $namespaceName = (new ReflectionClass($this))->getNamespaceName();
-        $className     = (new ReflectionClass($this))->getShortName();
+        $className = (new ReflectionClass($this))->getShortName();
+        $entityName = substr($className, 0, strpos($className, 'Service'));
         if (substr_count($className, 'Service') > 1) {
-            $pos = strrpos($className, "Service");
+            $pos = strrpos($className, 'Service');
             if ($pos !== false) {
-                $entityName = substr_replace($className, '', $pos, strlen("Service"));
+                $entityName = substr_replace($className, '', $pos, strlen('Service'));
             }
-        } else {
-            $entityName = substr($className, 0, strpos($className, "Service"));
         }
+
         $entityNamespace = str_replace('Service', 'Entity', $namespaceName);
-        return $entityNamespace . '\\' . $entityName . "Entity";
+        return $entityNamespace . '\\' . $entityName . 'Entity';
     }
 
-    
+
     public function enableFilter($filterName): void
     {
         $filters = $this->entityManager->getFilters();
 
-        if ($filters != null) {
+        if ($filters !== null) {
             $filters->enable($filterName);
         }
     }
@@ -69,7 +69,7 @@ abstract class BaseService
     {
         $filters = $this->entityManager->getFilters();
 
-        if ($filters != null && $filters->isEnabled($filterName)) {
+        if ($filters !== null && $filters->isEnabled($filterName)) {
             $$filters->disable($filterName);
         }
     }
@@ -236,7 +236,7 @@ abstract class BaseService
 
     public function update($id, $data)
     {
-        throw new Exception('Method not implemented', 400);
+        throw new BaseException('Method not implemented', 400);
     }
 
     public function getReference($id)
@@ -259,19 +259,19 @@ abstract class BaseService
     }
 
     /**
-     * @param null|string $loggedUser
-     */
-    public function setLoggedUser($loggedUser): void
-    {
-        $this->loggedUser = $loggedUser;
-    }
-
-    /**
      * @return IdentityService|null
      */
     public function getIdentityService(): ?IdentityService
     {
         return $this->identityService;
+    }
+
+    /**
+     * @param null|string $loggedUser
+     */
+    public function setLoggedUser($loggedUser): void
+    {
+        $this->loggedUser = $loggedUser;
     }
 
     /**

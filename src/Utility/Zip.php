@@ -2,13 +2,14 @@
 
 namespace Solcre\SolcreFramework2\Utility;
 
+use ZipArchive;
+
 class Zip
 {
-
-    public static function compressAndSend($dir, array $files, $zipname)
+    public static function compressAndSend($dir, array $files, $zipname): void
     {
         $file = tempnam("/tmp", "zip");
-        $zip = new \ZipArchive();
+        $zip = new ZipArchive();
         $zip->open($file, \ZipArchive::OVERWRITE);
         if (is_array($files) && count($files)) {
             foreach ($files as $name) {
@@ -42,7 +43,7 @@ class Zip
     public static function extractPattern($filename, $regex, $location = null, $delete = false)
     {
         $success = false;
-        $extracted = array();
+        $extracted = [];
         $location = $location ? $location : dirname($filename) . '/';
         $zip = new \ZipArchive();
         if ($zip->open($filename) === true) {
@@ -62,7 +63,7 @@ class Zip
                 }
             }
             $zip->close();
-            if (!$success) {
+            if (! $success) {
                 $countExtracted = count($extracted);
                 for ($i = 0; $i < $countExtracted; $i++) {
                     unlink($location . $extracted[$i]);
@@ -97,5 +98,4 @@ class Zip
         }
         return $file . $ext;
     }
-
 }

@@ -12,30 +12,23 @@ use Solcre\SolcreFramework2\Filter\FilterInterface;
 
 class BaseRepository extends EntityRepository
 {
-
+    private const MINIMUM_WHERE_PARTS = 2;
     private const NOT_NULL_FILTER = '!null';
     private const ORDER_BY_RELATION_SEPARATOR = '.';
     protected $filters = [];
 
-    public function addFilter(FilterInterface $filter)
+    public function addFilter(FilterInterface $filter): void
     {
         $this->filters[$filter->getName()] = $filter;
     }
 
     public function findBy(array $params, array $orderBy = null, $limit = null, $offset = null)
     {
-        //Pre find by
         $filtersOptions = $this->preFindBy($params);
-        //Legacy
-        if (empty($filtersOptions['fields'])) {
-            $result = parent::findBy($params, $orderBy, $limit, $offset);
-        } else {
-            //Execute
-            $query = $this->getFindByQuery($params, $orderBy, $filtersOptions);
-            $result = $query->getResult();
-        }
 
-        //Post find by
+        $query = $this->getFindByQuery($params, $orderBy, $filtersOptions);
+        $result = $query->getResult();
+
         $this->postFindBy($filtersOptions);
 
         return $result;
@@ -52,7 +45,7 @@ class BaseRepository extends EntityRepository
         return $filtersOptions;
     }
 
-    protected function getFindByQuery(array $params, array $orderBy = null, array $filterOptions = [])
+    protected function getFindByQuery(array $params, array $orderBy = null, array $filterOptions = []): \Doctrine\ORM\Query
     {
         //Table alias
         $tableAlias = 'a';
@@ -96,12 +89,11 @@ class BaseRepository extends EntityRepository
             //Foreach field
             foreach ($fields as $key => $fieldName) {
                 //Selected field?
-                if (\in_array($fieldName, $fieldsFilter)) {
+                if (\in_array($fieldName, $fieldsFilter, true)) {
                     $selectedFields[] = $fieldName;
                 }
             }
 
-            //Selet DQL base query
             $fieldsSelect = [sprintf('partial %s.{%s}', $tableAlias, implode(',', $selectedFields))];
         }
 
@@ -114,6 +106,7 @@ class BaseRepository extends EntityRepository
         if (\is_array($params) && ! empty($params)) {
             $and = $qb->expr()->andX();
             foreach ($params as $fieldName => $fieldValue) {
+                $fieldName = (string)$fieldName;
                 $alias = \sprintf('%s.%s', $tableAlias, $fieldName);
                 if (\is_array($fieldValue) && $this->entityHasAssociation($fieldName) && $this->hasStringKeys($fieldValue)) {
                     $qb->join($alias, $fieldName);
@@ -121,9 +114,10 @@ class BaseRepository extends EntityRepository
                         $alias = \sprintf('%s.%s', $fieldName, $key);
                         $this->setWhereClause($qb, $value, $alias, $and);
                     }
-                } else {
-                    $this->setWhereClause($qb, $fieldValue, $alias, $and);
+                    continue;
                 }
+
+                $this->setWhereClause($qb, $fieldValue, $alias, $and);
             }
 
             $qb->andWhere($and);
@@ -144,49 +138,62 @@ class BaseRepository extends EntityRepository
     {
         $expression = null;
         if ($fieldValue === null || $fieldValue === 'null') {
-            $expression = $qb->expr()->isNull($alias);
-            $and->add($expression);
-        } elseif (\is_array($fieldValue) && ! empty($fieldValue)) {
-            $expression = $qb->expr()->in($alias, $fieldValue);
-            $and->add($expression);
-        } elseif ($fieldValue === self::NOT_NULL_FILTER) {
-            $expression = $qb->expr()->isNotNull($alias);
-            $and->add($expression);
-        } elseif (\is_string($fieldValue)) {
-            if (strpos($fieldValue, '~') !== false) {
-                $valueParts = explode('~', $fieldValue);
-                if (\is_array($valueParts) && \count($valueParts) === 2) {
-                    $paramKey = \sprintf(':%s', $this->getUniqueKeyParam($qb));
-                    $expression = $qb->expr()->like($alias, $paramKey);
-                    $qb->setParameter($paramKey, '%' . $valueParts[1] . '%');
-                    $and->add($expression);
-                }
-            }
+            $this->isNullWhereClause($qb, $alias, $and, $expression);
+        }
 
-            if (strpos($fieldValue, '|') !== false) {
-                $valueParts = explode('|', $fieldValue);
-                if (\is_array($valueParts) && \count($valueParts) === 2) {
-                    if (! empty($valueParts[0])) {
-                        $paramKey = \sprintf(':%s', $this->getUniqueKeyParam($qb));
-                        $expression = $qb->expr()->gte($alias, $paramKey);
-                        $qb->setParameter($paramKey, $valueParts[0]);
-                        $and->add($expression);
-                    }
+        if (\is_array($fieldValue) && ! empty($fieldValue)) {
+            $this->inWhereClause($qb, $fieldValue, $alias, $and, $expression);
+        }
 
-                    if (! empty($valueParts[1])) {
-                        $paramKey = \sprintf(':%s', $this->getUniqueKeyParam($qb));
-                        $expression = $qb->expr()->lte($alias, $paramKey);
-                        $qb->setParameter($paramKey, $valueParts[1]);
-                        $and->add($expression);
-                    }
-                }
-            }
+        if (\is_string($fieldValue)) {
+            $this->setWhereClauseWithStringValue($qb, $fieldValue, $alias, $and, $expression, $valueParts, $paramKey);
         }
 
         if ($fieldValue !== null && $expression === null) {
+            $this->equalWhereClause($qb, $fieldValue, $alias, $and, $paramKey, $expression);
+        }
+    }
+
+    private function isNullWhereClause(QueryBuilder $qb, $alias, Andx $and, &$expression): void
+    {
+        $expression = $qb->expr()->isNull($alias);
+        $and->add($expression);
+    }
+
+    private function inWhereClause(QueryBuilder $qb, $fieldValue, $alias, Andx $and, &$expression): void
+    {
+        $expression = $qb->expr()->in($alias, $fieldValue);
+        $and->add($expression);
+    }
+
+    private function setWhereClauseWithStringValue(QueryBuilder $qb, $fieldValue, $alias, Andx $and, &$expression, &$valueParts, &$paramKey): void
+    {
+        if ($fieldValue === self::NOT_NULL_FILTER) {
+            $this->isNotNullWhereClause($qb, $alias, $and, $expression);
+        }
+
+        if (strpos($fieldValue, '~') !== false) {
+            $this->isLikeWhereClause($qb, $fieldValue, $alias, $and, $valueParts, $paramKey, $expression);
+        }
+
+        if (strpos($fieldValue, '|') !== false) {
+            $this->compareWhereClause($qb, $fieldValue, $alias, $and, $valueParts, $paramKey, $expression);
+        }
+    }
+
+    private function isNotNullWhereClause(QueryBuilder $qb, $alias, Andx $and, &$expression): void
+    {
+        $expression = $qb->expr()->isNotNull($alias);
+        $and->add($expression);
+    }
+
+    private function isLikeWhereClause(QueryBuilder $qb, $fieldValue, $alias, Andx $and, &$valueParts, &$paramKey, &$expression): void
+    {
+        $valueParts = explode('~', $fieldValue);
+        if (\is_array($valueParts) && \count($valueParts) === self::MINIMUM_WHERE_PARTS) {
             $paramKey = \sprintf(':%s', $this->getUniqueKeyParam($qb));
-            $expression = $qb->expr()->eq($alias, $paramKey);
-            $qb->setParameter($paramKey, $fieldValue);
+            $expression = $qb->expr()->like($alias, $paramKey);
+            $qb->setParameter($paramKey, '%' . $valueParts[1] . '%');
             $and->add($expression);
         }
     }
@@ -202,9 +209,37 @@ class BaseRepository extends EntityRepository
         return $paramName;
     }
 
+    private function compareWhereClause(QueryBuilder $qb, $fieldValue, $alias, Andx $and, &$valueParts, &$paramKey, &$expression): void
+    {
+        $valueParts = explode('|', $fieldValue);
+        if (\is_array($valueParts) && \count($valueParts) === self::MINIMUM_WHERE_PARTS) {
+            if (! empty($valueParts[0])) {
+                $paramKey = \sprintf(':%s', $this->getUniqueKeyParam($qb));
+                $expression = $qb->expr()->gte($alias, $paramKey);
+                $qb->setParameter($paramKey, $valueParts[0]);
+                $and->add($expression);
+            }
+
+            if (! empty($valueParts[1])) {
+                $paramKey = \sprintf(':%s', $this->getUniqueKeyParam($qb));
+                $expression = $qb->expr()->lte($alias, $paramKey);
+                $qb->setParameter($paramKey, $valueParts[1]);
+                $and->add($expression);
+            }
+        }
+    }
+
+    private function equalWhereClause(QueryBuilder $qb, $fieldValue, $alias, Andx $and, &$paramKey, &$expression): void
+    {
+        $paramKey = \sprintf(':%s', $this->getUniqueKeyParam($qb));
+        $expression = $qb->expr()->eq($alias, $paramKey);
+        $qb->setParameter($paramKey, $fieldValue);
+        $and->add($expression);
+    }
+
     protected function setOrderBy(array &$params, array $orderBy, QueryBuilder $qb, $tableAlias): void
     {
-        if ($orderBy !== null && \is_array($orderBy)) {
+        if (! empty($orderBy)) {
             foreach ($orderBy as $fieldName => $direction) {
                 if ($this->isAssociationSort($fieldName)) {
                     $this->processAssociationSort($tableAlias, $fieldName, $direction, $qb);
@@ -306,24 +341,18 @@ class BaseRepository extends EntityRepository
     protected function filter(array $options): void
     {
         if (count($this->filters) > 0) {
-            //Created entity for filters
             $entityName = $this->getEntityName();
             $entity = new $entityName();
 
-            //For each filter
             foreach ($this->filters as $name => $filter) {
-                //Is filter interface?
                 if ($filter instanceof FilterInterface) {
-                    //Can filter?
                     if ($filter->canFilter($options)) {
-                        //Load options
                         $filter->prepareOptions($options);
-                        //Filter
                         $filter->filter($entity);
-                    } else {
-                        //remove filter
-                        $filter->removeFilter($entity);
+                        continue;
                     }
+
+                    $filter->removeFilter($entity);
                 }
             }
         }
@@ -337,8 +366,7 @@ class BaseRepository extends EntityRepository
             'expand' => $params['expand'] ?? [],
         ];
         //Remove fields to prevent entity conflicts
-        unset($params['fields']);
-        unset($params['expand']);
+        unset($params['fields'], $params['expand']);
         //Find one by
         $entity = parent::findOneBy($params, $orderBy);
         //Execute  filters
@@ -346,12 +374,12 @@ class BaseRepository extends EntityRepository
         return $entity;
     }
 
-    protected function isParamSet(array $params, $key)
+    protected function isParamSet(array $params, $key): bool
     {
         return (isset($params[$key]) && ! empty($params[$key]));
     }
 
-    public function findByPaginated(array $params, array $orderBy = null, $limit = null, $offset = null)
+    public function findByPaginated(array $params, array $orderBy = null, $limit = null, $offset = null): DoctrinePaginator
     {
         //Pre find by
         $filtersOptions = $this->preFindBy($params);
@@ -368,9 +396,25 @@ class BaseRepository extends EntityRepository
         return $doctrinePaginator;
     }
 
-    protected function getDoctrinePaginator($query, $fetchJoinCollection = true)
+    protected function getDoctrinePaginator($query): DoctrinePaginator
     {
-        $ormPaginator = new OrmPaginator($query, $fetchJoinCollection);
+        $ormPaginator = $this->createOrmPaginator($query, true);
+        return $this->createDoctrinePaginator($ormPaginator);
+    }
+
+    private function createOrmPaginator($query, $fetchJoinCollection): OrmPaginator
+    {
+        return new OrmPaginator($query, $fetchJoinCollection);
+    }
+
+    private function createDoctrinePaginator($ormPaginator): DoctrinePaginator
+    {
         return new DoctrinePaginator($ormPaginator);
+    }
+
+    protected function getDoctrinePaginatorWithoutJoinCollection($query): DoctrinePaginator
+    {
+        $ormPaginator = $this->createOrmPaginator($query, false);
+        return $this->createDoctrinePaginator($ormPaginator);
     }
 }
