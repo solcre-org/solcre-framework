@@ -32,8 +32,11 @@ class Uploads
                 $filepath = $folder . $name . $i . $ext;
                 $file = $name . $i;
             }
+
+            return $file . $ext;
         }
-        return $file . $ext;
+
+        throw UploadsException::invalidNameException();
     }
 
     public static function nameWithoutSpaces($name)
