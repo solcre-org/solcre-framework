@@ -2,7 +2,7 @@
 
 namespace Solcre\SolcreFramework2\Exception;
 
-class StringException extends BaseException
+class StringsException extends BaseException
 {
     public static function openssl_cipher_iv_length_Exception(): self
     {

@@ -6,6 +6,7 @@ class UploadsException extends BaseException
 {
     public static function invalidNameException(): self
     {
-        return new self('Invalid Name', 400);
+        return new self('nameUnique method failure', 400);
     }
 }
+
