@@ -11,16 +11,11 @@ use Solcre\SolcreFramework2\Exception\ArraysException;
 
 class Arrays
 {
-    public function checkValidParam($array): void
+    public static function utf8Decode(array $array = null): array
     {
         if ( null === $array) {
             throw ArraysException::nonCountableException();
         }
-    }
-
-    public static function utf8Decode(array $array = null): array
-    {
-        $this->checkValidParam($array);
 
         if (count($array) > 0) {
 
@@ -42,7 +37,9 @@ class Arrays
 
     public static function utf8Encode(array $array = null): array
     {
-        $this->checkValidParam($array);
+        if ( null === $array) {
+            throw ArraysException::nonCountableException();
+        }
 
         if (count($array) > 0) {
 
@@ -64,7 +61,9 @@ class Arrays
 
     public static function htmlentitiesUTF8(array $array = null): array
     {
-        $this->checkValidParam($array);
+        if ( null === $array) {
+            throw ArraysException::nonCountableException();
+        }
 
         if (count($array) > 0) {
 
@@ -86,7 +85,9 @@ class Arrays
 
     public static function htmlEntities(array $array = null): array
     {
-        $this->checkValidParam($array);
+        if ( null === $array) {
+            throw ArraysException::nonCountableException();
+        }
 
         if (count($array) > 0) {
 
@@ -110,7 +111,9 @@ class Arrays
 
     public static function htmlEntityDecode(array $array = null): array
     {
-        $this->checkValidParam($array);
+        if ( null === $array) {
+            throw ArraysException::nonCountableException();
+        }
 
         if (count($array) > 0) {
 
@@ -132,7 +135,9 @@ class Arrays
 
     public static function stripSlashes(array $array = null): array
     {
-        $this->checkValidParam($array);
+        if ( null === $array) {
+            throw ArraysException::nonCountableException();
+        }
 
         if (count($array) > 0) {
 
@@ -154,7 +159,9 @@ class Arrays
 
     public static function stripTags(array $array = null): array
     {
-        $this->checkValidParam($array);
+        if ( null === $array) {
+            throw ArraysException::nonCountableException();
+        }
 
         if (count($array) > 0) {
 
@@ -176,7 +183,9 @@ class Arrays
 
     public static function addSlashes(array $array = null): array
     {
-        $this->checkValidParam($array);
+        if ( null === $array) {
+            throw ArraysException::nonCountableException();
+        }
 
         if (count($array) > 0) {
 
@@ -198,7 +207,9 @@ class Arrays
 
     public static function funcOver($func, array $array = null): array
     {
-        $this->checkValidParam($array);
+        if ( null === $array) {
+            throw ArraysException::nonCountableException();
+        }
 
         if (count($array) > 0) {
 
@@ -217,7 +228,9 @@ class Arrays
 
     public static function htmlEntityDecodeArray(array $array = null): array
     {
-        $this->checkValidParam($array);
+        if ( null === $array) {
+            throw ArraysException::nonCountableException();
+        }
 
         if (count($array) > 0) {
 
@@ -236,7 +249,9 @@ class Arrays
 
     public static function defaultText(array $array = null, $value = '-'): array
     {
-        $this->checkValidParam($array);
+        if ( null === $array) {
+            throw ArraysException::nonCountableException();
+        }
 
         if (count($array) > 0) {
 
