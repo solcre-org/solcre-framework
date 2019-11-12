@@ -2,6 +2,8 @@
 
 namespace Solcre\SolcreFramework2\Utility;
 
+use Solcre\SolcreFramework2\Exception\UploadsException;
+
 class Uploads
 {
     public static function validName($name, $folder)
