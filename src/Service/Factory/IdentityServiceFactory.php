@@ -3,7 +3,7 @@
 namespace Solcre\SolcreFramework2\Service\Factory;
 
 use Interop\Container\ContainerInterface;
-use MegaPharma\V1\Domain\Common\Service\IdentityService;
+use Solcre\SolcreFramework2\Service\IdentityService;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
 class IdentityServiceFactory implements FactoryInterface
