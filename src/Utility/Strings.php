@@ -3,7 +3,7 @@
 namespace Solcre\SolcreFramework2\Utility;
 
 use ForceUTF8\Encoding;
-use Solcre\SolcreFramework2\Exception\StringException;
+use Solcre\SolcreFramework2\Exception\StringsException;
 
 class Strings
 {
@@ -391,7 +391,7 @@ class Strings
     public static function encrypt($stringToEncrypt, $validateKey = self::VALIDATE_KEY)
     {
         if (openssl_cipher_iv_length(self::ENCRYPTION_METHOD) === false) {
-            throw StringException::openssl_cipher_iv_length_Exception();
+            throw StringsException::openssl_cipher_iv_length_Exception();
         }
 
         $cryptoStrong = true;
@@ -409,7 +409,7 @@ class Strings
     public static function decrypt($encryptedString, $validateKey = self::VALIDATE_KEY)
     {
         if (base64_decode($encryptedString) === false) {
-            throw StringException::base64_decode_Exception();
+            throw StringsException::base64_decode_Exception();
         }
 
         list($encryptedString, $iv) = explode(self::ENCRYPTION_GLUE, base64_decode($encryptedString), 2);
