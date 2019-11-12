@@ -108,7 +108,7 @@ class Validators
     public static function validFile($filename): bool
     {
         $extension = File::extension($filename);
-        return (empty($extension)) ? false : ! self::valid_script($filename);
+        return (empty($extension)) ? false : ! self::validScript($filename);
     }
 
     public static function validScript($filename): bool
