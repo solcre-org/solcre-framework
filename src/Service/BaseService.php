@@ -5,6 +5,8 @@ namespace Solcre\SolcreFramework2\Service;
 use Doctrine\ORM\EntityManager;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator;
 use Exception;
+use Solcre\SolcreFramework2\Exception\BaseException;
+use phpDocumentor\Reflection\Types\Boolean;
 use ReflectionClass;
 use Solcre\SolcreFramework2\Common\BaseRepository;
 use Solcre\SolcreFramework2\Entity\PaginatedResult;
@@ -19,6 +21,10 @@ abstract class BaseService
     protected $entityName;
     protected $currentPage = 1;
     protected $itemsCountPerPage = 50;
+    protected $configuration;
+    protected $identityService;
+    protected $loggedUser;
+
 
     /**
      * Additional attributes to render with the collection
@@ -30,7 +36,7 @@ abstract class BaseService
     public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
-        $this->entityName = $this->getEntityName();
+        $this->entityName    = $this->getEntityName();
 
         if ($this->entityName !== null) {
             $this->repository = $this->entityManager->getRepository($this->entityName);
@@ -42,16 +48,24 @@ abstract class BaseService
     public function getEntityName(): ?string
     {
         $namespaceName = (new ReflectionClass($this))->getNamespaceName();
-        $className = (new ReflectionClass($this))->getShortName();
-        $entityName = substr($className, 0, strpos($className, 'Service'));
+        $className     = (new ReflectionClass($this))->getShortName();
+
+        if (strpos($className, 'Service') === false) {
+           throw BaseException::classNameNotFound();
+        }
+
+        $entityName    = substr($className, 0, strpos($className, 'Service'));
+
         if (substr_count($className, 'Service') > 1) {
             $pos = strrpos($className, 'Service');
+
             if ($pos !== false) {
                 $entityName = substr_replace($className, '', $pos, strlen('Service'));
             }
         }
 
         $entityNamespace = str_replace('Service', 'Entity', $namespaceName);
+
         return $entityNamespace . '\\' . $entityName . 'Entity';
     }
 
@@ -126,18 +140,22 @@ abstract class BaseService
             $entity = $this->getEntityName();
             $entity = new $entity;
         }
+
         $hydrator = new EntityHydrator($this->entityManager);
+
         if (! empty($strategies)) {
             foreach ($strategies as $strategy) {
                 $hydrator->addStrategy($strategy['field'], $strategy['strategy']);
             }
         }
+
         return $hydrator->hydrate($data, $entity);
     }
 
     public function fetchOne($id, array $params = [])
     {
         $params['id'] = $id;
+
         return $this->repository->findOneBy($params);
     }
 
@@ -151,12 +169,14 @@ abstract class BaseService
         if (! empty($params) || ! empty($orderBy)) {
             return $this->repository->findBy((array)$params, $orderBy);
         }
+
         return $this->repository->findAll();
     }
 
     public function fetchAllPaginated($params = null, $orderBy = null): PaginatedResult
     {
         $doctrinePaginator = $this->repository->findByPaginated((array)$params, $orderBy);
+
         return $this->paginateResults($doctrinePaginator);
     }
 
@@ -164,7 +184,7 @@ abstract class BaseService
     {
         //Get options
         $currentPage = (int)$this->getCurrentPage();
-        $pageSize = (int)$this->getItemsCountPerPage();
+        $pageSize    = (int)$this->getItemsCountPerPage();
 
         //Here is where configures the paginator options and iterate for doctrinePaginator
         //The doctrine paginator with getIterator, rise the queries taking page size
@@ -175,9 +195,11 @@ abstract class BaseService
 
         //Get array result
         $arrayResult = [];
+
         foreach ($paginator as $item) {
             $arrayResult[] = $item;
         }
+
         //Fill the iterator and return it
         return new PaginatedResult($arrayResult, $doctrinePaginator->count(), $this->additionalAttributes);
     }
@@ -210,7 +232,7 @@ abstract class BaseService
         $this->itemsCountPerPage = $itemsCountPerPage;
     }
 
-    public function delete($id, $entityObj = null)
+    public function delete($id, $entityObj = null): bool
     {
         try {
             if (empty($entityObj)) {
@@ -218,6 +240,7 @@ abstract class BaseService
             }
             $this->entityManager->remove($entityObj);
             $this->entityManager->flush($entityObj);
+
             return true;
         } catch (Exception $e) {
             throw $e;
@@ -255,6 +278,7 @@ abstract class BaseService
         if ($this->getIdentityService() !== null) {
             return $this->getIdentityService()->getIdentity();
         }
+
         return null;
     }
 
@@ -298,3 +322,4 @@ abstract class BaseService
         $this->additionalAttributes = $additionalAttributes;
     }
 }
+
