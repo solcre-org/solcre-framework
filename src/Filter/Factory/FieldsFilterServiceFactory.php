@@ -12,12 +12,15 @@ class FieldsFilterServiceFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $helpers = $container->get('ViewHelperManager');
+
         if ($helpers instanceof HelperPluginManager) {
             if ($helpers->has('Hal')) {
                 $halPlugin = $helpers->get('Hal');
+
                 return new FieldsFilterService($halPlugin);
             }
         }
+
         return null;
     }
 }

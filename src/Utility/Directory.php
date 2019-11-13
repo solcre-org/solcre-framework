@@ -36,11 +36,8 @@ class Directory
 
         //abrimos el directorio
         if ($handle = opendir($path)) {
-
             while (false !== ($file = readdir($handle))) {
-
                 if ($file !== '.' && $file !== '..') {
-
                     //si es un directorio lo recorremos en caso de activar la recursividad
                     if (is_dir($path . $s . $file) and $read) {
                         self::includeDir($path . $s . $file, true);
@@ -103,7 +100,6 @@ class Directory
         }
 
         if (is_file($path)) {
-
             if (filesize($path) === false) {
                 throw DirectoryException::filesizeException();
             }
@@ -164,7 +160,7 @@ class Directory
     {
         $fileTime = filemtime($path);
 
-        If ($fileTime === false) {
+        if ($fileTime === false) {
             throw DirectoryException::fileTimeException();
         }
 

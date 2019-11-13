@@ -130,4 +130,3 @@ class Zip
         throw ZipException::invalidNameException();
     }
 }
-

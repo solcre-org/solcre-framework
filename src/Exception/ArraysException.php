@@ -9,4 +9,3 @@ class ArraysException extends BaseException
         return new self('count expected array|Countable $var, but null given.', 400);
     }
 }
-

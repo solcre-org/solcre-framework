@@ -275,7 +275,6 @@ class File
     public static function deleteFile($path): ?bool
     {
         if (file_exists($path)) {
-
             if (! unlink($path)) {
                 throw new BaseException('An error occurred deleting the file', 400);
             }
@@ -441,4 +440,3 @@ class File
         return [];
     }
 }
-

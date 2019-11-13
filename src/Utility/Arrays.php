@@ -13,18 +13,15 @@ class Arrays
 {
     public static function utf8Decode(array $array = null): array
     {
-        if ( null === $array) {
+        if (null === $array) {
             throw ArraysException::nonCountableException();
         }
 
         if (count($array) > 0) {
-
             foreach ($array as &$elem) {
-
                 if (is_array($elem)) {
                     $elem = self::utf8Decode($elem);
                 } else {
-
                     if (is_string($elem)) {
                         $elem = utf8_decode($elem);
                     }
@@ -37,18 +34,15 @@ class Arrays
 
     public static function utf8Encode(array $array = null): array
     {
-        if ( null === $array) {
+        if (null === $array) {
             throw ArraysException::nonCountableException();
         }
 
         if (count($array) > 0) {
-
             foreach ($array as &$elem) {
-
                 if (is_array($elem)) {
                     $elem = self::utf8Encode($elem);
                 } else {
-
                     if (is_string($elem)) {
                         $elem = utf8_encode($elem);
                     }
@@ -61,18 +55,15 @@ class Arrays
 
     public static function htmlentitiesUTF8(array $array = null): array
     {
-        if ( null === $array) {
+        if (null === $array) {
             throw ArraysException::nonCountableException();
         }
 
         if (count($array) > 0) {
-
             foreach ($array as &$elem) {
-
                 if (is_array($elem)) {
                     $elem = self::htmlentitiesUTF8($elem);
                 } else {
-
                     if (is_string($elem)) {
                         $elem = htmlentities($elem, ENT_QUOTES | ENT_IGNORE, 'UTF-8');
                     }
@@ -85,19 +76,15 @@ class Arrays
 
     public static function htmlEntities(array $array = null): array
     {
-        if ( null === $array) {
+        if (null === $array) {
             throw ArraysException::nonCountableException();
         }
 
         if (count($array) > 0) {
-
             foreach ($array as &$elem) {
-
                 if (is_array($elem)) {
-
                     $elem = self::htmlEntities($elem);
                 } else {
-
                     if (is_string($elem)) {
                         $elem = htmlentities($elem);
                     }
@@ -111,18 +98,15 @@ class Arrays
 
     public static function htmlEntityDecode(array $array = null): array
     {
-        if ( null === $array) {
+        if (null === $array) {
             throw ArraysException::nonCountableException();
         }
 
         if (count($array) > 0) {
-
             foreach ($array as &$elem) {
-
                 if (is_array($elem)) {
                     $elem = self::htmlEntityDecode($elem);
                 } else {
-
                     if (is_string($elem)) {
                         $elem = html_entity_decode($elem);
                     }
@@ -135,18 +119,15 @@ class Arrays
 
     public static function stripSlashes(array $array = null): array
     {
-        if ( null === $array) {
+        if (null === $array) {
             throw ArraysException::nonCountableException();
         }
 
         if (count($array) > 0) {
-
             foreach ($array as &$elem) {
-
                 if (is_array($elem)) {
                     $elem = self::stripSlashes($elem);
                 } else {
-
                     if (is_string($elem)) {
                         $elem = stripslashes($elem);
                     }
@@ -159,18 +140,15 @@ class Arrays
 
     public static function stripTags(array $array = null): array
     {
-        if ( null === $array) {
+        if (null === $array) {
             throw ArraysException::nonCountableException();
         }
 
         if (count($array) > 0) {
-
             foreach ($array as &$elem) {
-
                 if (is_array($elem)) {
                     $elem = self::stripTags($elem);
                 } else {
-
                     if (is_string($elem)) {
                         $elem = strip_tags($elem);
                     }
@@ -183,18 +161,15 @@ class Arrays
 
     public static function addSlashes(array $array = null): array
     {
-        if ( null === $array) {
+        if (null === $array) {
             throw ArraysException::nonCountableException();
         }
 
         if (count($array) > 0) {
-
             foreach ($array as &$elem) {
-
                 if (is_array($elem)) {
                     $elem = self::addSlashes($elem);
                 } else {
-
                     if (is_string($elem)) {
                         $elem = addslashes($elem);
                     }
@@ -207,14 +182,12 @@ class Arrays
 
     public static function funcOver($func, array $array = null): array
     {
-        if ( null === $array) {
+        if (null === $array) {
             throw ArraysException::nonCountableException();
         }
 
         if (count($array) > 0) {
-
             foreach ($array as &$elem) {
-
                 if (is_array($elem)) {
                     $elem = self::funcOver($func, $elem);
                 } else {
@@ -228,15 +201,13 @@ class Arrays
 
     public static function htmlEntityDecodeArray(array $array = null): array
     {
-        if ( null === $array) {
+        if (null === $array) {
             throw ArraysException::nonCountableException();
         }
 
         if (count($array) > 0) {
-
             foreach ($array as &$elem) {
                 if (is_array($elem)) {
-
                     $elem = self::htmlEntityDecodeArray($elem);
                 } elseif (is_string($elem)) {
                     $elem = html_entity_decode($elem);
@@ -249,14 +220,12 @@ class Arrays
 
     public static function defaultText(array $array = null, $value = '-'): array
     {
-        if ( null === $array) {
+        if (null === $array) {
             throw ArraysException::nonCountableException();
         }
 
         if (count($array) > 0) {
-
             foreach ($array as &$elem) {
-
                 if (is_array($elem)) {
                     $elem = self::defaultText($elem, $value);
                 } else {
@@ -352,13 +321,11 @@ class Arrays
         }
 
         if (! empty($filters) && is_string($filters) && ! empty($value)) {
-
             if (strpos($filters, '|') !== false) {
                 $filters = \explode('|', $filters);
             }
 
             if (Validators::validArray($filters)) {
-
                 foreach ($filters as $filter) {
                     $value = self::applyFilter($filter, $value);
                 }

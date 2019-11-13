@@ -19,4 +19,3 @@ class ZipException extends BaseException
         return new self('Invalid Name', 400);
     }
 }
-

@@ -51,7 +51,7 @@ abstract class BaseService
         $className     = (new ReflectionClass($this))->getShortName();
 
         if (strpos($className, 'Service') === false) {
-           throw BaseException::classNameNotFoundException();
+            throw BaseException::classNameNotFoundException();
         }
 
         $entityName    = substr($className, 0, strpos($className, 'Service'));
@@ -322,4 +322,3 @@ abstract class BaseService
         $this->additionalAttributes = $additionalAttributes;
     }
 }
-

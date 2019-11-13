@@ -9,4 +9,3 @@ class UploadsException extends BaseException
         return new self('nameUnique method failure', 400);
     }
 }
-

@@ -65,4 +65,3 @@ class Uploads
         return $name . $increment . '.' . $extension;
     }
 }
-

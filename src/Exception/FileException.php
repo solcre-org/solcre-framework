@@ -14,4 +14,3 @@ class FileException extends BaseException
         return new self('strtolower method expect string, but null given.', 400);
     }
 }
-

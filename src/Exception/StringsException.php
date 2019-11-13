@@ -14,4 +14,3 @@ class StringsException extends BaseException
         return new self('base64_decode method failure and return false.', 400);
     }
 }
-

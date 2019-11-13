@@ -24,4 +24,3 @@ class DirectoryException extends BaseException
         return new self('filetime method failure', 400);
     }
 }
-
