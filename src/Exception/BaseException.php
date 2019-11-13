@@ -20,7 +20,7 @@ class BaseException extends \Exception
         return $this->additional;
     }
 
-    public static function classNameNotFound(): self
+    public static function classNameNotFoundException(): self
     {
         return new self('class name was not found', 400);
     }
