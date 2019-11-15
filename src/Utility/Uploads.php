@@ -2,6 +2,8 @@
 
 namespace Solcre\SolcreFramework2\Utility;
 
+use Solcre\SolcreFramework2\Exception\UploadsException;
+
 class Uploads
 {
     public static function validName($name, $folder)
@@ -12,11 +14,11 @@ class Uploads
         return $name;
     }
 
-
     public static function nameUnique($name, $folder)
     {
         if ($name) {
             $t = explode('.', $name);
+
             if (count($t) == 1) {
                 $ext = '';
             } else {
@@ -27,13 +29,17 @@ class Uploads
             $file = $name;
             $filepath = $folder . $name . $ext;
             $i = 0;
+
             while (is_file($filepath)) {
                 $i++;
                 $filepath = $folder . $name . $i . $ext;
                 $file = $name . $i;
             }
+
+            return $file . $ext;
         }
-        return $file . $ext;
+
+        throw UploadsException::invalidNameException();
     }
 
     public static function nameWithoutSpaces($name)
@@ -51,9 +57,11 @@ class Uploads
         $name = pathinfo($rutaAbs . $fileName, PATHINFO_FILENAME);
         $extension = pathinfo($rutaAbs . $fileName, PATHINFO_EXTENSION);
         $increment = ''; //start with no suffix
+
         while (file_exists($rutaAbs . $name . $increment . '.' . $extension)) {
             $increment++;
         }
+
         return $name . $increment . '.' . $extension;
     }
 }

@@ -9,6 +9,7 @@
 namespace Solcre\SolcreFramework2\Common;
 
 use Exception;
+use Solcre\Lms\Service\PermissionService;
 use Solcre\SolcreFramework2\Exception\BaseException;
 use Solcre\SolcreFramework2\Service\BaseService;
 use Zend\Router\RouteMatch;
@@ -46,8 +47,8 @@ class BaseResource extends AbstractResourceListener
             $event->setParam('data', $data);
 
             //Set page and size to the service
-            $request = $event->getRequest();
-            $page = $request->getQuery('page', 1);
+            $request  = $event->getRequest();
+            $page     = $request->getQuery('page', 1);
             $pageSize = $request->getQuery('size', 25);
             $this->service->setCurrentPage($page);
             $this->service->setItemsCountPerPage($pageSize);
@@ -59,6 +60,7 @@ class BaseResource extends AbstractResourceListener
             return parent::dispatch($event);
         } catch (Exception $exc) {
             $code = $exc->getCode() ? $exc->getCode() : 404;
+
             return new ApiProblem($code, $exc->getMessage());
         }
     }
@@ -73,6 +75,7 @@ class BaseResource extends AbstractResourceListener
         $loggedUserId = $this->getLoggedUserId($event);
         if (empty($loggedUserId)) {
             //local access
+
             return true;
         }
 
@@ -80,6 +83,7 @@ class BaseResource extends AbstractResourceListener
         if (! $access && $throwExceptions) {
             throw new BaseException('Method not allowed for current user', 400);
         }
+
         return $access;
     }
 
@@ -91,11 +95,13 @@ class BaseResource extends AbstractResourceListener
     public function getLoggedUserId($event = null)
     {
         $identity = $this->getIdentity();
+
         if (! empty($event)) {
             $identity = $event->getIdentity();
         }
 
         $identityData = $identity->getAuthenticationIdentity();
+
         return $identityData['user_id'];
     }
 
@@ -129,8 +135,10 @@ class BaseResource extends AbstractResourceListener
     public function getUriParam($key)
     {
         $event = $this->getEvent();
+
         if ($event instanceof ResourceEvent) {
             $route = $event->getRouteMatch();
+
             if ($route instanceof RouteMatch) {
                 return $route->getParam($key);
             }

@@ -25,6 +25,7 @@ class BaseControllerRpc extends AbstractActionController
     {
         $identity = $this->getIdentity();
         $identityData = $identity->getAuthenticationIdentity();
+
         return $identityData['user_id'];
     }
 

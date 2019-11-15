@@ -11,6 +11,8 @@ namespace Solcre\SolcreFramework2\Utility;
 use Exception;
 use Zend\Filter\File\Rename;
 use Zend\Filter\File\RenameUpload;
+use Solcre\SolcreFramework2\Exception\BaseException;
+use Solcre\SolcreFramework2\Exception\FileException;
 
 class File
 {
@@ -209,6 +211,7 @@ class File
         $key = empty($options['key']) ? 'file' : $options['key'];
         $keyText = empty($options['key_text']) ? 'filename' : $options['key_text'];
         $fileName = '';
+
         if (! empty($data[$key])) {
             //Upload file and set $fileName
             $file = self::uploadFile($data, $options);
@@ -217,6 +220,7 @@ class File
             //Return key text value
             $fileName = $data[$keyText];
         }
+
         return $fileName;
     }
 
@@ -247,20 +251,24 @@ class File
                 ]
             );
         }
+
         $file = $filter->filter($data[$key]);
         chmod($file['tmp_name'], 0644);
+
         return $file;
     }
 
     public static function fileExtension($fileName)
     {
         $fileNameParts = explode('.', $fileName);
+
         return array_pop($fileNameParts);
     }
 
     public static function fileNameExtract($fullFileName)
     {
         $fileName = explode('/', $fullFileName);
+
         return array_pop($fileName);
     }
 
@@ -270,6 +278,7 @@ class File
             if (! unlink($path)) {
                 throw new BaseException('An error occurred deleting the file', 400);
             }
+
             return true;
         }
     }
@@ -286,6 +295,7 @@ class File
         $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
         $pow = min($pow, count($units) - 1);
         $bytes /= 1024 ** $pow;
+
         return round($bytes, $precision) . ' ' . $units[$pow];
     }
 
@@ -309,15 +319,18 @@ class File
         $info = explode(' . ', $nameFull);
         $name = $info[0];
         $extension = $info[1];
+
         if (! empty($name)) {
             $resource = $file . $nameFull;
             $i = 0;
+
             while (is_file($resource)) {
                 $i++;
                 $resource = $file . $name . $i;
                 $name .= $i;
             }
         }
+
         return $name . ' . ' . $extension;
     }
 
@@ -333,6 +346,11 @@ class File
     {
         $dir = dirname($path);
         $tmp = tempnam($dir, 'columnis');
+
+        if ($tmp === false) {
+            throw FileException::tempnamException();
+        }
+
         if (file_put_contents($tmp, $content) === false) {
             throw new \RuntimeException('Failed to write temporary file(' . $tmp . ') . ');
         }
@@ -357,15 +375,22 @@ class File
     public static function mimeContentType($filename)
     {
         $filenameExploded = explode(' . ', $filename);
+
+        if (null === (array_pop($filenameExploded))) {
+            throw FileException::createExtException();
+        }
+
         $ext = strtolower(array_pop($filenameExploded));
+
         if (array_key_exists($ext, self::$MIME_TYPES)) {
             return self::$MIME_TYPES[$ext];
         }
 
         if (function_exists('finfo_open')) {
-            $finfo = finfo_open(FILEINFO_MIME);
+            $finfo    = finfo_open(FILEINFO_MIME);
             $mimetype = finfo_file($finfo, $filename);
             finfo_close($finfo);
+
             return $mimetype;
         }
 
@@ -373,6 +398,7 @@ class File
             $finfo = finfo_open(FILEINFO_MIME);
             $mimetype = finfo_file($finfo, $filename);
             finfo_close($finfo);
+
             return $mimetype;
         }  // @TODO: Elseif verificar si es una foto usar getimagesize
 
@@ -383,6 +409,7 @@ class File
     {
         $ext = explode(' . ', $file);
         $count = count($ext);
+
         return $count > 1 ? $ext[$count - 1] : null;
     }
 
@@ -390,22 +417,26 @@ class File
     {
         if (! file_exists($pathFolder)) {
             $dirCreated = mkdir($pathFolder, 0777);
+
             if (! $dirCreated) {
                 throw new  \Exception('Error creating the folders', 404);
             }
         }
+
         return true;
     }
 
     public static function getFolderAndFilename($path): array
     {
         preg_match(' / ((?:[^\/]*\/)*)(.*)/', $path, $result);
+
         if (is_array($result) && ! empty($result) && count($result) === 3) {
             return [
                 'folder'   => $result[1],
                 'filename' => $result[2]
             ];
         }
+
         return [];
     }
 }
