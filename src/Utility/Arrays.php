@@ -42,10 +42,8 @@ class Arrays
             foreach ($array as &$elem) {
                 if (is_array($elem)) {
                     $elem = self::utf8Encode($elem);
-                } else {
-                    if (is_string($elem)) {
-                        $elem = utf8_encode($elem);
-                    }
+                } elseif (is_string($elem)) {
+                    $elem = utf8_encode($elem);
                 }
             }
         }
@@ -245,7 +243,7 @@ class Arrays
             $bProperty = '';
 
             if (is_object($a)) {
-                $funcion = "get" . ucfirst($propertyName);
+                $funcion = 'get' . ucfirst($propertyName);
 
                 if (method_exists($a, $funcion)) {
                     $aProperty = $a->$funcion();
@@ -255,7 +253,7 @@ class Arrays
             }
 
             if (is_object($b)) {
-                $funcion = "get" . ucfirst($propertyName);
+                $funcion = 'get' . ucfirst($propertyName);
 
                 if (method_exists($b, $funcion)) {
                     $bProperty = $b->$funcion();
@@ -296,9 +294,9 @@ class Arrays
             return 0;
         }
 
-        $arr    = \json_encode($arr, JSON_THROW_ON_ERROR, 512);
-        $sum    = 0;
-        $depth  = 0;
+        $arr = \json_encode($arr, JSON_THROW_ON_ERROR, 512);
+        $sum = 0;
+        $depth = 0;
         $length = strlen($arr);
 
         for ($i = 0; $i < $length; $i++) {
@@ -320,15 +318,13 @@ class Arrays
             $value = $array[$key];
         }
 
-        if (! empty($filters) && is_string($filters) && ! empty($value)) {
-            if (strpos($filters, '|') !== false) {
-                $filters = \explode('|', $filters);
-            }
+        if (! empty($filters) && is_string($filters) && ! empty($value) && strpos($filters, '|') !== false) {
+            $filters = \explode('|', $filters);
+        }
 
-            if (Validators::validArray($filters)) {
-                foreach ($filters as $filter) {
-                    $value = self::applyFilter($filter, $value);
-                }
+        if (Validators::validArray($filters)) {
+            foreach ($filters as $filter) {
+                $value = self::applyFilter($filter, $value);
             }
         }
 
@@ -354,22 +350,13 @@ class Arrays
     public static function objectToArray($obj): array
     {
         $_arr = is_object($obj) ? get_object_vars($obj) : $obj;
-        $arr  = [];
+        $arr = [];
 
         foreach ($_arr as $key => $val) {
-            $val       = (is_array($val) || is_object($val)) ? self::objectToArray($val) : $val;
+            $val = (is_array($val) || is_object($val)) ? self::objectToArray($val) : $val;
             $arr[$key] = $val;
         }
 
         return $arr;
-    }
-
-    public static function trimArray($Input)
-    {
-        if (! is_array($Input)) {
-            return trim($Input);
-        }
-
-        return array_map('self::trim_array', $Input);
     }
 }

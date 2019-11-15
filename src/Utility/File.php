@@ -8,11 +8,10 @@
 
 namespace Solcre\SolcreFramework2\Utility;
 
-use Exception;
-use Zend\Filter\File\Rename;
-use Zend\Filter\File\RenameUpload;
 use Solcre\SolcreFramework2\Exception\BaseException;
 use Solcre\SolcreFramework2\Exception\FileException;
+use Zend\Filter\File\Rename;
+use Zend\Filter\File\RenameUpload;
 
 class File
 {
@@ -386,21 +385,17 @@ class File
             return self::$MIME_TYPES[$ext];
         }
 
-        if (function_exists('finfo_open')) {
-            $finfo    = finfo_open(FILEINFO_MIME);
+        if (function_exists('finfo_open') || function_exists('mime_content_type')) {
+            $finfo = finfo_open(FILEINFO_MIME);
+            if (! \is_resource($finfo)) {
+                throw new FileException('finfo_open error', 400);
+            }
+
             $mimetype = finfo_file($finfo, $filename);
             finfo_close($finfo);
 
             return $mimetype;
         }
-
-        if (function_exists('mime_content_type')) {
-            $finfo = finfo_open(FILEINFO_MIME);
-            $mimetype = finfo_file($finfo, $filename);
-            finfo_close($finfo);
-
-            return $mimetype;
-        }  // @TODO: Elseif verificar si es una foto usar getimagesize
 
         return 'application / octet - stream';
     }
