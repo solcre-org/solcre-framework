@@ -2,8 +2,8 @@
 
 namespace Solcre\SolcreFramework2\Strategy;
 
-use DoctrineModule\Stdlib\Hydrator\Strategy\AbstractCollectionStrategy;
 use Doctrine\Common\Collections\ArrayCollection;
+use DoctrineModule\Stdlib\Hydrator\Strategy\AbstractCollectionStrategy;
 use Zend\Paginator\Adapter\ArrayAdapter;
 use Zend\Paginator\Paginator;
 
@@ -16,7 +16,7 @@ class ExpandEmbeddedStrategy extends AbstractCollectionStrategy
         return $this->expand;
     }
 
-    public function setExpand($expand)
+    public function setExpand($expand): void
     {
         $this->expand = $expand;
     }
@@ -27,7 +27,7 @@ class ExpandEmbeddedStrategy extends AbstractCollectionStrategy
         $adapter = new ArrayAdapter($value->getCollection());
         $paginator = new Paginator($adapter);
 
-        //Laod expand options
+        //Load expand options
         $this->loadExpandOptions($paginator);
 
         //Iterate
@@ -37,11 +37,10 @@ class ExpandEmbeddedStrategy extends AbstractCollectionStrategy
         }
 
         //Create collection for hal
-        $result = new ArrayCollection($forEmbedding);
-        return $result;
+        return new ArrayCollection($forEmbedding);
     }
 
-    protected function loadExpandOptions(Paginator &$paginator)
+    protected function loadExpandOptions(Paginator $paginator): void
     {
         $expand = $this->expand;
 
@@ -53,14 +52,14 @@ class ExpandEmbeddedStrategy extends AbstractCollectionStrategy
         }
     }
 
-    protected function loadExpandOption($key, $value, Paginator &$paginator)
+    protected function loadExpandOption($key, $value, Paginator $paginator): void
     {
         switch ($key) {
-            case "size":
-                $paginator->setItemCountPerPage((int) $value);
+            case 'size':
+                $paginator->setItemCountPerPage((int)$value);
                 break;
-            case "page":
-                $paginator->setCurrentPageNumber((int) $value);
+            case 'page':
+                $paginator->setCurrentPageNumber((int)$value);
                 break;
         }
     }

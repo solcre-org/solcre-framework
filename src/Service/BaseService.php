@@ -182,8 +182,8 @@ abstract class BaseService
     protected function paginateResults(DoctrinePaginator $doctrinePaginator): PaginatedResult
     {
         //Get options
-        $currentPage = (int)$this->getCurrentPage();
-        $pageSize = (int)$this->getItemsCountPerPage();
+        $currentPage = $this->getCurrentPage();
+        $pageSize = $this->getItemsCountPerPage();
 
         //Here is where configures the paginator options and iterate for doctrinePaginator
         //The doctrine paginator with getIterator, rise the queries taking page size
@@ -256,7 +256,7 @@ abstract class BaseService
         return $this->entityManager->getRepository($entityClass)->findOneBy($params);
     }
 
-    public function update($id, $data)
+    public function update($id, $data): void
     {
         throw new BaseException('Method not implemented', 400);
     }

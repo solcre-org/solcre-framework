@@ -12,7 +12,7 @@ class Zip
         $file = tempnam('/tmp', 'zip');
         if ($file !== false) {
             $zip = new ZipArchive();
-            $zip->open($file, \ZipArchive::OVERWRITE);
+            $zip->open($file, ZipArchive::OVERWRITE);
             if (is_array($files) && count($files)) {
                 foreach ($files as $name) {
                     $zip->addFile($dir . $name, $name);
@@ -33,7 +33,7 @@ class Zip
     {
         $success = false;
         $location = $location ?: dirname($filename);
-        $zip = new \ZipArchive();
+        $zip = new ZipArchive();
         if ($zip->open($filename) === true) {
             $success = $zip->extractTo($location);
             $zip->close();
@@ -49,7 +49,7 @@ class Zip
         $success = false;
         $extracted = [];
         $location = $location ?: dirname($filename) . '/';
-        $zip = new \ZipArchive();
+        $zip = new ZipArchive();
         if ($zip->open($filename) === true) {
             $success = true;
             $numFiles = $zip->numFiles;
@@ -71,9 +71,8 @@ class Zip
             }
             $zip->close();
             if (! $success) {
-                $countExtracted = count($extracted);
-                for ($i = 0; $i < $countExtracted; $i++) {
-                    unlink($location . $extracted[$i]);
+                foreach ($extracted as $iValue) {
+                    unlink($location . $iValue);
                 }
             }
             if ($success && $delete) {

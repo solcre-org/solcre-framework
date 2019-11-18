@@ -8,6 +8,9 @@
 namespace Solcre\SolcreFramework2\Utility;
 
 use Solcre\SolcreFramework2\Exception\ArraysException;
+use function array_key_exists;
+use function explode;
+use function json_encode;
 
 class Arrays
 {
@@ -21,10 +24,8 @@ class Arrays
             foreach ($array as &$elem) {
                 if (is_array($elem)) {
                     $elem = self::utf8Decode($elem);
-                } else {
-                    if (is_string($elem)) {
-                        $elem = utf8_decode($elem);
-                    }
+                } elseif (is_string($elem)) {
+                    $elem = utf8_decode($elem);
                 }
             }
         }
@@ -61,10 +62,8 @@ class Arrays
             foreach ($array as &$elem) {
                 if (is_array($elem)) {
                     $elem = self::htmlentitiesUTF8($elem);
-                } else {
-                    if (is_string($elem)) {
-                        $elem = htmlentities($elem, ENT_QUOTES | ENT_IGNORE, 'UTF-8');
-                    }
+                } elseif (is_string($elem)) {
+                    $elem = htmlentities($elem, ENT_QUOTES | ENT_IGNORE, 'UTF-8');
                 }
             }
         }
@@ -82,10 +81,8 @@ class Arrays
             foreach ($array as &$elem) {
                 if (is_array($elem)) {
                     $elem = self::htmlEntities($elem);
-                } else {
-                    if (is_string($elem)) {
-                        $elem = htmlentities($elem);
-                    }
+                } elseif (is_string($elem)) {
+                    $elem = htmlentities($elem);
                 }
             }
         }
@@ -104,10 +101,8 @@ class Arrays
             foreach ($array as &$elem) {
                 if (is_array($elem)) {
                     $elem = self::htmlEntityDecode($elem);
-                } else {
-                    if (is_string($elem)) {
-                        $elem = html_entity_decode($elem);
-                    }
+                } elseif (is_string($elem)) {
+                    $elem = html_entity_decode($elem);
                 }
             }
         }
@@ -125,10 +120,8 @@ class Arrays
             foreach ($array as &$elem) {
                 if (is_array($elem)) {
                     $elem = self::stripSlashes($elem);
-                } else {
-                    if (is_string($elem)) {
-                        $elem = stripslashes($elem);
-                    }
+                } elseif (is_string($elem)) {
+                    $elem = stripslashes($elem);
                 }
             }
         }
@@ -146,10 +139,8 @@ class Arrays
             foreach ($array as &$elem) {
                 if (is_array($elem)) {
                     $elem = self::stripTags($elem);
-                } else {
-                    if (is_string($elem)) {
-                        $elem = strip_tags($elem);
-                    }
+                } elseif (is_string($elem)) {
+                    $elem = strip_tags($elem);
                 }
             }
         }
@@ -167,10 +158,8 @@ class Arrays
             foreach ($array as &$elem) {
                 if (is_array($elem)) {
                     $elem = self::addSlashes($elem);
-                } else {
-                    if (is_string($elem)) {
-                        $elem = addslashes($elem);
-                    }
+                } elseif (is_string($elem)) {
+                    $elem = addslashes($elem);
                 }
             }
         }
@@ -286,6 +275,8 @@ class Arrays
         if (is_array($array)) {
             return array_filter($array, 'ctype_digit');
         }
+
+        return null;
     }
 
     public static function arrayDepth($arr): int
@@ -294,7 +285,7 @@ class Arrays
             return 0;
         }
 
-        $arr = \json_encode($arr, JSON_THROW_ON_ERROR, 512);
+        $arr = json_encode($arr, JSON_THROW_ON_ERROR, 512);
         $sum = 0;
         $depth = 0;
         $length = strlen($arr);
@@ -314,12 +305,12 @@ class Arrays
     {
         $value = null;
 
-        if (is_array($array) && \array_key_exists($key, $array) && (count($array) > 0)) {
+        if (is_array($array) && array_key_exists($key, $array) && (count($array) > 0)) {
             $value = $array[$key];
         }
 
         if (! empty($filters) && is_string($filters) && ! empty($value) && strpos($filters, '|') !== false) {
-            $filters = \explode('|', $filters);
+            $filters = explode('|', $filters);
         }
 
         if (Validators::validArray($filters)) {

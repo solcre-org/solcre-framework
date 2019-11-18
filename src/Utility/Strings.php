@@ -3,6 +3,8 @@
 namespace Solcre\SolcreFramework2\Utility;
 
 use ForceUTF8\Encoding;
+use InvalidArgumentException;
+use RuntimeException;
 use Solcre\SolcreFramework2\Exception\StringsException;
 
 class Strings
@@ -10,6 +12,8 @@ class Strings
     public const VALIDATE_KEY = 'COLUMNIS';
     public const ENCRYPTION_METHOD = 'AES-256-CBC';
     public const ENCRYPTION_GLUE = '::';
+    private const BCRYPT_PASSWORD_LENGTH = 60;
+    private const URUGUAYAN_RUT_LENGTH = 12;
 
     public static function bcryptPassword($password, $cost = 10)
     {
@@ -26,7 +30,7 @@ class Strings
 
     public static function isBcryptPassword($bscryptPassword): bool
     {
-        return (strlen($bscryptPassword) === 60);
+        return (strlen($bscryptPassword) === self::BCRYPT_PASSWORD_LENGTH);
     }
 
     public static function generateRandomPassword($lenght): string
@@ -73,8 +77,8 @@ class Strings
     {
         $rut = strlen((string)$rut);
 
-        if ($rut !== 12) {
-            throw new \InvalidArgumentException('Rut param incorrect formatted', 422);
+        if ($rut !== self::URUGUAYAN_RUT_LENGTH) {
+            throw new InvalidArgumentException('Rut param incorrect formatted', 422);
         }
 
         return true;
@@ -396,7 +400,7 @@ class Strings
         $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length(self::ENCRYPTION_METHOD), $cryptoStrong);
 
         if (false === $cryptoStrong || false === $iv) {
-            throw new \RuntimeException('IV generation failed');
+            throw new RuntimeException('IV generation failed');
         }
 
         $stringEncrypted = openssl_encrypt($stringToEncrypt, self::ENCRYPTION_METHOD, $validateKey, 0, $iv);

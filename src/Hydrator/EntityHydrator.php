@@ -6,6 +6,7 @@ use Doctrine\Common\Inflector\Inflector;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
 use ReflectionClass;
 use ReflectionProperty;
+use function in_array;
 
 class EntityHydrator extends DoctrineObject
 {
@@ -20,7 +21,7 @@ class EntityHydrator extends DoctrineObject
             $getter = 'get' . Inflector::classify($fieldName);
             $dataFieldName = $this->computeExtractFieldName($fieldName);
 
-            if (\in_array($getter, $methods, true)) {
+            if (in_array($getter, $methods, true)) {
                 $data[$dataFieldName] = $this->extractValue($fieldName, $object->$getter(), $object);
             }
         }

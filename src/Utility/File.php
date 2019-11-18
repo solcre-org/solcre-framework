@@ -8,13 +8,19 @@
 
 namespace Solcre\SolcreFramework2\Utility;
 
+use Exception;
+use RuntimeException;
 use Solcre\SolcreFramework2\Exception\BaseException;
 use Solcre\SolcreFramework2\Exception\FileException;
 use Zend\Filter\File\Rename;
 use Zend\Filter\File\RenameUpload;
+use function array_key_exists;
+use function is_array;
+use function is_resource;
 
 class File
 {
+    private const FOLDER_AND_FILENAME_MAX_COUNT_PREG_MATCH = 3;
     public static $MIME_TYPES
         = [
             '323'     => 'text/h323',
@@ -252,7 +258,9 @@ class File
         }
 
         $file = $filter->filter($data[$key]);
-        chmod($file['tmp_name'], 0644);
+        if (is_array($file) && array_key_exists('tmp_name', $file)) {
+            chmod($file['tmp_name'], 0644);
+        }
 
         return $file;
     }
@@ -280,6 +288,8 @@ class File
 
             return true;
         }
+
+        return false;
     }
 
     public static function fileExists($path): bool
@@ -351,21 +361,21 @@ class File
         }
 
         if (file_put_contents($tmp, $content) === false) {
-            throw new \RuntimeException('Failed to write temporary file(' . $tmp . ') . ');
+            throw new RuntimeException('Failed to write temporary file(' . $tmp . ') . ');
         }
 
         $path = str_replace([' / ', '\\'], DIRECTORY_SEPARATOR, $path);
 
         if (is_file($path) && ! unlink($path)) {
-            throw new \RuntimeException('Failed to remove old file . ');
+            throw new RuntimeException('Failed to remove old file . ');
         }
 
         if (! rename($tmp, $path)) {
-            throw new \RuntimeException('Failed to move temporary file . ');
+            throw new RuntimeException('Failed to move temporary file . ');
         }
 
         if (is_int($perm) && ! chmod($path, $perm)) {
-            throw new \RuntimeException('Failed to apply permisions to file . ');
+            throw new RuntimeException('Failed to apply permisions to file . ');
         }
 
         return true;
@@ -387,7 +397,7 @@ class File
 
         if (function_exists('finfo_open') || function_exists('mime_content_type')) {
             $finfo = finfo_open(FILEINFO_MIME);
-            if (! \is_resource($finfo)) {
+            if (! is_resource($finfo)) {
                 throw new FileException('finfo_open error', 400);
             }
 
@@ -414,7 +424,7 @@ class File
             $dirCreated = mkdir($pathFolder, 0777);
 
             if (! $dirCreated) {
-                throw new  \Exception('Error creating the folders', 404);
+                throw new  \RuntimeException('Error creating the folders', 404);
             }
         }
 
@@ -423,9 +433,9 @@ class File
 
     public static function getFolderAndFilename($path): array
     {
-        preg_match(' / ((?:[^\/]*\/)*)(.*)/', $path, $result);
+        preg_match('/((?:[^\/]*\/)*)(.*)/', $path, $result);
 
-        if (is_array($result) && ! empty($result) && count($result) === 3) {
+        if (is_array($result) && ! empty($result) && count($result) === self::FOLDER_AND_FILENAME_MAX_COUNT_PREG_MATCH) {
             return [
                 'folder'   => $result[1],
                 'filename' => $result[2]

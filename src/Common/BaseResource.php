@@ -9,6 +9,7 @@
 namespace Solcre\SolcreFramework2\Common;
 
 use Exception;
+use Solcre\SolcreFramework2\Exception\BaseException;
 use Solcre\SolcreFramework2\Interfaces\PermissionInterface;
 use Solcre\SolcreFramework2\Service\BaseService;
 use Zend\Router\RouteMatch;
@@ -43,6 +44,9 @@ class BaseResource extends AbstractResourceListener
 
             //Set page and size to the service
             $request = $event->getRequest();
+            if ($request === null) {
+                throw new BaseException('Request does not exists', 404);
+            }
             $page = $request->getQuery('page', 1);
             $pageSize = $request->getQuery('size', 25);
             $this->service->setCurrentPage($page);
@@ -54,7 +58,7 @@ class BaseResource extends AbstractResourceListener
             //Normal flow
             return parent::dispatch($event);
         } catch (Exception $exc) {
-            $code = $exc->getCode() ? $exc->getCode() : 404;
+            $code = $exc->getCode() ?: 404;
 
             return new ApiProblem($code, $exc->getMessage());
         }

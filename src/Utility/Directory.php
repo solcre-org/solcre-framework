@@ -3,6 +3,10 @@
 namespace Solcre\SolcreFramework2\Utility;
 
 use Solcre\SolcreFramework2\Exception\DirectoryException;
+use function array_search;
+use function preg_replace;
+use function str_replace;
+use function substr;
 
 class Directory
 {
@@ -19,19 +23,19 @@ class Directory
         //vemos si es la primera vez que usamos la funcion
         if (! $read) {
             //obtenemos los dos ultimos caracteres
-            $tree = \substr($path, -2);
+            $tree = substr($path, -2);
 
             if ($tree === '.*') {
                 //eliminamos el asterisco y activamos la recursividad
-                $path = \preg_replace('!\.\*$!', '', $path);
+                $path = preg_replace('!\.\*$!', '', $path);
                 $read = true;
             }
 
             //obtenemos el document_root del archivo en caso de usarse
-            $path = \preg_replace('!^root\.!', $_SERVER['DOCUMENT_ROOT'] . $s, $path);
+            $path = preg_replace('!^root\.!', $_SERVER['DOCUMENT_ROOT'] . $s, $path);
             //cambiamos el punto por el separador
             /* HOTFIX */
-            $path = \str_replace(['..', '.', ',,'], [',,', $s, '..'], $path);
+            $path = str_replace(['..', '.', ',,'], [',,', $s, '..'], $path);
         }
 
         //abrimos el directorio
@@ -39,7 +43,7 @@ class Directory
             while (false !== ($file = readdir($handle))) {
                 if ($file !== '.' && $file !== '..') {
                     //si es un directorio lo recorremos en caso de activar la recursividad
-                    if (is_dir($path . $s . $file) and $read) {
+                    if (is_dir($path . $s . $file) && $read) {
                         self::includeDir($path . $s . $file, true);
                     } else {
                         $ext = strtolower(substr($file, -3));
@@ -62,15 +66,14 @@ class Directory
 
         if (is_dir($dirname)) {
             $contents = self::dirContents($dirname);
-            $count = count($contents);
 
-            for ($i = 0; $i < $count; $i++) {
-                $file = $contents[$i];
+            foreach ($contents as $iValue) {
+                $file = $iValue;
 
-                if (is_dir($dirname . "/" . $file)) {
+                if (is_dir($dirname . '/' . $file)) {
                     self::dirDelete($dirname . '/' . $file);
                 } else {
-                    unlink($dirname . "/" . $file);
+                    unlink($dirname . '/' . $file);
                 }
             }
 
@@ -88,7 +91,7 @@ class Directory
             throw DirectoryException::scandirException();
         }
 
-        unset($files[\array_search('.', $files, true)], $files[\array_search('..', $files, true)]);
+        unset($files[array_search('.', $files, true)], $files[array_search('..', $files, true)]);
 
         return array_values($files);
     }
@@ -107,8 +110,8 @@ class Directory
             return filesize($path);
         }
 
-        $ret      = 0;
-        $globPath = (glob($path . "/*"));
+        $ret = 0;
+        $globPath = (glob($path . '/*'));
 
         if ($globPath === false) {
             throw DirectoryException::globPathException();

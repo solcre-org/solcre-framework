@@ -1,18 +1,19 @@
 parameters:
   git_dir: .
   bin_dir: vendor/bin
+  stop_on_failure: true
   tasks:
     phpcs:
       standard: PSR2
       exclude: ['Generic.Files.LineLength']
-    phpmd:
-      whitelist_patterns: []
-      #      exclude: ['test','src\Repository\BaseRepository.php', 'src/Repository/BaseRepository.php', 'src/Service/BaseService.php', 'src\Service\BaseService.php']
-      ruleset: ['cleancode', 'codesize', 'controversial', 'design']
-      triggered_by: ['php']
+#    phpmd:
+#      whitelist_patterns: []
+#      #      exclude: ['test','src\Repository\BaseRepository.php', 'src/Repository/BaseRepository.php', 'src/Service/BaseService.php', 'src\Service\BaseService.php']
+#      ruleset: ['cleancode', 'codesize', 'controversial', 'design']
+#      triggered_by: ['php']
     phpstan:
       autoload_file: ~
-      configuration: ~
+      configuration: phpstan.neon
       level: 7
       force_patterns: []
       ignore_patterns: ['test']

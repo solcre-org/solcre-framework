@@ -2,7 +2,9 @@
 
 namespace Solcre\SolcreFramework2\Exception;
 
-class BaseException extends \Exception
+use Exception;
+
+class BaseException extends Exception
 {
     protected $additional = [];
 

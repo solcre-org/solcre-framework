@@ -4,6 +4,9 @@ namespace Solcre\SolcreFramework2\Filter;
 
 use Zend\Hydrator\FilterEnabledInterface;
 use ZF\Hal\Plugin\Hal;
+use function is_array;
+use function is_object;
+use function is_string;
 
 class FieldsFilterService implements FilterInterface
 {
@@ -31,11 +34,11 @@ class FieldsFilterService implements FilterInterface
             $this->setOptions($fields);
         }
 
-        if (\is_array($entity)) {
+        if (is_array($entity)) {
             $entity = array_pop($entity);
         }
 
-        if (! \is_object($entity)) {
+        if (! is_object($entity)) {
             return;
         }
 
@@ -52,14 +55,14 @@ class FieldsFilterService implements FilterInterface
         $hydrator->addFilter(
             self::FILTER_NAME,
             static function ($fieldName) use ($fields, $fixedFields) {
-                return empty($fields) || ! \is_array($fields) || ! count($fields) || (bool)in_array($fieldName, $fields, true) || (bool)in_array($fieldName, $fixedFields, true);
+                return empty($fields) || ! is_array($fields) || ! count($fields) || (bool)in_array($fieldName, $fields, true) || (bool)in_array($fieldName, $fixedFields, true);
             }
         );
     }
 
     public function removeFilter($entity): void
     {
-        if (\is_array($entity)) {
+        if (is_array($entity)) {
             $entity = array_pop($entity);
         }
 
@@ -76,7 +79,7 @@ class FieldsFilterService implements FilterInterface
 
     public function setOptions($options): void
     {
-        if (\is_string($options)) {
+        if (is_string($options)) {
             $options = explode(self::QUERY_FIELDS_SPLITTER, $options);
         }
 

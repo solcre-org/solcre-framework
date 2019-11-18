@@ -14,15 +14,25 @@ class Uploads
         return $name;
     }
 
-    public static function nameUnique($name, $folder)
+    public static function withoutCommas($name)
+    {
+        return str_replace("'", '', stripslashes($name));
+    }
+
+    public static function nameWithoutSpaces($name)
+    {
+        return str_replace(' ', '_', $name);
+    }
+
+    public static function nameUnique($name, $folder): string
     {
         if ($name) {
             $t = explode('.', $name);
 
-            if (count($t) == 1) {
+            if (count($t) === 1) {
                 $ext = '';
             } else {
-                $ext = "." . $t[count($t) - 1];
+                $ext = '.' . $t[count($t) - 1];
                 $t = array_slice($t, 0, count($t) - 1);
                 $name = implode('.', $t);
             }
@@ -42,17 +52,7 @@ class Uploads
         throw UploadsException::invalidNameException();
     }
 
-    public static function nameWithoutSpaces($name)
-    {
-        return str_replace(" ", "_", $name);
-    }
-
-    public static function withoutCommas($name)
-    {
-        return str_replace("'", "", stripslashes($name));
-    }
-
-    public static function safeFileName($fileName, $rutaAbs)
+    public static function safeFileName($fileName, $rutaAbs): string
     {
         $name = pathinfo($rutaAbs . $fileName, PATHINFO_FILENAME);
         $extension = pathinfo($rutaAbs . $fileName, PATHINFO_EXTENSION);
