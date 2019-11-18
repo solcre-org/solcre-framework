@@ -40,5 +40,10 @@
     "psr-4": {
       "SolcreFrameworkTest\\": "./tests/"
     }
+  },
+  "scripts": {
+    "cs-check": "phpcs",
+    "cs-fix": "phpcbf",
+    "test": "phpunit"
   }
 }
