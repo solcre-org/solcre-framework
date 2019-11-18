@@ -9,7 +9,7 @@ class Module
         return include __DIR__ . '/../config/module.config.php';
     }
 
-    public function getAutoloaderConfig()
+    public function getAutoloaderConfig(): array
     {
         return [
             'ZF\Apigility\Autoloader' => [

@@ -5,6 +5,8 @@ namespace Solcre\SolcreFramework2\Filter;
 use Solcre\SolcreFramework2\Strategy\ExpandEmbeddedStrategy;
 use Zend\Hydrator\AbstractHydrator;
 use ZF\Hal\Plugin\Hal;
+use function is_array;
+use function is_object;
 
 class ExpandFilterService implements FilterInterface
 {
@@ -38,10 +40,10 @@ class ExpandFilterService implements FilterInterface
         }
 
         //Control entity
-        if (\is_array($entity)) {
+        if (is_array($entity)) {
             $entity = array_pop($entity);
         }
-        if (! \is_object($entity)) {
+        if (! is_object($entity)) {
             return;
         }
 
@@ -50,14 +52,14 @@ class ExpandFilterService implements FilterInterface
 
         $hydrator = $this->halPlugin->getHydratorForEntity($entity);
         /* @var $hydrator AbstractHydrator */
-        if (empty($hydrator) || ! ($hydrator instanceof AbstractHydrator)) {
+        if (! ($hydrator instanceof AbstractHydrator)) {
             return;
         }
 
         //Get options
         $options = $this->getOptions();
 
-        if (\is_array($options) && count($options) > 0) {
+        if (is_array($options) && count($options) > 0) {
             //Create strategies
             foreach ($options as $fieldName => $expand) {
                 $strategy = new ExpandEmbeddedStrategy();
@@ -70,7 +72,7 @@ class ExpandFilterService implements FilterInterface
     public function removeFilter($entity): void
     {
         //Control entity
-        if (\is_array($entity)) {
+        if (is_array($entity)) {
             $entity = array_pop($entity);
         }
         //Get hydrator
@@ -80,7 +82,7 @@ class ExpandFilterService implements FilterInterface
             $options = $this->getOptions();
 
             //Remove strategies
-            if (\is_array($options) && count($options) > 0) {
+            if (is_array($options) && count($options) > 0) {
                 foreach ($options as $fieldName => $expand) {
                     $hydrator->removeStrategy($fieldName);
                 }
@@ -126,8 +128,8 @@ class ExpandFilterService implements FilterInterface
         preg_match_all("/([^,]*?)\((.*?)\)/", $expand, $optionsResult);
 
         //Control options results
-        if (! (\is_array($optionsResult[1]) && count($optionsResult[1]) > 0)
-            || ! (\is_array($optionsResult[2]) && count($optionsResult[2]) > 0)
+        if (! (is_array($optionsResult[1]) && count($optionsResult[1]) > 0)
+            || ! (is_array($optionsResult[2]) && count($optionsResult[2]) > 0)
         ) {
             return [];
         }
@@ -145,8 +147,8 @@ class ExpandFilterService implements FilterInterface
             preg_match_all("/([a-zA-Z]*?)\:([0-9a-zA-Z]*)/", $fieldOptions[$i], $options);
 
             //Control options
-            if (! (\is_array($options[1]) && count($options[1]) > 0)
-                || ! (\is_array($options[2]) && count($options[2]) > 0)
+            if (! (is_array($options[1]) && count($options[1]) > 0)
+                || ! (is_array($options[2]) && count($options[2]) > 0)
             ) {
                 continue;
             }

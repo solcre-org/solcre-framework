@@ -5,11 +5,10 @@ namespace Solcre\SolcreFramework2\Service;
 use Doctrine\ORM\EntityManager;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator;
 use Exception;
-use Solcre\SolcreFramework2\Exception\BaseException;
-use phpDocumentor\Reflection\Types\Boolean;
 use ReflectionClass;
 use Solcre\SolcreFramework2\Common\BaseRepository;
 use Solcre\SolcreFramework2\Entity\PaginatedResult;
+use Solcre\SolcreFramework2\Exception\BaseException;
 use Solcre\SolcreFramework2\Filter\FilterInterface;
 use Solcre\SolcreFramework2\Hydrator\EntityHydrator;
 use Zend\Paginator\Paginator;
@@ -36,7 +35,7 @@ abstract class BaseService
     public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
-        $this->entityName    = $this->getEntityName();
+        $this->entityName = $this->getEntityName();
 
         if ($this->entityName !== null) {
             $this->repository = $this->entityManager->getRepository($this->entityName);
@@ -48,13 +47,13 @@ abstract class BaseService
     public function getEntityName(): ?string
     {
         $namespaceName = (new ReflectionClass($this))->getNamespaceName();
-        $className     = (new ReflectionClass($this))->getShortName();
+        $className = (new ReflectionClass($this))->getShortName();
 
         if (strpos($className, 'Service') === false) {
             throw BaseException::classNameNotFoundException();
         }
 
-        $entityName    = substr($className, 0, strpos($className, 'Service'));
+        $entityName = substr($className, 0, strpos($className, 'Service'));
 
         if (substr_count($className, 'Service') > 1) {
             $pos = strrpos($className, 'Service');
@@ -183,8 +182,8 @@ abstract class BaseService
     protected function paginateResults(DoctrinePaginator $doctrinePaginator): PaginatedResult
     {
         //Get options
-        $currentPage = (int)$this->getCurrentPage();
-        $pageSize    = (int)$this->getItemsCountPerPage();
+        $currentPage = $this->getCurrentPage();
+        $pageSize = $this->getItemsCountPerPage();
 
         //Here is where configures the paginator options and iterate for doctrinePaginator
         //The doctrine paginator with getIterator, rise the queries taking page size
@@ -257,7 +256,7 @@ abstract class BaseService
         return $this->entityManager->getRepository($entityClass)->findOneBy($params);
     }
 
-    public function update($id, $data)
+    public function update($id, $data): void
     {
         throw new BaseException('Method not implemented', 400);
     }
@@ -283,14 +282,6 @@ abstract class BaseService
     }
 
     /**
-     * @return IdentityService|null
-     */
-    public function getIdentityService(): ?IdentityService
-    {
-        return $this->identityService;
-    }
-
-    /**
      * @param null|string $loggedUser
      */
     public function setLoggedUser($loggedUser): void
@@ -299,9 +290,17 @@ abstract class BaseService
     }
 
     /**
-     * @param mixed $identityService
+     * @return IdentityService|null
      */
-    public function setIdentityService(IdentityService $identityService): void
+    public function getIdentityService(): ?IdentityService
+    {
+        return $this->identityService;
+    }
+
+    /**
+     * @param IdentityService|null $identityService
+     */
+    public function setIdentityService(?IdentityService $identityService): void
     {
         $this->identityService = $identityService;
     }

@@ -15,6 +15,8 @@ namespace Solcre\SolcreFramework2\Utility;
 
 class Validators
 {
+    private const DIGIT_MORE_THAN = 9;
+
     public static function validPng($filename): bool
     {
         return strtolower(File::extension($filename)) === 'png';
@@ -30,7 +32,7 @@ class Validators
         return strtolower(File::extension($filename)) === 'mp3';
     }
 
-    public static function validFlash($filename)
+    public static function validFlash($filename): bool
     {
         return self::validSwf($filename) || self::validFlv($filename);
     }
@@ -208,7 +210,7 @@ class Validators
         } else {
             $indice = 0;
         }
-        if (substr($arrayDom[$indice], 0, 4) === 'www.') {
+        if (strpos($arrayDom[$indice], 'www.') === 0) {
             $dominio = substr($arrayDom[$indice], 4, (strlen($arrayDom[$indice]) + 1));
         } else {
             $dominio = $arrayDom[$indice];
@@ -219,16 +221,16 @@ class Validators
     public static function validCC($cardNumber): bool
     {
         $cardNumber = preg_replace('/\D|\s/', '', $cardNumber);  # strip any non-digits
-        $cardlength = strlen($cardNumber);
-        $parity = $cardlength % 2;
+        $cardLength = strlen($cardNumber);
+        $parity = $cardLength % 2;
         $sum = 0;
-        for ($i = 0; $i < $cardlength; $i++) {
+        for ($i = 0; $i < $cardLength; $i++) {
             $digit = $cardNumber[$i];
             if ($i % 2 === $parity) {
                 $digit *= 2;
             }
-            if ($digit > 9) {
-                $digit -= 9;
+            if ($digit > self::DIGIT_MORE_THAN) {
+                $digit -= self::DIGIT_MORE_THAN;
             }
             $sum += $digit;
         }

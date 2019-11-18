@@ -6,12 +6,12 @@ use DateTime;
 
 class Date
 {
-    public static function current()
+    public static function current(): DateTime
     {
         return new DateTime('NOW');
     }
 
-    public static function getTimezones()
+    public static function getTimezones(): array
     {
         return [
             [
@@ -1701,7 +1701,7 @@ class Date
         ];
     }
 
-    public static function convertSecondsToDatetime($seconds)
+    public static function convertSecondsToDatetime($seconds): DateTime
     {
         return new DateTime("@$seconds");
     }

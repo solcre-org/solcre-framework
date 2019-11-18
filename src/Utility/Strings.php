@@ -3,56 +3,58 @@
 namespace Solcre\SolcreFramework2\Utility;
 
 use ForceUTF8\Encoding;
+use InvalidArgumentException;
+use RuntimeException;
 use Solcre\SolcreFramework2\Exception\StringsException;
 
 class Strings
 {
-    const VALIDATE_KEY = 'COLUMNIS';
-    const ENCRYPTION_METHOD = 'AES-256-CBC';
-    const ENCRYPTION_GLUE = '::';
+    public const VALIDATE_KEY = 'COLUMNIS';
+    public const ENCRYPTION_METHOD = 'AES-256-CBC';
+    public const ENCRYPTION_GLUE = '::';
+    private const BCRYPT_PASSWORD_LENGTH = 60;
+    private const URUGUAYAN_RUT_LENGTH = 12;
 
     public static function bcryptPassword($password, $cost = 10)
     {
-        $salt = substr(str_replace('+', '.', base64_encode(sha1(microtime(true), true))), 0, 22);
-        $hash = crypt($password, '$2a$' . $cost . '$' . $salt);
-
-        return $hash;
+        $salt = substr(str_replace('+', '.', base64_encode(sha1(microtime(false), true))), 0, 22);
+        return crypt($password, '$2y$' . $cost . '$' . $salt);
     }
 
-    public static function verifyBcryptPassword($password, $existingBscrypt)
+    public static function verifyBcryptPassword($password, $existingBscrypt): bool
     {
         $hash = crypt($password, $existingBscrypt);
 
         return ($hash === $existingBscrypt);
     }
 
-    public static function isBcryptPassword($bscryptPassword)
+    public static function isBcryptPassword($bscryptPassword): bool
     {
-        return (strlen($bscryptPassword) === 60);
+        return (strlen($bscryptPassword) === self::BCRYPT_PASSWORD_LENGTH);
     }
 
-    public static function generateRandomPassword($lenght)
+    public static function generateRandomPassword($lenght): string
     {
-        $alphabet    = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789!#$%&/()?~[]";
-        $pass        = []; //remember to declare $pass as an array
+        $alphabet = 'abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789!#$%&/()?~[]';
+        $pass = []; //remember to declare $pass as an array
         $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
 
         for ($i = 0; $i < $lenght; $i++) {
-            $n      = rand(0, $alphaLength);
+            $n = random_int(0, $alphaLength);
             $pass[] = $alphabet[$n];
         }
 
         return implode($pass); //turn the array into a string
     }
 
-    public static function generateAlphaNumericString($length = 8)
+    public static function generateAlphaNumericString($length = 8): string
     {
         $characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
-        $string     = '';
-        $max        = strlen($characters) - 1;
+        $string = '';
+        $max = strlen($characters) - 1;
 
         for ($i = 0; $i < $length; $i++) {
-            $string .= $characters[mt_rand(0, $max)];
+            $string .= $characters[random_int(0, $max)];
         }
 
         return strtoupper($string);
@@ -71,12 +73,12 @@ class Strings
         return empty($variable) ? $default : $variable;
     }
 
-    public static function validateRut($rut)
+    public static function validateRut($rut): bool
     {
         $rut = strlen((string)$rut);
 
-        if ($rut !== 12) {
-            throw new \InvalidArgumentException('Rut param incorrect formatted', 422);
+        if ($rut !== self::URUGUAYAN_RUT_LENGTH) {
+            throw new InvalidArgumentException('Rut param incorrect formatted', 422);
         }
 
         return true;
@@ -89,7 +91,7 @@ class Strings
      *
      * @return string
      */
-    public static function generateMd5Hash($optionString = '')
+    public static function generateMd5Hash($optionString = ''): string
     {
         return md5(self::VALIDATE_KEY . $optionString);
     }
@@ -102,15 +104,15 @@ class Strings
      *
      * @return boolean
      */
-    public static function validateMd5Hash($hash, $comparedString)
+    public static function validateMd5Hash($hash, $comparedString): bool
     {
-        return md5(self::VALIDATE_KEY . $comparedString) == $hash;
+        return md5(self::VALIDATE_KEY . $comparedString) === $hash;
     }
 
     public static function cleanName($text)
     {
-        $space_char          = '-';
-        $text                = self::strtolowerUtf8(trim(Encoding::toUTF8($text)));
+        $space_char = '-';
+        $text = self::strtolowerUtf8(trim(Encoding::toUTF8($text)));
         $code_entities_match = [
             '¿',
             'ñ',
@@ -193,14 +195,12 @@ class Strings
             ''
         ];
 
-        $text = str_replace($code_entities_match, $code_entities_replace, $text);
-
-        return str_replace('__', '_', $text);
+        return str_replace([$code_entities_match, '__'], [$code_entities_replace, '_'], $text);
     }
 
     public static function strtolowerUtf8($string)
     {
-        $string     = trim(Encoding::toUTF8($string));
+        $string = trim(Encoding::toUTF8($string));
         $convert_to = [
             'a',
             'b',
@@ -390,17 +390,17 @@ class Strings
         return preg_replace('/\s+/', '', $string);
     }
 
-    public static function encrypt($stringToEncrypt, $validateKey = self::VALIDATE_KEY)
+    public static function encrypt($stringToEncrypt, $validateKey = self::VALIDATE_KEY): string
     {
         if (openssl_cipher_iv_length(self::ENCRYPTION_METHOD) === false) {
-            throw StringsException::openssl_cipher_iv_length_Exception();
+            throw StringsException::opensslCipherIvLengthException();
         }
 
         $cryptoStrong = true;
-        $iv           = openssl_random_pseudo_bytes(openssl_cipher_iv_length(self::ENCRYPTION_METHOD), $cryptoStrong);
+        $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length(self::ENCRYPTION_METHOD), $cryptoStrong);
 
         if (false === $cryptoStrong || false === $iv) {
-            throw new \RuntimeException('IV generation failed');
+            throw new RuntimeException('IV generation failed');
         }
 
         $stringEncrypted = openssl_encrypt($stringToEncrypt, self::ENCRYPTION_METHOD, $validateKey, 0, $iv);
@@ -411,10 +411,10 @@ class Strings
     public static function decrypt($encryptedString, $validateKey = self::VALIDATE_KEY)
     {
         if (base64_decode($encryptedString) === false) {
-            throw StringsException::base64_decode_Exception();
+            throw StringsException::base64DecodeException();
         }
 
-        list($encryptedString, $iv) = explode(self::ENCRYPTION_GLUE, base64_decode($encryptedString), 2);
+        [$encryptedString, $iv] = explode(self::ENCRYPTION_GLUE, base64_decode($encryptedString), 2);
 
         return openssl_decrypt($encryptedString, self::ENCRYPTION_METHOD, $validateKey, 0, $iv);
     }

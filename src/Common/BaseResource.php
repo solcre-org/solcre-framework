@@ -9,8 +9,8 @@
 namespace Solcre\SolcreFramework2\Common;
 
 use Exception;
-use Solcre\Lms\Service\PermissionService;
 use Solcre\SolcreFramework2\Exception\BaseException;
+use Solcre\SolcreFramework2\Interfaces\PermissionInterface;
 use Solcre\SolcreFramework2\Service\BaseService;
 use Zend\Router\RouteMatch;
 use Zend\Stdlib\Parameters;
@@ -20,15 +20,12 @@ use ZF\Rest\ResourceEvent;
 
 class BaseResource extends AbstractResourceListener
 {
-    const PERMISSION_NAME = 'permission-undefined';
-    /**
-     *
-     * @var BaseService
-     */
+    public const NO_PERMISSION = 'permission-undefined';
+
     protected $service;
     protected $permissionService;
 
-    public function __construct(BaseService $service, PermissionService $permissionService)
+    public function __construct(BaseService $service, ?PermissionInterface $permissionService)
     {
         $this->service = $service;
         $this->permissionService = $permissionService;
@@ -37,7 +34,6 @@ class BaseResource extends AbstractResourceListener
     public function dispatch(ResourceEvent $event)
     {
         try {
-            //Set event and check permissions
             $this->event = $event;
             $this->checkPermission($event);
 
@@ -47,8 +43,11 @@ class BaseResource extends AbstractResourceListener
             $event->setParam('data', $data);
 
             //Set page and size to the service
-            $request  = $event->getRequest();
-            $page     = $request->getQuery('page', 1);
+            $request = $event->getRequest();
+            if ($request === null) {
+                throw new BaseException('Request does not exists', 404);
+            }
+            $page = $request->getQuery('page', 1);
             $pageSize = $request->getQuery('size', 25);
             $this->service->setCurrentPage($page);
             $this->service->setItemsCountPerPage($pageSize);
@@ -59,37 +58,30 @@ class BaseResource extends AbstractResourceListener
             //Normal flow
             return parent::dispatch($event);
         } catch (Exception $exc) {
-            $code = $exc->getCode() ? $exc->getCode() : 404;
+            $code = $exc->getCode() ?: 404;
 
             return new ApiProblem($code, $exc->getMessage());
         }
     }
 
-    public function checkPermission($event, $permissionName = null, $throwExceptions = true)
+    public function checkPermission(ResourceEvent $event, $permissionName = null, $throwExceptions = true): bool
     {
         $permissionName = empty($permissionName) ? $this->getPermissionName() : $permissionName;
-        if ($permissionName === 'permission-undefined') {
-            throw new BaseException('Permission name not defined', 400);
-        }
-
         $loggedUserId = $this->getLoggedUserId($event);
-        if (empty($loggedUserId)) {
-            //local access
-
+        if ($permissionName === self::NO_PERMISSION || $loggedUserId === null) {
             return true;
         }
 
-        $access = $this->permissionService->checkPermission($event->getName(), $loggedUserId, $permissionName);
-        if (! $access && $throwExceptions) {
-            throw new BaseException('Method not allowed for current user', 400);
+        $hasPermission = $this->permissionService->hasPermission($event->getName(), $permissionName, $loggedUserId);
+        if (! $hasPermission && $throwExceptions) {
+            $this->permissionService->throwMethodNotAllowedForCurrentUserException();
         }
-
-        return $access;
+        return $hasPermission;
     }
 
     public function getPermissionName(): string
     {
-        return self::PERMISSION_NAME;
+        return self::NO_PERMISSION;
     }
 
     public function getLoggedUserId($event = null)

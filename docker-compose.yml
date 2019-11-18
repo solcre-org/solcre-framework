@@ -1,0 +1,7 @@
+solcre-framework:
+  build: .
+  dockerfile: Dockerfile
+  ports:
+   - "8084:80"
+  volumes:
+   - .:/var/www

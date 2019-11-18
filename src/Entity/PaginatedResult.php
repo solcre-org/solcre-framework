@@ -18,7 +18,7 @@ class PaginatedResult implements IteratorAggregate
      */
     private $additionalAttributes;
 
-    public function getTotalCount()
+    public function getTotalCount(): int
     {
         return $this->totalCount;
     }

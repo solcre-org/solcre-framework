@@ -3,12 +3,22 @@
 namespace Solcre\SolcreFramework2\Common;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Andx;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator as OrmPaginator;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator;
 use Solcre\SolcreFramework2\Filter\FilterInterface;
+use function array_key_exists;
+use function count;
+use function explode;
+use function in_array;
+use function is_array;
+use function is_string;
+use function sprintf;
+use function strpos;
+use function uniqid;
 
 class BaseRepository extends EntityRepository
 {
@@ -45,7 +55,7 @@ class BaseRepository extends EntityRepository
         return $filtersOptions;
     }
 
-    protected function getFindByQuery(array $params, array $orderBy = null, array $filterOptions = []): \Doctrine\ORM\Query
+    protected function getFindByQuery(array $params, array $orderBy = null, array $filterOptions = []): Query
     {
         //Table alias
         $tableAlias = 'a';
@@ -79,7 +89,7 @@ class BaseRepository extends EntityRepository
 
         //Check query fields
         if (! empty($fieldsFilterQuery)) {
-            $fieldsFilter = \is_string($fieldsFilterQuery) ? explode(',', $fieldsFilterQuery) : $fieldsFilterQuery;
+            $fieldsFilter = is_string($fieldsFilterQuery) ? explode(',', $fieldsFilterQuery) : $fieldsFilterQuery;
 
 
             //parse selection str
@@ -89,7 +99,7 @@ class BaseRepository extends EntityRepository
             //Foreach field
             foreach ($fields as $key => $fieldName) {
                 //Selected field?
-                if (\in_array($fieldName, $fieldsFilter, true)) {
+                if (in_array($fieldName, $fieldsFilter, true)) {
                     $selectedFields[] = $fieldName;
                 }
             }
@@ -103,15 +113,15 @@ class BaseRepository extends EntityRepository
     protected function setWhereSql($tableAlias, QueryBuilder $qb, $params): void
     {
         unset($params['sort']);
-        if (\is_array($params) && ! empty($params)) {
+        if (is_array($params) && ! empty($params)) {
             $and = $qb->expr()->andX();
             foreach ($params as $fieldName => $fieldValue) {
                 $fieldName = (string)$fieldName;
-                $alias = \sprintf('%s.%s', $tableAlias, $fieldName);
-                if (\is_array($fieldValue) && $this->entityHasAssociation($fieldName) && $this->hasStringKeys($fieldValue)) {
+                $alias = sprintf('%s.%s', $tableAlias, $fieldName);
+                if (is_array($fieldValue) && $this->entityHasAssociation($fieldName) && $this->hasStringKeys($fieldValue)) {
                     $qb->join($alias, $fieldName);
                     foreach ($fieldValue as $key => $value) {
-                        $alias = \sprintf('%s.%s', $fieldName, $key);
+                        $alias = sprintf('%s.%s', $fieldName, $key);
                         $this->setWhereClause($qb, $value, $alias, $and);
                     }
                     continue;
@@ -141,11 +151,11 @@ class BaseRepository extends EntityRepository
             $this->isNullWhereClause($qb, $alias, $and, $expression);
         }
 
-        if (\is_array($fieldValue) && ! empty($fieldValue)) {
+        if (is_array($fieldValue) && ! empty($fieldValue)) {
             $this->inWhereClause($qb, $fieldValue, $alias, $and, $expression);
         }
 
-        if (\is_string($fieldValue)) {
+        if (is_string($fieldValue)) {
             $this->setWhereClauseWithStringValue($qb, $fieldValue, $alias, $and, $expression, $valueParts, $paramKey);
         }
 
@@ -190,8 +200,8 @@ class BaseRepository extends EntityRepository
     private function isLikeWhereClause(QueryBuilder $qb, $fieldValue, $alias, Andx $and, &$valueParts, &$paramKey, &$expression): void
     {
         $valueParts = explode('~', $fieldValue);
-        if (\is_array($valueParts) && \count($valueParts) === self::MINIMUM_WHERE_PARTS) {
-            $paramKey = \sprintf(':%s', $this->getUniqueKeyParam($qb));
+        if (is_array($valueParts) && count($valueParts) === self::MINIMUM_WHERE_PARTS) {
+            $paramKey = sprintf(':%s', $this->getUniqueKeyParam($qb));
             $expression = $qb->expr()->like($alias, $paramKey);
             $qb->setParameter($paramKey, '%' . $valueParts[1] . '%');
             $and->add($expression);
@@ -212,16 +222,16 @@ class BaseRepository extends EntityRepository
     private function compareWhereClause(QueryBuilder $qb, $fieldValue, $alias, Andx $and, &$valueParts, &$paramKey, &$expression): void
     {
         $valueParts = explode('|', $fieldValue);
-        if (\is_array($valueParts) && \count($valueParts) === self::MINIMUM_WHERE_PARTS) {
+        if (is_array($valueParts) && count($valueParts) === self::MINIMUM_WHERE_PARTS) {
             if (! empty($valueParts[0])) {
-                $paramKey = \sprintf(':%s', $this->getUniqueKeyParam($qb));
+                $paramKey = sprintf(':%s', $this->getUniqueKeyParam($qb));
                 $expression = $qb->expr()->gte($alias, $paramKey);
                 $qb->setParameter($paramKey, $valueParts[0]);
                 $and->add($expression);
             }
 
             if (! empty($valueParts[1])) {
-                $paramKey = \sprintf(':%s', $this->getUniqueKeyParam($qb));
+                $paramKey = sprintf(':%s', $this->getUniqueKeyParam($qb));
                 $expression = $qb->expr()->lte($alias, $paramKey);
                 $qb->setParameter($paramKey, $valueParts[1]);
                 $and->add($expression);
@@ -231,7 +241,7 @@ class BaseRepository extends EntityRepository
 
     private function equalWhereClause(QueryBuilder $qb, $fieldValue, $alias, Andx $and, &$paramKey, &$expression): void
     {
-        $paramKey = \sprintf(':%s', $this->getUniqueKeyParam($qb));
+        $paramKey = sprintf(':%s', $this->getUniqueKeyParam($qb));
         $expression = $qb->expr()->eq($alias, $paramKey);
         $qb->setParameter($paramKey, $fieldValue);
         $and->add($expression);
@@ -256,17 +266,17 @@ class BaseRepository extends EntityRepository
 
     private function isAssociationSort($fieldName): bool
     {
-        return (bool)\strpos($fieldName, self::ORDER_BY_RELATION_SEPARATOR);
+        return (bool)strpos($fieldName, self::ORDER_BY_RELATION_SEPARATOR);
     }
 
     private function processAssociationSort($tableAlias, $fieldName, $direction, QueryBuilder $qb): void
     {
-        $sortParts = \explode(self::ORDER_BY_RELATION_SEPARATOR, $fieldName);
+        $sortParts = explode(self::ORDER_BY_RELATION_SEPARATOR, $fieldName);
         [$sortAssociationFieldName, $sortAssociationFieldToSort] = $sortParts;
         if ($this->entityHasAssociation($sortAssociationFieldName) && $this->entityAssociationHasFieldName($sortAssociationFieldName, $sortAssociationFieldToSort)) {
             $associationKey = $this->getAliasFromJoin($tableAlias, $sortAssociationFieldName, $qb);
             if ($associationKey === null) {
-                $associationKey = \uniqid($sortAssociationFieldName, false);
+                $associationKey = uniqid($sortAssociationFieldName, false);
                 $qb->join($tableAlias . '.' . $sortAssociationFieldName, $associationKey);
             }
 
@@ -288,7 +298,7 @@ class BaseRepository extends EntityRepository
     private function getAliasFromJoin($tableAlias, $table, QueryBuilder $qb): ?string
     {
         $joins = $qb->getDQLPart('join');
-        if (! empty($joins) && \array_key_exists($tableAlias, $joins)) {
+        if (! empty($joins) && array_key_exists($tableAlias, $joins)) {
             $tableJoins = $joins[$tableAlias];
             foreach ($tableJoins as $tableJoin) {
                 if ($tableJoin->getJoin() === $tableAlias . '.' . $table) {
@@ -303,7 +313,7 @@ class BaseRepository extends EntityRepository
     {
         $searchableFields = $this->getSearchableFields();
 
-        if (\is_array($searchableFields) && count($searchableFields)) {
+        if (is_array($searchableFields) && count($searchableFields)) {
             $or = $qb->expr()->orX();
             foreach ($searchableFields as $field) {
                 if ($field['type'] === 'string') {
@@ -319,7 +329,7 @@ class BaseRepository extends EntityRepository
     {
         $searchableFields = [];
         $fieldMappings = $this->getClassMetadata()->fieldMappings;
-        if (\is_array($fieldMappings) && count($fieldMappings)) {
+        if (is_array($fieldMappings) && count($fieldMappings)) {
             foreach ($fieldMappings as $key => $field) {
                 //Check searchable options
                 if (isset($field['options']['searchable'], $field['type'], $field['fieldName']) && $field['options']['searchable']) {
