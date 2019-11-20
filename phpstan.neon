@@ -3,5 +3,4 @@ parameters:
         - '#Call to an undefined method [a-zA-Z0-9\\_]+::bodyParams()#'
         - '#Call to an undefined method [a-zA-Z0-9\\_]+::queryParams()#'
         - '#Call to an undefined method [a-zA-Z0-9\\_]+::getIdentity()#'
-        - '#Call to an undefined method [a-zA-Z0-9\\_]+::patch()#'
-        - '#Call to an undefined method [a-zA-Z0-9\\_]+::replaceList()#'
+        - '#Cannot call method setPermissionService() on Solcre\SolcreFramework2\Interfaces\PermissionAwareInterface|string#'

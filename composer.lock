@@ -93,6 +93,7 @@
             ],
             "description": "Promoting the interoperability of container objects (DIC, SL, etc.)",
             "homepage": "https://github.com/container-interop/container-interop",
+            "abandoned": "psr/container",
             "time": "2017-02-14T19:40:03+00:00"
         },
         {
@@ -948,33 +949,35 @@
         },
         {
             "name": "doctrine/orm",
-            "version": "v2.6.4",
+            "version": "v2.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/orm.git",
-                "reference": "b52ef5a1002f99ab506a5a2d6dba5a2c236c5f43"
+                "reference": "4d763ca4c925f647b248b9fa01b5f47aa3685d62"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/orm/zipball/b52ef5a1002f99ab506a5a2d6dba5a2c236c5f43",
-                "reference": "b52ef5a1002f99ab506a5a2d6dba5a2c236c5f43",
+                "url": "https://api.github.com/repos/doctrine/orm/zipball/4d763ca4c925f647b248b9fa01b5f47aa3685d62",
+                "reference": "4d763ca4c925f647b248b9fa01b5f47aa3685d62",
                 "shasum": ""
             },
             "require": {
-                "doctrine/annotations": "~1.5",
-                "doctrine/cache": "~1.6",
-                "doctrine/collections": "^1.4",
-                "doctrine/common": "^2.7.1",
-                "doctrine/dbal": "^2.6",
-                "doctrine/instantiator": "~1.1",
+                "doctrine/annotations": "^1.8",
+                "doctrine/cache": "^1.9.1",
+                "doctrine/collections": "^1.5",
+                "doctrine/common": "^2.11",
+                "doctrine/dbal": "^2.9.3",
+                "doctrine/event-manager": "^1.1",
+                "doctrine/instantiator": "^1.3",
+                "doctrine/persistence": "^1.2",
                 "ext-pdo": "*",
                 "php": "^7.1",
-                "symfony/console": "~3.0|~4.0"
+                "symfony/console": "^3.0|^4.0|^5.0"
             },
             "require-dev": {
                 "doctrine/coding-standard": "^5.0",
                 "phpunit/phpunit": "^7.5",
-                "symfony/yaml": "~3.4|~4.0"
+                "symfony/yaml": "^3.4|^4.0|^5.0"
             },
             "suggest": {
                 "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
@@ -985,7 +988,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.6.x-dev"
+                    "dev-master": "2.7.x-dev"
                 }
             },
             "autoload": {
@@ -1020,12 +1023,12 @@
                 }
             ],
             "description": "Object-Relational-Mapper for PHP",
-            "homepage": "http://www.doctrine-project.org",
+            "homepage": "https://www.doctrine-project.org/projects/orm.html",
             "keywords": [
                 "database",
                 "orm"
             ],
-            "time": "2019-09-20T14:30:26+00:00"
+            "time": "2019-11-19T08:38:05+00:00"
         },
         {
             "name": "doctrine/persistence",
@@ -5770,16 +5773,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "7.0.8",
+            "version": "7.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "aa0d179a13284c7420fc281fc32750e6cc7c9e2f"
+                "reference": "075572dd777ea8317196838f8b59b1de2a642abc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/aa0d179a13284c7420fc281fc32750e6cc7c9e2f",
-                "reference": "aa0d179a13284c7420fc281fc32750e6cc7c9e2f",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/075572dd777ea8317196838f8b59b1de2a642abc",
+                "reference": "075572dd777ea8317196838f8b59b1de2a642abc",
                 "shasum": ""
             },
             "require": {
@@ -5829,7 +5832,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-09-17T06:24:36+00:00"
+            "time": "2019-11-20T08:52:29+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -6209,12 +6212,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "261562a9c048aa10932e5e1d596da6c761cf95bb"
+                "reference": "40fb2c205dd261ab6bb42ec29545934f0db7026f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/261562a9c048aa10932e5e1d596da6c761cf95bb",
-                "reference": "261562a9c048aa10932e5e1d596da6c761cf95bb",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/40fb2c205dd261ab6bb42ec29545934f0db7026f",
+                "reference": "40fb2c205dd261ab6bb42ec29545934f0db7026f",
                 "shasum": ""
             },
             "conflict": {
@@ -6282,7 +6285,7 @@
                 "league/commonmark": "<0.18.3",
                 "magento/magento1ce": "<1.9.4.3",
                 "magento/magento1ee": ">=1,<1.14.4.3",
-                "magento/product-community-edition": ">=2,<2.2.10|>=2.3,<2.3.3",
+                "magento/product-community-edition": ">=2,<2.2.10|>=2.3,<2.3.2",
                 "monolog/monolog": ">=1.8,<1.12",
                 "namshi/jose": "<2.2",
                 "onelogin/php-saml": "<2.10.4",
@@ -6419,7 +6422,7 @@
                 }
             ],
             "description": "Prevents installation of composer packages with known security vulnerabilities: no API, simply require it",
-            "time": "2019-11-15T09:15:43+00:00"
+            "time": "2019-11-19T14:18:57+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -6588,16 +6591,16 @@
         },
         {
             "name": "sebastian/environment",
-            "version": "4.2.2",
+            "version": "4.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/environment.git",
-                "reference": "f2a2c8e1c97c11ace607a7a667d73d47c19fe404"
+                "reference": "464c90d7bdf5ad4e8a6aea15c091fec0603d4368"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/f2a2c8e1c97c11ace607a7a667d73d47c19fe404",
-                "reference": "f2a2c8e1c97c11ace607a7a667d73d47c19fe404",
+                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/464c90d7bdf5ad4e8a6aea15c091fec0603d4368",
+                "reference": "464c90d7bdf5ad4e8a6aea15c091fec0603d4368",
                 "shasum": ""
             },
             "require": {
@@ -6637,7 +6640,7 @@
                 "environment",
                 "hhvm"
             ],
-            "time": "2019-05-05T09:05:15+00:00"
+            "time": "2019-11-20T08:46:58+00:00"
         },
         {
             "name": "sebastian/exporter",

@@ -21,22 +21,16 @@ abstract class BaseService
     protected $currentPage = 1;
     protected $itemsCountPerPage = 50;
     protected $configuration;
-    protected $identityService;
-    protected $loggedUser;
+    protected $logger;
 
 
-    /**
-     * Additional attributes to render with the collection
-     *
-     * @var array
-     */
     protected $additionalAttributes;
 
     public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
-        $this->entityName = $this->getEntityName();
 
+        $this->entityName = $this->getEntityName();
         if ($this->entityName !== null) {
             $this->repository = $this->entityManager->getRepository($this->entityName);
         }
@@ -71,10 +65,8 @@ abstract class BaseService
 
     public function enableFilter($filterName): void
     {
-        $filters = $this->entityManager->getFilters();
-
-        if ($filters !== null) {
-            $filters->enable($filterName);
+        if (! $this->entityManager->getFilters()->isEnabled($filterName)) {
+            $this->entityManager->getFilters()->enable($filterName);
         }
     }
 
@@ -267,42 +259,6 @@ abstract class BaseService
             return null;
         }
         return $this->entityManager->getReference($this->entityName, $id);
-    }
-
-    /**
-     * @return null|string
-     */
-    public function getLoggedUser(): ?string
-    {
-        if ($this->getIdentityService() !== null) {
-            return $this->getIdentityService()->getIdentity();
-        }
-
-        return null;
-    }
-
-    /**
-     * @param null|string $loggedUser
-     */
-    public function setLoggedUser($loggedUser): void
-    {
-        $this->loggedUser = $loggedUser;
-    }
-
-    /**
-     * @return IdentityService|null
-     */
-    public function getIdentityService(): ?IdentityService
-    {
-        return $this->identityService;
-    }
-
-    /**
-     * @param IdentityService|null $identityService
-     */
-    public function setIdentityService(?IdentityService $identityService): void
-    {
-        $this->identityService = $identityService;
     }
 
     /**

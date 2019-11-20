@@ -1,23 +1,21 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
+namespace SolcreFrameworkTest;
+
 use Doctrine\ORM\EntityManager;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator;
-use Solcre\SolcreFramework2\Service\BaseService;
-use Solcre\SolcreFramework2\Common\BaseRepository;
-use Solcre\SolcreFramework2\Entity\PaginatedResult;
-use Solcre\SolcreFramework2\Exception\BaseException;
-use Solcre\SolcreFramework2\Filter\FilterInterface;
-use Solcre\SolcreFramework2\Hydrator\EntityHydrator;
-use Zend\Paginator\Paginator;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+use Solcre\SolcreFramework2\Common\BaseRepository;
+use Solcre\SolcreFramework2\Filter\FilterInterface;
+use Solcre\SolcreFramework2\Service\BaseService;
 
 class BaseServiceTest extends TestCase
 {
     protected $mockedEntityManager;
     protected $mockedRepository;
     protected $entityName;
-    protected $currentPage       = 1;
+    protected $currentPage = 1;
     protected $itemsCountPerPage = 50;
     protected $configuration;
     protected $identityService;
@@ -75,19 +73,21 @@ class BaseServiceTest extends TestCase
 
         // $this->additionalAttributes = [];
 
-        $this->baseService = new class($this->mockedEntityManager) extends BaseService{};
+        $this->baseService = new class($this->mockedEntityManager) extends BaseService
+        {
+        };
     }
 
-    public function testEnableFilter(): void
-    {
-        $this->mockedEntityManager->expects($this->once())
-            ->method('getFilters');
-
-        $this->mockedEntityManager->expects($this->once())
-            ->method('enable');
-
-        $this->baseService->enableFilter(null);
-    }
+//    public function testEnableFilter(): void
+//    {
+//        $this->mockedEntityManager->expects($this->once())
+//            ->method('getFilters');
+//
+//        $this->mockedEntityManager->expects($this->once())
+//            ->method('enable');
+//
+//        $this->baseService->enableFilter(null);
+//    }
 
     public function testDisableFilterWithIsEnabledFilter(): void
     {
@@ -143,6 +143,28 @@ class BaseServiceTest extends TestCase
         $this->baseService->addFilter($filter);
     }
 
+    public function testAdd()
+    {
+        $mockedBaseService = $this->setupBaseServiceForAddMethod();
+
+        $data = ['data'];
+        $entityObj = 'entity object';
+
+        $this->mockedEntityManager->expects($this->once())
+            ->method('persist')
+            ->with(
+                $this->equalTo($entityObj)
+            );
+
+        $this->mockedEntityManager->expects($this->once())
+            ->method('flush');
+
+        $mockedBaseService->expects($this->once())
+            ->method('prepareEntity');
+
+        $mockedBaseService->add($data);
+    }
+
     public function setupBaseServiceForAddMethod(): MockObject
     {
         $mockedBaseService = $this->getMockBuilder(BaseService::class)
@@ -157,33 +179,11 @@ class BaseServiceTest extends TestCase
         return $mockedBaseService;
     }
 
-    public function testAdd()
-    {
-        $mockedBaseService = $this->setupBaseServiceForAddMethod();
-
-        $data      = ['data'];
-        $entityObj = 'entity object';
-
-        $this->mockedEntityManager->expects($this->once())
-            ->method('persist')
-            ->with(
-                $this->equalTo($entityObj)
-            );
-
-        $this->mockedEntityManager->expects($this->once())
-            ->method('flush');
-
-        $mockedBaseService->expects($this->once())
-                    ->method('prepareEntity');
-
-        $mockedBaseService->add($data);
-    }
-
     public function testFetchOne(): void
     {
         $id = 1;
 
-        $params= [
+        $params = [
             'id' => $id
         ];
 
@@ -200,7 +200,7 @@ class BaseServiceTest extends TestCase
 
     public function testFetchBy()
     {
-        $params= [
+        $params = [
             'id' => 1
         ];
 
@@ -217,7 +217,7 @@ class BaseServiceTest extends TestCase
 
     public function testFetchAllWithoutParams()
     {
-        $params         = null;
+        $params = [];
         $expectedReturn = ['return of repository findAll method'];
 
         $this->assertEquals($this->baseService->fetchAll($params), $expectedReturn);
@@ -225,7 +225,7 @@ class BaseServiceTest extends TestCase
 
     public function testFetchAllWithParams()
     {
-        $params         = ['params'];
+        $params = ['params'];
         $expectedReturn = ['return of repository findBy method'];
 
         $this->mockedRepository->expects($this->once())
@@ -236,8 +236,8 @@ class BaseServiceTest extends TestCase
 
     public function testFetchAllWithOrder()
     {
-        $params         = [];
-        $order          = ['order'];
+        $params = [];
+        $order = ['order'];
         $expectedReturn = ['return of repository findBy method'];
 
         $this->mockedRepository->expects($this->once())
