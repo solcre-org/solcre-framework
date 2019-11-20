@@ -120,17 +120,17 @@ class BaseServiceTest extends TestCase
         $this->assertTrue($this->baseService->isEntityPersisted($entity));
     }
 
-    public function testGetEntityManager()
+    public function testGetEntityManager(): void
     {
         $this->assertEquals($this->baseService->getEntityManager(), $this->mockedEntityManager);
     }
 
-    public function testGetRepository()
+    public function testGetRepository(): void
     {
         $this->assertEquals($this->baseService->getRepository(), $this->mockedRepository);
     }
 
-    public function testAddFilter()
+    public function testAddFilter(): void
     {
         $filter = $this->createMock(FilterInterface::class);
 
@@ -157,7 +157,7 @@ class BaseServiceTest extends TestCase
         return $mockedBaseService;
     }
 
-    public function testAdd()
+    public function testAdd(): void
     {
         $mockedBaseService = $this->setupBaseServiceForAddMethod();
 
@@ -198,7 +198,7 @@ class BaseServiceTest extends TestCase
         $this->assertEquals($this->baseService->fetchOne($id, $params), $expectedReturn);
     }
 
-    public function testFetchBy()
+    public function testFetchBy(): void
     {
         $params= [
             'id' => 1
@@ -215,15 +215,15 @@ class BaseServiceTest extends TestCase
         $this->assertEquals($this->baseService->fetchBy($params), $expectedReturn);
     }
 
-    public function testFetchAllWithoutParams()
+    public function testFetchAllWithoutParams(): void
     {
-        $params         = null;
+        $params         = [];
         $expectedReturn = ['return of repository findAll method'];
 
         $this->assertEquals($this->baseService->fetchAll($params), $expectedReturn);
     }
 
-    public function testFetchAllWithParams()
+    public function testFetchAllWithParams(): void
     {
         $params         = ['params'];
         $expectedReturn = ['return of repository findBy method'];
@@ -234,7 +234,7 @@ class BaseServiceTest extends TestCase
         $this->assertEquals($this->baseService->fetchAll($params), $expectedReturn);
     }
 
-    public function testFetchAllWithOrder()
+    public function testFetchAllWithOrder(): void
     {
         $params         = [];
         $order          = ['order'];
