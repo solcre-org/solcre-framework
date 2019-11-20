@@ -3,14 +3,13 @@
 namespace SolcreFrameworkTest\TestAsset\Factory;
 
 use Interop\Container\ContainerInterface;
-use SolcreFrameworkTest\TestAsset\DummyIdentityService;
+use SolcreFrameworkTest\TestAsset\DummyPermissionService;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
-class DummyIdentityServiceFactory implements FactoryInterface
+class DummyPermissionServiceFactory implements FactoryInterface
 {
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        return new DummyIdentityService();
+        return new DummyPermissionService();
     }
-
 }

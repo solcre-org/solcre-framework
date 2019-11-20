@@ -14,7 +14,6 @@ use function is_subclass_of;
 
 class BaseServiceAbstractFactory implements AbstractFactoryInterface
 {
-
     public const PERMISSION_SERVICE_CLASS = 'PermissionServiceClass';
     public const LOGGER_SERVICE_CLASS = 'LoggerServiceClass';
     public const IDENTITY_SERVICE_CLASS = 'IdentityServiceClass';

@@ -84,5 +84,4 @@ class BaseServiceAbstractTest extends TestCase
 
         self::assertInstanceOf(TestAsset\DummyDependencyService::class, $service->getPermissionService()->getDummyDependency());
     }
-
 }

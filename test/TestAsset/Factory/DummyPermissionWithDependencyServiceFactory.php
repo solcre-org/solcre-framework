@@ -4,13 +4,14 @@ namespace SolcreFrameworkTest\TestAsset\Factory;
 
 use Interop\Container\ContainerInterface;
 use SolcreFrameworkTest\TestAsset\DummyDependencyService;
+use SolcreFrameworkTest\TestAsset\DummyPermissionWithDependencyService;
 use Zend\ServiceManager\Factory\FactoryInterface;
 
-class DummyDependencyServiceFactory implements FactoryInterface
+class DummyPermissionWithDependencyServiceFactory implements FactoryInterface
 {
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        return new DummyDependencyService();
+        $dummyDependency = $container->get(DummyDependencyService::class);
+        return new DummyPermissionWithDependencyService($dummyDependency);
     }
-
 }

@@ -45,5 +45,4 @@ class DummyService extends BaseService implements IdentityAwareInterface, Permis
     {
         $this->permissionService = $permissionService;
     }
-
 }

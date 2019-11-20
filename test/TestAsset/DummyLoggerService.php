@@ -50,5 +50,4 @@ class DummyLoggerService implements LoggerInterface
     {
         // TODO: Implement warning() method.
     }
-
 }
