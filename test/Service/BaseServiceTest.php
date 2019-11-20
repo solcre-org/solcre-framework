@@ -54,20 +54,12 @@ class BaseServiceTest extends TestCase
             )
             ->getMock();
 
-        $this->mockedRepository->method('findOneBy')->willReturn(['return of repository findOneBy method']);
-        $this->mockedRepository->method('findAll')->willReturn(['return of repository findAll method']);
-        $this->mockedRepository->method('findBy')->willReturn(['return of repository findBy method']);
-
         $returnOfDoctrinePaginator = $this->createMock(DoctrinePaginator::class);
         $this->mockedRepository->method('findByPaginated')->willReturn($returnOfDoctrinePaginator);
 
         $this->mockedEntityManager->method('getRepository')->willReturn($this->mockedRepository);
-        $this->mockedEntityManager->method('getFilters')->willReturn($this->mockedEntityManager);
-        $this->mockedEntityManager->method('enable')->willReturn(true);
-        $this->mockedEntityManager->method('isEnabled')->willReturn(true);
-        $this->mockedEntityManager->method('disable')->willReturn(true);
+
         $this->mockedEntityManager->method('getUnitOfWork')->willReturn($this->mockedEntityManager);
-        $this->mockedEntityManager->method('isEntityScheduled')->willReturn(true);
 
         $this->entityName = 'entity name';
 
@@ -78,19 +70,27 @@ class BaseServiceTest extends TestCase
         };
     }
 
-//    public function testEnableFilter(): void
-//    {
-//        $this->mockedEntityManager->expects($this->once())
-//            ->method('getFilters');
-//
-//        $this->mockedEntityManager->expects($this->once())
-//            ->method('enable');
-//
-//        $this->baseService->enableFilter(null);
-//    }
-
-    public function testDisableFilterWithIsEnabledFilter(): void
+    public function testEnableFilter(): void
     {
+        $this->mockedEntityManager->method('getFilters')->willReturn($this->mockedEntityManager);
+        $this->mockedEntityManager->method('isEnabled')->willReturn(false);
+
+        $filterName = 'filterName';
+
+        $this->mockedEntityManager->expects($this->once())
+           ->method('enable')
+            ->with(
+                $this->equalTo($filterName)
+            );
+
+        $this->baseService->enableFilter($filterName);
+    }
+
+    public function testDisableFilterWithEnabledFilter(): void
+    {
+        $this->mockedEntityManager->method('getFilters')->willReturn($this->mockedEntityManager);
+        $this->mockedEntityManager->method('isEnabled')->willReturn(true);
+
         $this->mockedEntityManager->expects($this->once())
             ->method('getFilters');
 
@@ -102,19 +102,21 @@ class BaseServiceTest extends TestCase
 
     public function testIsEntityPersisted(): void
     {
+        $this->mockedEntityManager->method('isEntityScheduled')->willReturn(true);
+
         $entity = 'entity';
 
         $this->mockedEntityManager->expects($this->once())
-            ->method('isEntityScheduled')
-            ->with(
-                $this->equalTo($entity)
-            );
+            ->method('isEntityScheduled');
 
         $this->baseService->isEntityPersisted($entity);
     }
 
     public function testIsEntityPersistedIsTrue(): void
     {
+
+        $this->mockedEntityManager->method('isEntityScheduled')->willReturn(true);
+
         $entity = 'entity';
 
         $this->assertTrue($this->baseService->isEntityPersisted($entity));
@@ -181,6 +183,8 @@ class BaseServiceTest extends TestCase
 
     public function testFetchOne(): void
     {
+        $this->mockedRepository->method('findOneBy')->willReturn(['return of repository findOneBy method']);
+
         $id = 1;
 
         $params = [
@@ -200,6 +204,8 @@ class BaseServiceTest extends TestCase
 
     public function testFetchBy(): void
     {
+        $this->mockedRepository->method('findOneBy')->willReturn(['return of repository findOneBy method']);
+
         $params = [
             'id' => 1
         ];
@@ -211,12 +217,14 @@ class BaseServiceTest extends TestCase
             ->with(
                 $this->equalTo($params)
             );
-
+        
         $this->assertEquals($this->baseService->fetchBy($params), $expectedReturn);
     }
 
     public function testFetchAllWithoutParams(): void
     {
+        $this->mockedRepository->method('findAll')->willReturn(['return of repository findAll method']);
+
         $params = [];
 
         $expectedReturn = ['return of repository findAll method'];
@@ -226,6 +234,8 @@ class BaseServiceTest extends TestCase
 
     public function testFetchAllWithParams(): void
     {
+        $this->mockedRepository->method('findBy')->willReturn(['return of repository findBy method']);
+
         $params = ['params'];
         $expectedReturn = ['return of repository findBy method'];
 
@@ -237,6 +247,8 @@ class BaseServiceTest extends TestCase
 
     public function testFetchAllWithOrder(): void
     {
+        $this->mockedRepository->method('findBy')->willReturn(['return of repository findBy method']);
+
         $params = [];
         $order = ['order'];
         $expectedReturn = ['return of repository findBy method'];
