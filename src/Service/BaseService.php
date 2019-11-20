@@ -150,7 +150,7 @@ abstract class BaseService
         return $this->repository->findOneBy($params);
     }
 
-    public function fetchBy($params = null, $orderBy = null)
+    public function fetchBy($params = [], $orderBy = [])
     {
         return $this->repository->findOneBy($params, $orderBy);
     }
