@@ -83,7 +83,7 @@ abstract class BaseService
         $filters = $this->entityManager->getFilters();
 
         if ($filters !== null && $filters->isEnabled($filterName)) {
-            $$filters->disable($filterName);
+            $filters->disable($filterName);
         }
     }
 
@@ -163,18 +163,18 @@ abstract class BaseService
         return $this->repository->findOneBy($params, $orderBy);
     }
 
-    public function fetchAll($params = null, $orderBy = null): array
+    public function fetchAll(array $params = [], array $orderBy = []): array
     {
         if (! empty($params) || ! empty($orderBy)) {
-            return $this->repository->findBy((array)$params, $orderBy);
+            return $this->repository->findBy($params, $orderBy);
         }
 
         return $this->repository->findAll();
     }
 
-    public function fetchAllPaginated($params = null, $orderBy = null): PaginatedResult
+    public function fetchAllPaginated(array $params = [], array $orderBy = []): PaginatedResult
     {
-        $doctrinePaginator = $this->repository->findByPaginated((array)$params, $orderBy);
+        $doctrinePaginator = $this->repository->findByPaginated($params, $orderBy);
 
         return $this->paginateResults($doctrinePaginator);
     }
