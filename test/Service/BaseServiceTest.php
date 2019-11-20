@@ -3,19 +3,22 @@
 namespace SolcreFrameworkTest;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\UnitOfWork;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Solcre\SolcreFramework2\Common\BaseRepository;
+use Solcre\SolcreFramework2\Exception\BaseException;
 use Solcre\SolcreFramework2\Filter\FilterInterface;
 use Solcre\SolcreFramework2\Service\BaseService;
+use Doctrine\ORM\Query\FilterCollection;
 
 class BaseServiceTest extends TestCase
 {
     protected $mockedEntityManager;
     protected $mockedRepository;
     protected $entityName;
-    protected $currentPage = 1;
+    protected $currentPage = '1';
     protected $itemsCountPerPage = 50;
     protected $configuration;
     protected $identityService;
@@ -26,40 +29,34 @@ class BaseServiceTest extends TestCase
     {
         $this->mockedEntityManager = $this->getMockBuilder(EntityManager::class)
             ->disableOriginalConstructor()
-            ->setMethods(
+            ->onlyMethods(
                 [
                     'getRepository',
                     'getFilters',
-                    'enable',
-                    'isEnabled',
-                    'disable',
                     'getUnitOfWork',
-                    'isEntityScheduled',
                     'persist',
-                    'flush'
+                    'flush',
+                    'remove',
+                    'getReference'
                 ]
             )
             ->getMock();
 
         $this->mockedRepository = $this->getMockBuilder(BaseRepository::class)
             ->disableOriginalConstructor()
-            ->setMethods(
+            ->onlyMethods(
                 [
                     'addFilter',
                     'findOneBy',
                     'findAll',
                     'findBy',
-                    'findByPaginated'
+                    'findByPaginated',
+                    'find'
                 ]
             )
             ->getMock();
 
-        $returnOfDoctrinePaginator = $this->createMock(DoctrinePaginator::class);
-        $this->mockedRepository->method('findByPaginated')->willReturn($returnOfDoctrinePaginator);
-
         $this->mockedEntityManager->method('getRepository')->willReturn($this->mockedRepository);
-
-        $this->mockedEntityManager->method('getUnitOfWork')->willReturn($this->mockedEntityManager);
 
         $this->entityName = 'entity name';
 
@@ -72,29 +69,28 @@ class BaseServiceTest extends TestCase
 
     public function testEnableFilter(): void
     {
-        $this->mockedEntityManager->method('getFilters')->willReturn($this->mockedEntityManager);
-        $this->mockedEntityManager->method('isEnabled')->willReturn(false);
+        $mockFilterCollection = $this->createMock(FilterCollection::class);
+        $mockFilterCollection->method('isEnabled')->willReturn(false);
+        $mockFilterCollection->method('enable')->willReturn(false);
+
+        $this->mockedEntityManager->method('getFilters')->willReturn($mockFilterCollection);
 
         $filterName = 'filterName';
 
-        $this->mockedEntityManager->expects($this->once())
-           ->method('enable')
-            ->with(
-                $this->equalTo($filterName)
-            );
+        $mockFilterCollection->expects($this->once())
+           ->method('enable');
 
         $this->baseService->enableFilter($filterName);
     }
 
-    public function testDisableFilterWithEnabledFilter(): void
+    public function testDisableFilter(): void
     {
-        $this->mockedEntityManager->method('getFilters')->willReturn($this->mockedEntityManager);
-        $this->mockedEntityManager->method('isEnabled')->willReturn(true);
+        $mockFilterCollection = $this->createMock(FilterCollection::class);
+        $mockFilterCollection->method('isEnabled')->willReturn(true);
 
-        $this->mockedEntityManager->expects($this->once())
-            ->method('getFilters');
+        $this->mockedEntityManager->method('getFilters')->willReturn($mockFilterCollection);
 
-        $this->mockedEntityManager->expects($this->once())
+        $mockFilterCollection->expects($this->once())
             ->method('disable');
 
         $this->baseService->disableFilter(null);
@@ -102,24 +98,29 @@ class BaseServiceTest extends TestCase
 
     public function testIsEntityPersisted(): void
     {
-        $this->mockedEntityManager->method('isEntityScheduled')->willReturn(true);
+         $mockUnitOfWork = $this->createMock(UnitOfWork::class);
+         $mockUnitOfWork->method('isEntityScheduled')->willReturn(true);
 
-        $entity = 'entity';
+         $this->mockedEntityManager->method('getUnitOfWork')->willReturn($mockUnitOfWork);
 
-        $this->mockedEntityManager->expects($this->once())
+         $entityObject = (object)['prop1' => 'value1'];
+
+         $mockUnitOfWork->expects($this->once())
             ->method('isEntityScheduled');
 
-        $this->baseService->isEntityPersisted($entity);
+         $this->baseService->isEntityPersisted($entityObject);
     }
 
     public function testIsEntityPersistedIsTrue(): void
     {
+        $mockUnitOfWork = $this->createMock(UnitOfWork::class);
+        $mockUnitOfWork->method('isEntityScheduled')->willReturn(true);
 
-        $this->mockedEntityManager->method('isEntityScheduled')->willReturn(true);
+        $this->mockedEntityManager->method('getUnitOfWork')->willReturn($mockUnitOfWork);
 
-        $entity = 'entity';
+        $entityObject = (object)['prop1' => 'value1'];
 
-        $this->assertTrue($this->baseService->isEntityPersisted($entity));
+        $this->assertTrue($this->baseService->isEntityPersisted($entityObject));
     }
 
     public function testGetEntityManager(): void
@@ -145,15 +146,16 @@ class BaseServiceTest extends TestCase
         $this->baseService->addFilter($filter);
     }
 
-    public function setupBaseServiceForAddMethod(): MockObject
+    public function setupBaseServiceForAddAndDelete(): MockObject
     {
         $mockedBaseService = $this->getMockBuilder(BaseService::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['prepareEntity'])
+            ->onlyMethods(['prepareEntity', 'fetch'])
             ->getMock();
 
-        $entityObject = 'entity object';
-        $mockedBaseService->method('prepareEntity')->willReturn($entityObject);
+        $expectedEntityObject = (object)['prop1' => 'value1'];
+        $mockedBaseService->method('fetch')->willReturn($expectedEntityObject);
+        $mockedBaseService->method('prepareEntity')->willReturn($expectedEntityObject);
         $mockedBaseService->__construct($this->mockedEntityManager);
 
         return $mockedBaseService;
@@ -161,15 +163,15 @@ class BaseServiceTest extends TestCase
 
     public function testAdd(): void
     {
-        $mockedBaseService = $this->setupBaseServiceForAddMethod();
+        $mockedBaseService = $this->setupBaseServiceForAddAndDelete();
 
         $data = ['data'];
-        $entityObj = 'entity object';
+        $entityObject = (object)['prop1' => 'value1'];
 
         $this->mockedEntityManager->expects($this->once())
             ->method('persist')
             ->with(
-                $this->equalTo($entityObj)
+                $this->equalTo($entityObject)
             );
 
         $this->mockedEntityManager->expects($this->once())
@@ -217,7 +219,7 @@ class BaseServiceTest extends TestCase
             ->with(
                 $this->equalTo($params)
             );
-        
+
         $this->assertEquals($this->baseService->fetchBy($params), $expectedReturn);
     }
 
@@ -257,5 +259,120 @@ class BaseServiceTest extends TestCase
             ->method('findBy');
 
         $this->assertEquals($this->baseService->fetchAll($params, $order), $expectedReturn);
+    }
+
+    public function testGetCurrentPage(): void
+    {
+        $this->assertTrue(gettype($this->baseService->getCurrentPage()) === 'integer');
+    }
+
+    public function testGetItemsCountPerPage(): void
+    {
+        $this->assertTrue(gettype($this->baseService->getItemsCountPerPage()) === 'integer');
+    }
+
+    public function testDeleteWithEntityObjetc(): void
+    {
+        $entityObj =  (object)['prop1' => 'value1'];
+        $id        = 12345;
+
+        $this->mockedEntityManager->expects($this->once())
+            ->method('remove')
+            ->with(
+                $this->equalTo($entityObj)
+            );
+
+        $this->mockedEntityManager->expects($this->once())
+            ->method('flush')
+            ->with(
+                $this->equalTo($entityObj)
+            );
+
+        $this->assertTrue($this->baseService->delete($id, $entityObj));
+    }
+
+    public function testDeleteWithoutEntityObject(): void
+    {
+        $mockedBaseService = $this->setupBaseServiceForAddAndDelete();
+        $entityObj = (object)['prop1' => 'value1'];
+        $id        = 12345;
+
+        $mockedBaseService->expects($this->once())
+            ->method('fetch')
+            ->with(
+                $this->equalTo($id)
+            );
+
+        $this->mockedEntityManager->expects($this->once())
+            ->method('remove')
+            ->with(
+                $this->equalTo($entityObj)
+            );
+
+        $this->mockedEntityManager->expects($this->once())
+            ->method('flush')
+            ->with(
+                $this->equalTo($entityObj)
+            );
+
+        $this->assertTrue($mockedBaseService->delete($id));
+    }
+
+    public function testDeleteWithWithRemoveException(): void
+    {
+        $entityObj =  (object)['prop1' => 'value1'];
+        $id        = '12345';
+
+        $this->mockedEntityManager->method('remove')->will($this->throwException(
+            new \Exception()
+        ));
+
+        $this->mockedEntityManager->expects($this->once())
+            ->method('remove')
+            ->with(
+                $this->equalTo($entityObj)
+            );
+
+        $this->expectException(\Exception::class);
+
+        $this->baseService->delete($id, $entityObj);
+    }
+
+    public function testFetch(): void
+    {
+        $this->mockedRepository->method('find')->willReturn(['return of repository find method']);
+
+        $id = 12345;
+        $expectedReturn = ['return of repository find method'];
+
+        $this->mockedRepository->expects($this->once())
+            ->method('find');
+
+        $this->assertEquals($this->baseService->fetch($id), $expectedReturn);
+    }
+
+    public function testUpdate(): void
+    {
+        $id        = '12345';
+        $data = [];
+
+        $this->expectException(BaseException::class);
+
+        $this->baseService->update($id, $data);
+    }
+
+    public function testGetRefereneWithNull(): void
+    {
+        $this->assertNull($this->baseService->getReference(null));
+    }
+
+    public function testGetReference(): void
+    {
+        $id = 12345;
+
+        $this->mockedEntityManager->expects($this->once())
+            ->method('getReference');
+
+        $this->baseService->getReference($id);
     }
 }
