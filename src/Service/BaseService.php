@@ -90,25 +90,31 @@ abstract class BaseService
         return $this->entityManager;
     }
 
+    // @codeCoverageIgnoreStart
     public function setEntityManager($entityManager): void
     {
         $this->entityManager = $entityManager;
     }
+    // @codeCoverageIgnoreEnd
 
     public function getRepository()
     {
         return $this->repository;
     }
 
+    // @codeCoverageIgnoreStart
     public function setRepository($repository): void
     {
         $this->repository = $repository;
     }
+    // @codeCoverageIgnoreEnd
 
+    // @codeCoverageIgnoreStart
     public function setConfiguration($configuration): void
     {
         $this->configuration = $configuration;
     }
+    // @codeCoverageIgnoreEnd
 
     public function addFilter($filter): void
     {
@@ -214,6 +220,7 @@ abstract class BaseService
         return $this->itemsCountPerPage;
     }
 
+    // @codeCoverageIgnoreStart
     public function setItemsCountPerPage($itemsCountPerPage): void
     {
         if (empty($itemsCountPerPage)) {
@@ -222,6 +229,7 @@ abstract class BaseService
 
         $this->itemsCountPerPage = $itemsCountPerPage;
     }
+    // @codeCoverageIgnoreEnd
 
     public function delete($id, $entityObj = null): bool
     {
@@ -261,6 +269,7 @@ abstract class BaseService
         return $this->entityManager->getReference($this->entityName, $id);
     }
 
+    // @codeCoverageIgnoreStart
     /**
      * @return array
      */
@@ -276,4 +285,5 @@ abstract class BaseService
     {
         $this->additionalAttributes = $additionalAttributes;
     }
+    // @codeCoverageIgnoreEnd
 }
