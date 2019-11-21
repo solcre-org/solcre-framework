@@ -29,8 +29,8 @@ abstract class BaseService
     public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
+        $this->entityName    = $this->getEntityName();
 
-        $this->entityName = $this->getEntityName();
         if ($this->entityName !== null) {
             $this->repository = $this->entityManager->getRepository($this->entityName);
         }
@@ -41,7 +41,7 @@ abstract class BaseService
     public function getEntityName(): ?string
     {
         $namespaceName = (new ReflectionClass($this))->getNamespaceName();
-        $className = (new ReflectionClass($this))->getShortName();
+        $className     = (new ReflectionClass($this))->getShortName();
 
         if (strpos($className, 'Service') === false) {
             throw BaseException::classNameNotFoundException();
@@ -82,6 +82,7 @@ abstract class BaseService
     public function isEntityPersisted($entity): bool
     {
         $unitOfWork = $this->entityManager->getUnitOfWork();
+
         return $unitOfWork->isEntityScheduled($entity);
     }
 
@@ -128,6 +129,7 @@ abstract class BaseService
         $entityObj = $this->prepareEntity($data);
         $this->entityManager->persist($entityObj);
         $this->entityManager->flush();
+
         return $entityObj;
     }
 
@@ -177,11 +179,12 @@ abstract class BaseService
         return $this->paginateResults($doctrinePaginator);
     }
 
+    // @codeCoverageIgnoreStart
     protected function paginateResults(DoctrinePaginator $doctrinePaginator): PaginatedResult
     {
         //Get options
         $currentPage = $this->getCurrentPage();
-        $pageSize = $this->getItemsCountPerPage();
+        $pageSize    = $this->getItemsCountPerPage();
 
         //Here is where configures the paginator options and iterate for doctrinePaginator
         //The doctrine paginator with getIterator, rise the queries taking page size
@@ -200,12 +203,14 @@ abstract class BaseService
         //Fill the iterator and return it
         return new PaginatedResult($arrayResult, $doctrinePaginator->count(), $this->additionalAttributes);
     }
+    // @codeCoverageIgnoreEnd
 
     public function getCurrentPage(): int
     {
         return $this->currentPage;
     }
 
+    // @codeCoverageIgnoreStart
     public function setCurrentPage($currentPage): void
     {
         if (empty($currentPage)) {
@@ -214,6 +219,7 @@ abstract class BaseService
 
         $this->currentPage = $currentPage;
     }
+    // @codeCoverageIgnoreEnd
 
     public function getItemsCountPerPage(): int
     {
@@ -237,6 +243,7 @@ abstract class BaseService
             if (empty($entityObj)) {
                 $entityObj = $this->fetch($id);
             }
+
             $this->entityManager->remove($entityObj);
             $this->entityManager->flush($entityObj);
 
@@ -266,6 +273,7 @@ abstract class BaseService
         if (empty($id)) {
             return null;
         }
+
         return $this->entityManager->getReference($this->entityName, $id);
     }
 
