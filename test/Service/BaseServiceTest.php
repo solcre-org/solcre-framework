@@ -73,8 +73,7 @@ class BaseServiceTest extends TestCase
 
         // $this->additionalAttributes = [];
 
-        $this->baseService = new class($this->mockedEntityManager) extends BaseService
-        {
+        $this->baseService = new class($this->mockedEntityManager) extends BaseService {
         };
     }
 

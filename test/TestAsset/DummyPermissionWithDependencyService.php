@@ -19,7 +19,7 @@ class DummyPermissionWithDependencyService implements PermissionInterface
         $this->dummyDependency = $dummyDependency;
     }
 
-    public function hasPermission(string $event, ?string $permissionName = null, bool $throwExceptions = true): bool
+    public function hasPermission(string $event, ?string $permissionName = null, bool $throwExceptions = true, $loggedUserId = null, $oauthType = null): bool
     {
         // TODO: Implement hasPermission() method.
     }

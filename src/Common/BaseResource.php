@@ -12,9 +12,11 @@ use Exception;
 use Solcre\SolcreFramework2\Exception\BaseException;
 use Solcre\SolcreFramework2\Interfaces\PermissionInterface;
 use Solcre\SolcreFramework2\Service\BaseService;
+use Zend\EventManager\Event;
 use Zend\Router\RouteMatch;
 use Zend\Stdlib\Parameters;
 use ZF\ApiProblem\ApiProblem;
+use ZF\MvcAuth\Identity\IdentityInterface;
 use ZF\Rest\AbstractResourceListener;
 use ZF\Rest\ResourceEvent;
 
@@ -122,6 +124,26 @@ class BaseResource extends AbstractResourceListener
 
             $event->setQueryParams($queryParams);
         }
+    }
+
+    public function getLoggedUserOauthType(Event $event = null)
+    {
+        $identity = $this->getLoggedUserIdentity($event);
+        if ($identity instanceof IdentityInterface) {
+            $identityData = $identity->getAuthenticationIdentity();
+            return $identityData['oauth_type'];
+        }
+        return null;
+    }
+
+    private function getLoggedUserIdentity(Event $event = null): ?IdentityInterface
+    {
+        if ($event instanceof ResourceEvent) {
+            $identity = $event->getIdentity();
+        } else {
+            $identity = $this->getIdentity();
+        }
+        return $identity;
     }
 
     public function getUriParam($key)

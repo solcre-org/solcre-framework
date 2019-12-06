@@ -7,7 +7,7 @@ use Solcre\SolcreFramework2\Interfaces\PermissionInterface;
 
 class DummyPermissionService implements PermissionInterface
 {
-    public function hasPermission(string $event, ?string $permissionName = null, bool $throwExceptions = true): bool
+    public function hasPermission(string $event, ?string $permissionName = null, bool $throwExceptions = true, $loggedUserId = null, $oauthType = null): bool
     {
         // TODO: Implement hasPermission() method.
     }

@@ -248,7 +248,7 @@ abstract class BaseService
         return $this->entityManager->getRepository($entityClass)->findOneBy($params);
     }
 
-    public function update($id, $data): void
+    public function update($id, $data)
     {
         throw new BaseException('Method not implemented', 400);
     }
