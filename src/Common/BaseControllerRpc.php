@@ -2,7 +2,7 @@
 
 namespace Solcre\SolcreFramework2\Common;
 
-use Solcre\SolcreFramework2\Service\IdentityService;
+use Solcre\SolcreFramework2\Interfaces\IdentityInterface;
 use Zend\Mvc\Controller\AbstractActionController;
 use ZF\MvcAuth\Identity\AuthenticatedIdentity;
 use function is_array;
@@ -11,15 +11,15 @@ class BaseControllerRpc extends AbstractActionController
 {
     protected $identityService;
 
-    public function __construct(IdentityService $identityService = null)
+    public function __construct(IdentityInterface $identityService = null)
     {
         $this->identityService = $identityService;
     }
 
     protected function setUserLogged(): void
     {
-        if ($this->identityService instanceof IdentityService) {
-            $this->identityService->setIdentity($this->getLoggedUserId());
+        if ($this->identityService instanceof IdentityInterface) {
+            $this->identityService->setIdentityService($this->getLoggedUserId());
         }
     }
 
