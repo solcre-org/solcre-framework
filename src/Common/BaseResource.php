@@ -55,7 +55,10 @@ class BaseResource extends AbstractResourceListener
             $this->service->setItemsCountPerPage($pageSize);
 
             // Remove size parameter
-            $event->getQueryParams()->offsetUnset('size');
+            $parameters = $event->getQueryParams();
+            if ($parameters instanceof Parameters & $parameters->offsetExists('size')) {
+                $event->getQueryParams()->offsetUnset('size');
+            }
 
             //Normal flow
             return parent::dispatch($event);
@@ -74,7 +77,7 @@ class BaseResource extends AbstractResourceListener
             return true;
         }
 
-        $hasPermission = $this->permissionService->hasPermission($event->getName(), $permissionName, $loggedUserId);
+        $hasPermission = $this->permissionService->hasPermission($event->getName(), $permissionName, $loggedUserId, $this->getLoggedUserOauthType($event));
         if (! $hasPermission && $throwExceptions) {
             $this->permissionService->throwMethodNotAllowedForCurrentUserException();
         }
@@ -97,6 +100,26 @@ class BaseResource extends AbstractResourceListener
         $identityData = $identity->getAuthenticationIdentity();
 
         return $identityData['user_id'];
+    }
+
+    public function getLoggedUserOauthType(Event $event = null)
+    {
+        $identity = $this->getLoggedUserIdentity($event);
+        if ($identity instanceof IdentityInterface) {
+            $identityData = $identity->getAuthenticationIdentity();
+            return $identityData['oauth_type'];
+        }
+        return null;
+    }
+
+    private function getLoggedUserIdentity(Event $event = null): ?IdentityInterface
+    {
+        if ($event instanceof ResourceEvent) {
+            $identity = $event->getIdentity();
+        } else {
+            $identity = $this->getIdentity();
+        }
+        return $identity;
     }
 
     protected function normalizeQueryParams(ResourceEvent &$event = null): void
@@ -124,26 +147,6 @@ class BaseResource extends AbstractResourceListener
 
             $event->setQueryParams($queryParams);
         }
-    }
-
-    public function getLoggedUserOauthType(Event $event = null)
-    {
-        $identity = $this->getLoggedUserIdentity($event);
-        if ($identity instanceof IdentityInterface) {
-            $identityData = $identity->getAuthenticationIdentity();
-            return $identityData['oauth_type'];
-        }
-        return null;
-    }
-
-    private function getLoggedUserIdentity(Event $event = null): ?IdentityInterface
-    {
-        if ($event instanceof ResourceEvent) {
-            $identity = $event->getIdentity();
-        } else {
-            $identity = $this->getIdentity();
-        }
-        return $identity;
     }
 
     public function getUriParam($key)

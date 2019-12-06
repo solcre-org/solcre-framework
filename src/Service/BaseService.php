@@ -155,18 +155,18 @@ abstract class BaseService
         return $this->repository->findOneBy($params, $orderBy);
     }
 
-    public function fetchAll(array $params = [], array $orderBy = []): array
+    public function fetchAll($params = [], array $orderBy = []): array
     {
         if (! empty($params) || ! empty($orderBy)) {
-            return $this->repository->findBy($params, $orderBy);
+            return $this->repository->findBy((array)$params, $orderBy);
         }
 
         return $this->repository->findAll();
     }
 
-    public function fetchAllPaginated(array $params = [], array $orderBy = []): PaginatedResult
+    public function fetchAllPaginated($params = [], array $orderBy = []): PaginatedResult
     {
-        $doctrinePaginator = $this->repository->findByPaginated($params, $orderBy);
+        $doctrinePaginator = $this->repository->findByPaginated((array)$params, $orderBy);
 
         return $this->paginateResults($doctrinePaginator);
     }

@@ -19,7 +19,15 @@ class DummyPermissionWithDependencyService implements PermissionInterface
         $this->dummyDependency = $dummyDependency;
     }
 
-    public function hasPermission(string $event, ?string $permissionName = null, bool $throwExceptions = true, $loggedUserId = null, $oauthType = null): bool
+    /**
+     * @return mixed
+     */
+    public function getDummyDependency()
+    {
+        return $this->dummyDependency;
+    }
+
+    public function hasPermission(string $event, ?string $permissionName = null, $loggedUserId = null, $oauthType = null, bool $throwExceptions = true): bool
     {
         // TODO: Implement hasPermission() method.
     }
@@ -27,13 +35,5 @@ class DummyPermissionWithDependencyService implements PermissionInterface
     public function throwMethodNotAllowedForCurrentUserException(): Exception
     {
         // TODO: Implement throwMethodNotAllowedForCurrentUserException() method.
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDummyDependency()
-    {
-        return $this->dummyDependency;
     }
 }
