@@ -112,7 +112,6 @@ class BaseRepository extends EntityRepository
 
     protected function setWhereSql($tableAlias, QueryBuilder $qb, $params): void
     {
-        unset($params['sort']);
         if (is_array($params) && ! empty($params)) {
             $and = $qb->expr()->andX();
             foreach ($params as $fieldName => $fieldValue) {
@@ -124,12 +123,12 @@ class BaseRepository extends EntityRepository
                         $alias = sprintf('%s.%s', $fieldName, $key);
                         $this->setWhereClause($qb, $value, $alias, $and);
                     }
-                    continue;
                 }
-
-                $this->setWhereClause($qb, $fieldValue, $alias, $and);
+                elseif ($this->entityHasField($this->_entityName, $fieldName))
+                {
+                    $this->setWhereClause($qb, $fieldValue, $alias, $and);
+                }
             }
-
             $qb->andWhere($and);
         }
     }
