@@ -37,6 +37,11 @@ class BaseResource extends AbstractResourceListener
     {
         try {
             $this->event = $event;
+
+            $identityService = $this->service->getIdentityService();
+            $identityService->setUserId($this->getLoggedUserId());
+            $identityService->setOauthType($this->getLoggedUserOauthType());
+
             $this->checkPermission($event);
 
             //Normalized as array query params and adata
@@ -67,26 +72,6 @@ class BaseResource extends AbstractResourceListener
 
             return new ApiProblem($code, $exc->getMessage());
         }
-    }
-
-    public function checkPermission(ResourceEvent $event, $permissionName = null, $throwExceptions = true): bool
-    {
-        $permissionName = empty($permissionName) ? $this->getPermissionName() : $permissionName;
-        $loggedUserId = $this->getLoggedUserId($event);
-        if ($permissionName === self::NO_PERMISSION || $loggedUserId === null) {
-            return true;
-        }
-
-        $hasPermission = $this->permissionService->hasPermission($event->getName(), $permissionName, $loggedUserId, $this->getLoggedUserOauthType($event));
-        if (! $hasPermission && $throwExceptions) {
-            $this->permissionService->throwMethodNotAllowedForCurrentUserException();
-        }
-        return $hasPermission;
-    }
-
-    public function getPermissionName(): string
-    {
-        return self::NO_PERMISSION;
     }
 
     public function getLoggedUserId($event = null)
@@ -120,6 +105,26 @@ class BaseResource extends AbstractResourceListener
             $identity = $this->getIdentity();
         }
         return $identity;
+    }
+
+    public function checkPermission(ResourceEvent $event, $permissionName = null, $throwExceptions = true): bool
+    {
+        $permissionName = empty($permissionName) ? $this->getPermissionName() : $permissionName;
+        $loggedUserId = $this->getLoggedUserId($event);
+        if ($permissionName === self::NO_PERMISSION || $loggedUserId === null) {
+            return true;
+        }
+
+        $hasPermission = $this->permissionService->hasPermission($event->getName(), $permissionName, $loggedUserId, $this->getLoggedUserOauthType($event));
+        if (! $hasPermission && $throwExceptions) {
+            $this->permissionService->throwMethodNotAllowedForCurrentUserException();
+        }
+        return $hasPermission;
+    }
+
+    public function getPermissionName(): string
+    {
+        return self::NO_PERMISSION;
     }
 
     protected function normalizeQueryParams(ResourceEvent &$event = null): void
