@@ -4,6 +4,8 @@ namespace Solcre\SolcreFramework2\Common;
 
 use Solcre\SolcreFramework2\Interfaces\IdentityInterface;
 use Zend\Mvc\Controller\AbstractActionController;
+use ZF\ApiProblem\ApiProblem;
+use ZF\ApiProblem\ApiProblemResponse;
 use ZF\MvcAuth\Identity\AuthenticatedIdentity;
 use function is_array;
 
@@ -49,5 +51,40 @@ class BaseControllerRpc extends AbstractActionController
     protected function getParamFromBodyParams($paramName)
     {
         return $this->bodyParams()[$paramName] ?? null;
+    }
+
+    protected function getAuthenticationOauthType(): ?int
+    {
+        $authenticationIdentity = $this->getAuthenticationIdentity();
+        if ($authenticationIdentity !== null) {
+            return $authenticationIdentity['oauth_type'];
+        }
+        return null;
+    }
+
+    protected function getAuthenticationIdentity(): ?array
+    {
+        $identity = $this->getIdentity();
+        return $identity->getAuthenticationIdentity();
+    }
+
+    private function getAuthenticationId(): ?int
+    {
+        $authenticationIdentity = $this->getAuthenticationIdentity();
+        if ($authenticationIdentity !== null) {
+            return $authenticationIdentity['user_id'];
+        }
+        return null;
+    }
+
+    public function createApiProblemResponse(int $code, string $message, array $additional = []): ApiProblemResponse
+    {
+        $apiProblem = $this->createApiProblem($code, $message, $additional);
+        return new ApiProblemResponse($apiProblem);
+    }
+
+    private function createApiProblem(int $code, string $message, array $additional): ApiProblem
+    {
+        return new ApiProblem($code, $message, null, null, $additional);
     }
 }
