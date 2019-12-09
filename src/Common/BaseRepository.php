@@ -112,25 +112,27 @@ class BaseRepository extends EntityRepository
 
     protected function setWhereSql($tableAlias, QueryBuilder $qb, $params): void
     {
-        unset($params['sort']);
-        if (is_array($params) && ! empty($params)) {
+        unset($params['sort'], $params['size']);
+        if (\is_array($params) && ! empty($params)) {
             $and = $qb->expr()->andX();
+            $or = $qb->expr()->orX();
             foreach ($params as $fieldName => $fieldValue) {
-                $fieldName = (string)$fieldName;
-                $alias = sprintf('%s.%s', $tableAlias, $fieldName);
-                if (is_array($fieldValue) && $this->entityHasAssociation($fieldName) && $this->hasStringKeys($fieldValue)) {
+                $alias = \sprintf('%s.%s', $tableAlias, $fieldName);
+                if (\is_array($fieldValue) && $this->entityHasAssociation($fieldName) && $this->hasStringKeys($fieldValue)) {
                     $qb->join($alias, $fieldName);
                     foreach ($fieldValue as $key => $value) {
-                        $alias = sprintf('%s.%s', $fieldName, $key);
-                        $this->setWhereClause($qb, $value, $alias, $and);
+                        $alias = \sprintf('%s.%s', $fieldName, $key);
+                        $this->setWhereClause($qb, $value, $alias, $and, $or);
                     }
-                    continue;
+                } else {
+                    $this->setWhereClause($qb, $fieldValue, $alias, $and, $or);
                 }
 
                 $this->setWhereClause($qb, $fieldValue, $alias, $and);
             }
 
             $qb->andWhere($and);
+            $qb->orWhere($or);
         }
     }
 
@@ -266,7 +268,7 @@ class BaseRepository extends EntityRepository
 
     private function isAssociationSort($fieldName): bool
     {
-        return (bool)strpos($fieldName, self::ORDER_BY_RELATION_SEPARATOR);
+        return (bool)\strpos($fieldName, self::ORDER_BY_RELATION_SEPARATOR);
     }
 
     private function processAssociationSort($tableAlias, $fieldName, $direction, QueryBuilder $qb): void
