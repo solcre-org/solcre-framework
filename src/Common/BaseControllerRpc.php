@@ -71,7 +71,7 @@ class BaseControllerRpc extends AbstractActionController
         return $identity->getAuthenticationIdentity();
     }
 
-    private function getAuthenticationId(): ?int
+    protected function getAuthenticationId(): ?int
     {
         $authenticationIdentity = $this->getAuthenticationIdentity();
         if ($authenticationIdentity !== null) {
