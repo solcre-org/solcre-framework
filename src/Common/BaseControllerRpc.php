@@ -2,6 +2,7 @@
 
 namespace Solcre\SolcreFramework2\Common;
 
+use Psr\Log\LoggerInterface;
 use Solcre\SolcreFramework2\Interfaces\IdentityInterface;
 use Zend\Mvc\Controller\AbstractActionController;
 use ZF\ApiProblem\ApiProblem;
@@ -12,10 +13,12 @@ use function is_array;
 class BaseControllerRpc extends AbstractActionController
 {
     protected $identityService;
+    protected $logger;
 
-    public function __construct(IdentityInterface $identityService = null)
+    public function __construct(IdentityInterface $identityService = null, ?LoggerInterface $logger = null)
     {
         $this->identityService = $identityService;
+        $this->logger = $logger;
     }
 
     protected function setUserLogged(): void
