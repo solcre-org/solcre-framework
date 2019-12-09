@@ -143,6 +143,10 @@ class BaseResource extends AbstractResourceListener
                 if ($value === 'now()') {
                     $queryParams->set($key, date('Y-m-d'));
                 }
+
+                if ($value === 'null') {
+                    $queryParams->set($key, null);
+                }
             }
 
             $event->setQueryParams($queryParams);
