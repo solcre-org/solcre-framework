@@ -24,7 +24,8 @@ class BaseControllerRpc extends AbstractActionController
     protected function setUserLogged(): void
     {
         if ($this->identityService instanceof IdentityInterface) {
-            $this->identityService->setIdentityService($this->getLoggedUserId());
+            $this->identityService->setUserId($this->getLoggedUserId());
+            $this->identityService->setOauthType($this->getAuthenticationOauthType());
         }
     }
 
@@ -37,7 +38,6 @@ class BaseControllerRpc extends AbstractActionController
                 return $identityData['user_id'];
             }
         }
-
         return null;
     }
 

@@ -71,7 +71,7 @@ class BaseRepository extends EntityRepository
 
         //Add order by to dql
         if (! empty($orderBy)) {
-            $this->setOrderBy($params, $orderBy, $qb, $tableAlias);
+            $this->setOrderBy($orderBy, $qb, $tableAlias);
         }
 
         $searchTerm = $filterOptions['search'] ?? false;
@@ -249,7 +249,7 @@ class BaseRepository extends EntityRepository
         $and->add($expression);
     }
 
-    protected function setOrderBy(array &$params, array $orderBy, QueryBuilder $qb, $tableAlias): void
+    protected function setOrderBy(array $orderBy, QueryBuilder $qb, string $tableAlias): void
     {
         if (! empty($orderBy)) {
             foreach ($orderBy as $fieldName => $direction) {
@@ -258,10 +258,6 @@ class BaseRepository extends EntityRepository
                 } elseif ($this->entityHasField($this->_entityName, $fieldName)) {
                     $qb->addOrderBy($tableAlias . '.' . $fieldName, $direction);
                 }
-            }
-
-            if (isset($params['sort'])) {
-                unset($params['sort']);
             }
         }
     }
