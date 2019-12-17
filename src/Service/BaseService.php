@@ -5,6 +5,7 @@ namespace Solcre\SolcreFramework2\Service;
 use Doctrine\ORM\EntityManager;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator;
 use Exception;
+use Psr\Log\LoggerInterface;
 use ReflectionClass;
 use Solcre\SolcreFramework2\Common\BaseRepository;
 use Solcre\SolcreFramework2\Entity\PaginatedResult;
@@ -21,9 +22,10 @@ abstract class BaseService
     protected $currentPage = 1;
     protected $itemsCountPerPage = 50;
     protected $configuration;
+    /**
+     * @var LoggerInterface
+     */
     protected $logger;
-
-
     protected $additionalAttributes;
 
     public function __construct(EntityManager $entityManager)
