@@ -8,14 +8,10 @@
   "license": "BSD-3-Clause",
   "require": {
     "php": "^7.3",
-    "ext-fileinfo": "*",
-    "ext-json": "*",
-    "ext-openssl": "*",
-    "ext-zip": "*",
     "doctrine/doctrine-orm-module": "^2.1",
-    "neitanod/forceutf8": "^2.0",
-    "zfcampus/zf-hal": "^1.6",
-    "zfcampus/zf-rest": "^1.5"
+    "laminas-api-tools/api-tools-hal": "^1.6",
+    "laminas-api-tools/api-tools-rest": "^1.5",
+    "neitanod/forceutf8": "^2.0"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^2.16",
