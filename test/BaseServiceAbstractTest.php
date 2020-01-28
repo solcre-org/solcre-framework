@@ -8,7 +8,7 @@ use Solcre\SolcreFramework2\AbstractFactory\BaseServiceAbstractFactory;
 use Solcre\SolcreFramework2\Filter\FieldsFilterService;
 use SolcreFrameworkTest\TestAsset;
 use SolcreFrameworkTest\TestAsset\Factory;
-use Zend\ServiceManager\ServiceManager;
+use Laminas\ServiceManager\ServiceManager;
 
 class BaseServiceAbstractTest extends TestCase
 {

@@ -4,10 +4,10 @@ namespace Solcre\SolcreFramework2\Common;
 
 use Psr\Log\LoggerInterface;
 use Solcre\SolcreFramework2\Interfaces\IdentityInterface;
-use Zend\Mvc\Controller\AbstractActionController;
-use ZF\ApiProblem\ApiProblem;
-use ZF\ApiProblem\ApiProblemResponse;
-use ZF\MvcAuth\Identity\AuthenticatedIdentity;
+use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\ApiTools\ApiProblem\ApiProblem;
+use Laminas\ApiTools\ApiProblem\ApiProblemResponse;
+use Laminas\ApiTools\MvcAuth\Identity\AuthenticatedIdentity;
 use function is_array;
 
 class BaseControllerRpc extends AbstractActionController

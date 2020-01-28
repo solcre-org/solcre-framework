@@ -4,8 +4,8 @@ namespace Solcre\SolcreFramework2\Filter\Factory;
 
 use Interop\Container\ContainerInterface;
 use Solcre\SolcreFramework2\Filter\FieldsFilterService;
-use Zend\ServiceManager\Factory\FactoryInterface;
-use Zend\View\HelperPluginManager;
+use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\View\HelperPluginManager;
 
 class FieldsFilterServiceFactory implements FactoryInterface
 {

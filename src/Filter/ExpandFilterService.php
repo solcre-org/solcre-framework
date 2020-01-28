@@ -3,8 +3,8 @@
 namespace Solcre\SolcreFramework2\Filter;
 
 use Solcre\SolcreFramework2\Strategy\ExpandEmbeddedStrategy;
-use Zend\Hydrator\AbstractHydrator;
-use ZF\Hal\Plugin\Hal;
+use Laminas\Hydrator\AbstractHydrator;
+use Laminas\ApiTools\Hal\Plugin\Hal;
 use function is_array;
 use function is_object;
 

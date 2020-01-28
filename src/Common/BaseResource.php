@@ -12,13 +12,13 @@ use Exception;
 use Solcre\SolcreFramework2\Exception\BaseException;
 use Solcre\SolcreFramework2\Interfaces\PermissionInterface;
 use Solcre\SolcreFramework2\Service\BaseService;
-use Zend\EventManager\Event;
-use Zend\Router\RouteMatch;
-use Zend\Stdlib\Parameters;
-use ZF\ApiProblem\ApiProblem;
-use ZF\MvcAuth\Identity\IdentityInterface;
-use ZF\Rest\AbstractResourceListener;
-use ZF\Rest\ResourceEvent;
+use Laminas\EventManager\Event;
+use Laminas\Router\RouteMatch;
+use Laminas\Stdlib\Parameters;
+use Laminas\ApiTools\ApiProblem\ApiProblem;
+use Laminas\ApiTools\MvcAuth\Identity\IdentityInterface;
+use Laminas\ApiTools\Rest\AbstractResourceListener;
+use Laminas\ApiTools\Rest\ResourceEvent;
 
 class BaseResource extends AbstractResourceListener
 {

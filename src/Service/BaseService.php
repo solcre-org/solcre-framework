@@ -12,7 +12,7 @@ use Solcre\SolcreFramework2\Entity\PaginatedResult;
 use Solcre\SolcreFramework2\Exception\BaseException;
 use Solcre\SolcreFramework2\Filter\FilterInterface;
 use Solcre\SolcreFramework2\Hydrator\EntityHydrator;
-use Zend\Paginator\Paginator;
+use Laminas\Paginator\Paginator;
 
 abstract class BaseService
 {
