@@ -5,7 +5,7 @@ namespace SolcreFrameworkTest\TestAsset\Factory;
 use Interop\Container\ContainerInterface;
 use SolcreFrameworkTest\TestAsset\DummyDependencyService;
 use SolcreFrameworkTest\TestAsset\DummyPermissionWithDependencyService;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class DummyPermissionWithDependencyServiceFactory implements FactoryInterface
 {

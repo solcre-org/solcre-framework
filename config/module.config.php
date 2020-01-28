@@ -2,12 +2,12 @@
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
+use Laminas\Hydrator\ArraySerializable;
 use Solcre\SolcreFramework2\AbstractFactory\BaseServiceAbstractFactory;
 use Solcre\SolcreFramework2\Filter;
 use Solcre\SolcreFramework2\Filter\Factory as FilterFactory;
 use Solcre\SolcreFramework2\Hydrator\EntityHydrator;
 use Solcre\SolcreFramework2\Hydrator\Factory\EntityHydratorFactory;
-use Zend\Hydrator\ArraySerializable;
 
 return [
     'service_manager'    => [
@@ -19,7 +19,7 @@ return [
             BaseServiceAbstractFactory::class,
         ]
     ],
-    'zf-hal'             => [
+    'api-tools-hal'             => [
         'metadata_map' => [
             PersistentCollection::class => [
                 'hydrator'     => ArraySerializable::class,
@@ -30,7 +30,7 @@ return [
             ],
         ],
     ],
-    'zf-rest'            => [
+    'api-tools-rest'            => [
         'controllers' => [
             'collection_query_whitelist' => [
                 'query',

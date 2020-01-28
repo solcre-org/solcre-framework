@@ -4,8 +4,8 @@ namespace Solcre\SolcreFramework2\Strategy;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use DoctrineModule\Stdlib\Hydrator\Strategy\AbstractCollectionStrategy;
-use Zend\Paginator\Adapter\ArrayAdapter;
-use Zend\Paginator\Paginator;
+use Laminas\Paginator\Adapter\ArrayAdapter;
+use Laminas\Paginator\Paginator;
 
 class ExpandEmbeddedStrategy extends AbstractCollectionStrategy
 {

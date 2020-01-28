@@ -2,8 +2,8 @@
 
 namespace Solcre\SolcreFramework2\Adapter;
 
+use Laminas\Paginator\Adapter\AdapterInterface;
 use Solcre\SolcreFramework2\Entity\PaginatedResult;
-use Zend\Paginator\Adapter\AdapterInterface;
 
 class PaginatedAdapter implements AdapterInterface
 {

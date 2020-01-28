@@ -4,7 +4,7 @@ namespace Solcre\SolcreFramework2\Filter\Factory;
 
 use Interop\Container\ContainerInterface;
 use Solcre\SolcreFramework2\Filter\ExpandFilterService;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class ExpandFilterServiceFactory implements FactoryInterface
 {
