@@ -9,16 +9,16 @@
 namespace Solcre\SolcreFramework2\Common;
 
 use Exception;
-use Solcre\SolcreFramework2\Exception\BaseException;
-use Solcre\SolcreFramework2\Interfaces\PermissionInterface;
-use Solcre\SolcreFramework2\Service\BaseService;
-use Laminas\EventManager\Event;
-use Laminas\Router\RouteMatch;
-use Laminas\Stdlib\Parameters;
 use Laminas\ApiTools\ApiProblem\ApiProblem;
 use Laminas\ApiTools\MvcAuth\Identity\IdentityInterface;
 use Laminas\ApiTools\Rest\AbstractResourceListener;
 use Laminas\ApiTools\Rest\ResourceEvent;
+use Laminas\EventManager\Event;
+use Laminas\Router\RouteMatch;
+use Laminas\Stdlib\Parameters;
+use Solcre\SolcreFramework2\Exception\BaseException;
+use Solcre\SolcreFramework2\Interfaces\PermissionInterface;
+use Solcre\SolcreFramework2\Service\BaseService;
 
 class BaseResource extends AbstractResourceListener
 {
@@ -84,7 +84,7 @@ class BaseResource extends AbstractResourceListener
 
         $identityData = $identity->getAuthenticationIdentity();
 
-        return $identityData['user_id'];
+        return $identityData['user_id'] ?? null;
     }
 
     public function getLoggedUserOauthType(Event $event = null)
@@ -92,7 +92,7 @@ class BaseResource extends AbstractResourceListener
         $identity = $this->getLoggedUserIdentity($event);
         if ($identity instanceof IdentityInterface) {
             $identityData = $identity->getAuthenticationIdentity();
-            return $identityData['oauth_type'];
+            return $identityData['oauth_type'] ?? null;
         }
         return null;
     }
