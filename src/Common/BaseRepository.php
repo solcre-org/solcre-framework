@@ -127,14 +127,16 @@ class BaseRepository extends EntityRepository
                 $alias = $this->getAliasFromFieldInTable($tableAlias, $fieldName);
                 if (\is_array($fieldValue) && $this->entityHasAssociation($fieldName) && $this->hasStringKeys($fieldValue))
                 {
-                    $qb->join($alias, $fieldName);
+                    if (! $this->aliasExists($qb, $fieldName))
+                    {
+                        $qb->join($alias, $fieldName);
+                    }
                     foreach ($fieldValue as $key => $value)
                     {
                         $alias = $this->getAliasFromFieldInTable($fieldName, $key);
                         $this->setWhereClause($qb, $value, $alias, $and, $or);
                     }
-                }
-                else
+                } else
                 {
                     $this->setWhereClause($qb, $fieldValue, $alias, $and, $or);
                 }
@@ -155,6 +157,11 @@ class BaseRepository extends EntityRepository
     private function hasStringKeys(array $array): bool
     {
         return count(array_filter(array_keys($array), 'is_string')) > 0;
+    }
+
+    private function aliasExists(QueryBuilder $qb, string $alias): bool
+    {
+        return in_array($alias, $qb->getAllAliases());
     }
 
     private function setWhereClause(QueryBuilder $qb, $fieldValue, $alias, Andx $and): void
@@ -281,8 +288,7 @@ class BaseRepository extends EntityRepository
                 if ($this->isAssociationSort($fieldName))
                 {
                     $this->processAssociationSort($tableAlias, $fieldName, $direction, $qb);
-                }
-                elseif ($this->entityHasField($this->_entityName, $fieldName))
+                } elseif ($this->entityHasField($this->_entityName, $fieldName))
                 {
                     $qb->addOrderBy($tableAlias . '.' . $fieldName, $direction);
                 }
@@ -298,7 +304,10 @@ class BaseRepository extends EntityRepository
     private function processAssociationSort($tableAlias, $fieldName, $direction, QueryBuilder $qb): void
     {
         $sortParts = explode(self::ORDER_BY_RELATION_SEPARATOR, $fieldName);
-        [$sortAssociationFieldName, $sortAssociationFieldToSort] = $sortParts;
+        [
+            $sortAssociationFieldName,
+            $sortAssociationFieldToSort
+        ] = $sortParts;
         if ($this->entityHasAssociation($sortAssociationFieldName) && $this->entityAssociationHasFieldName($sortAssociationFieldName, $sortAssociationFieldToSort))
         {
             $associationKey = $this->getAliasFromJoin($tableAlias, $sortAssociationFieldName, $qb);
