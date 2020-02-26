@@ -119,13 +119,19 @@ class BaseRepository extends EntityRepository
             $or = $qb->expr()->orX();
             foreach ($params as $fieldName => $fieldValue) {
                 $alias = $this->getAliasFromFieldInTable($tableAlias, $fieldName);
-                if (is_array($fieldValue) && $this->entityHasAssociation($fieldName) && $this->hasStringKeys($fieldValue)) {
-                    $qb->join($alias, $fieldName);
-                    foreach ($fieldValue as $key => $value) {
+                if (is_array($fieldValue) && $this->entityHasAssociation($fieldName) && $this->hasStringKeys($fieldValue))
+                {
+                    if (! $this->aliasExists($qb, $fieldName))
+                    {
+                        $qb->join($alias, $fieldName);
+                    }
+                    foreach ($fieldValue as $key => $value)
+                    {
                         $alias = $this->getAliasFromFieldInTable($fieldName, $key);
                         $this->setWhereClause($qb, $value, $alias, $and, $or);
                     }
-                } else {
+                } else
+                {
                     $this->setWhereClause($qb, $fieldValue, $alias, $and, $or);
                 }
 
@@ -150,6 +156,11 @@ class BaseRepository extends EntityRepository
     private function hasStringKeys(array $array): bool
     {
         return count(array_filter(array_keys($array), 'is_string')) > 0;
+    }
+
+    private function aliasExists(QueryBuilder $qb, string $alias): bool
+    {
+        return in_array($alias, $qb->getAllAliases());
     }
 
     private function setWhereClause(QueryBuilder $qb, $fieldValue, $alias, Andx $and): void
@@ -261,7 +272,8 @@ class BaseRepository extends EntityRepository
             foreach ($orderBy as $fieldName => $direction) {
                 if ($this->isAssociationSort($fieldName)) {
                     $this->processAssociationSort($tableAlias, $fieldName, $direction, $qb);
-                } elseif ($this->entityHasField($this->_entityName, $fieldName)) {
+                } elseif ($this->entityHasField($this->_entityName, $fieldName))
+                {
                     $qb->addOrderBy($tableAlias . '.' . $fieldName, $direction);
                 }
             }
