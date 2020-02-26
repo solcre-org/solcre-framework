@@ -10,6 +10,7 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator as OrmPaginator;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator;
 use ReflectionClass;
+use ReflectionMethod;
 use Solcre\SolcreFramework2\Filter\FilterInterface;
 use function array_key_exists;
 use function count;
@@ -368,7 +369,12 @@ class BaseRepository extends EntityRepository
     {
         $entityName = $this->getEntityName();
         $reflection = new ReflectionClass($entityName);
-        $params = $reflection->getConstructor()->getParameters();
+        $params = [];
+        $constructor = $reflection->getConstructor();
+        if($constructor instanceof ReflectionMethod)
+        {
+            $params = $reflection->getConstructor()->getParameters();
+        }
         if (count($this->filters) > 0 && count($params) === 0) {
             $entityName = $this->getEntityName();
             $entity = new $entityName();
