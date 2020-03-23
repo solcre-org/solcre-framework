@@ -14,6 +14,7 @@ use Laminas\ApiTools\MvcAuth\Identity\IdentityInterface;
 use Laminas\ApiTools\Rest\AbstractResourceListener;
 use Laminas\ApiTools\Rest\ResourceEvent;
 use Laminas\EventManager\Event;
+use Laminas\Http\Request;
 use Laminas\Router\RouteMatch;
 use Laminas\Stdlib\Parameters;
 use Solcre\SolcreFramework2\Exception\BaseException;
@@ -44,28 +45,29 @@ class BaseResource extends AbstractResourceListener
 
             $this->checkPermission($event);
 
-            //Normalized as array query params and adata
-            $this->normalizeQueryParams($event);
-            $data = (array)$event->getParam('data', []);
-            $event->setParam('data', $data);
-
-            //Set page and size to the service
             $request = $event->getRequest();
-            if ($request === null) {
+            if (! $request instanceof Request) {
                 throw new BaseException('Request does not exists', 404);
             }
-            $page = $request->getQuery('page', 1);
-            $pageSize = $request->getQuery('size', 25);
-            $this->service->setCurrentPage($page);
-            $this->service->setItemsCountPerPage($pageSize);
 
-            // Remove size parameter
-            $parameters = $event->getQueryParams();
-            if ($parameters instanceof Parameters & $parameters->offsetExists('size')) {
-                $event->getQueryParams()->offsetUnset('size');
+            $method = $request->getMethod();
+            if ($method === Request::METHOD_GET) {
+                $this->normalizeQueryParams($event);
+
+                $page = $request->getQuery('page', 1);
+                $pageSize = $request->getQuery('size', 25);
+                $this->service->setCurrentPage($page);
+                $this->service->setItemsCountPerPage($pageSize);
+
+                // Remove size parameter
+                $parameters = $event->getQueryParams();
+                if ($parameters instanceof Parameters & $parameters->offsetExists('size')) {
+                    $parameters->offsetUnset('size');
+                }
+            } elseif ($method === Request::METHOD_POST || $method === Request::METHOD_PUT || $method === Request::METHOD_PATCH || $method === Request::METHOD_DELETE) {
+                $this->normalizeBodyParams($event);
             }
 
-            //Normal flow
             return parent::dispatch($event);
         } catch (Exception $exc) {
             $code = $exc->getCode() ?: 404;
@@ -156,6 +158,26 @@ class BaseResource extends AbstractResourceListener
 
             $event->setQueryParams($queryParams);
         }
+    }
+
+    protected function normalizeBodyParams(ResourceEvent &$event = null): void
+    {
+        if ($event === null) {
+            return;
+        }
+
+        $bodyParams = $event->getParam('data', []);
+
+        if (! empty($bodyParams)) {
+            //For each qp
+            foreach ($bodyParams as $key => $value) {
+                if ($value === 'null') {
+                    $bodyParams->$key = null;
+                }
+            }
+        }
+
+        $event->setParam('data', (array)$bodyParams);
     }
 
     public function getUriParam($key)
