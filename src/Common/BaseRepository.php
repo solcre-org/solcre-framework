@@ -26,6 +26,7 @@ class BaseRepository extends EntityRepository
 {
     private const MINIMUM_WHERE_PARTS = 2;
     private const NOT_NULL_FILTER = '!null';
+    private const NOT_IN_FIELD_NAME = 'notIn';
     private const ORDER_BY_RELATION_SEPARATOR = '.';
     protected $filters = [];
 
@@ -120,23 +121,25 @@ class BaseRepository extends EntityRepository
             $or = $qb->expr()->orX();
             foreach ($params as $fieldName => $fieldValue) {
                 $alias = $this->getAliasFromFieldInTable($tableAlias, $fieldName);
-                if (is_array($fieldValue) && $this->entityHasAssociation($fieldName) && $this->hasStringKeys($fieldValue))
-                {
-                    if (! $this->aliasExists($qb, $fieldName))
-                    {
-                        $qb->join($alias, $fieldName);
-                    }
-                    foreach ($fieldValue as $key => $value)
-                    {
-                        $alias = $this->getAliasFromFieldInTable($fieldName, $key);
-                        $this->setWhereClause($qb, $value, $alias, $and, $or);
-                    }
-                } else
-                {
-                    $this->setWhereClause($qb, $fieldValue, $alias, $and, $or);
-                }
+                if (is_array($fieldValue)) {
+                    if ($fieldName === self::NOT_IN_FIELD_NAME) {
+                        foreach ($fieldValue as $key => $values) {
+                            $alias = $this->getAliasFromFieldInTable($tableAlias, $key);
+                            $this->notInWhereClause($qb, $values, $alias, $and);
+                        }
+                    } elseif ($this->entityHasAssociation($fieldName) && $this->hasStringKeys($fieldValue)) {
+                        if (! $this->aliasExists($qb, $fieldName)) {
+                            $qb->join($alias, $fieldName);
+                        }
 
-                $this->setWhereClause($qb, $fieldValue, $alias, $and);
+                        foreach ($fieldValue as $key => $value) {
+                            $alias = $this->getAliasFromFieldInTable($fieldName, $key);
+                            $this->setWhereClause($qb, $value, $alias, $and);
+                        }
+                    }
+                } else {
+                    $this->setWhereClause($qb, $fieldValue, $alias, $and);
+                }
             }
 
             $qb->andWhere($and);
@@ -147,6 +150,12 @@ class BaseRepository extends EntityRepository
     protected function getAliasFromFieldInTable(string $tableName, string $fieldName): string
     {
         return sprintf('%s.%s', $tableName, $fieldName);
+    }
+
+    private function notInWhereClause(QueryBuilder $qb, $fieldValue, $alias, Andx $and): void
+    {
+        $expression = $qb->expr()->notIn($alias, $fieldValue);
+        $and->add($expression);
     }
 
     protected function entityHasAssociation($fieldName): bool
@@ -273,8 +282,7 @@ class BaseRepository extends EntityRepository
             foreach ($orderBy as $fieldName => $direction) {
                 if ($this->isAssociationSort($fieldName)) {
                     $this->processAssociationSort($tableAlias, $fieldName, $direction, $qb);
-                } elseif ($this->entityHasField($this->_entityName, $fieldName))
-                {
+                } elseif ($this->entityHasField($this->_entityName, $fieldName)) {
                     $qb->addOrderBy($tableAlias . '.' . $fieldName, $direction);
                 }
             }
@@ -371,8 +379,7 @@ class BaseRepository extends EntityRepository
         $reflection = new ReflectionClass($entityName);
         $params = [];
         $constructor = $reflection->getConstructor();
-        if($constructor instanceof ReflectionMethod)
-        {
+        if ($constructor instanceof ReflectionMethod) {
             $params = $reflection->getConstructor()->getParameters();
         }
         if (count($this->filters) > 0 && count($params) === 0) {
