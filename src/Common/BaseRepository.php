@@ -136,6 +136,8 @@ class BaseRepository extends EntityRepository
                             $alias = $this->getAliasFromFieldInTable($fieldName, $key);
                             $this->setWhereClause($qb, $value, $alias, $and);
                         }
+                    } else {
+                        $this->setWhereClause($qb, $fieldValue, $alias, $and);
                     }
                 } else {
                     $this->setWhereClause($qb, $fieldValue, $alias, $and);
