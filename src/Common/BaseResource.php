@@ -28,7 +28,7 @@ class BaseResource extends AbstractResourceListener
     protected $service;
     protected $permissionService;
 
-    public function __construct(BaseService $service, ?PermissionInterface $permissionService)
+    public function __construct(BaseService $service, ?PermissionInterface $permissionService = null)
     {
         $this->service = $service;
         $this->permissionService = $permissionService;
@@ -111,6 +111,10 @@ class BaseResource extends AbstractResourceListener
 
     public function checkPermission(ResourceEvent $event, $permissionName = null, $throwExceptions = true): bool
     {
+        if (! $this->permissionService instanceof PermissionInterface) {
+            return true;
+        }
+
         $permissionName = empty($permissionName) ? $this->getPermissionName() : $permissionName;
         $loggedUserId = $this->getLoggedUserId($event);
         if ($permissionName === self::NO_PERMISSION || $loggedUserId === null) {
