@@ -3,7 +3,7 @@
 namespace Solcre\SolcreFramework2\Strategy;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use DoctrineModule\Stdlib\Hydrator\Strategy\AbstractCollectionStrategy;
+use Doctrine\Laminas\Hydrator\Strategy\AbstractCollectionStrategy;
 use Laminas\Paginator\Adapter\ArrayAdapter;
 use Laminas\Paginator\Paginator;
 

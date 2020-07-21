@@ -2,8 +2,8 @@
 
 namespace Solcre\SolcreFramework2\Filter;
 
-use Laminas\Hydrator\FilterEnabledInterface;
 use Laminas\ApiTools\Hal\Plugin\Hal;
+use Laminas\Hydrator\Filter\FilterEnabledInterface;
 use function is_array;
 use function is_object;
 use function is_string;

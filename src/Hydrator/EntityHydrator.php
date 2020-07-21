@@ -2,8 +2,7 @@
 
 namespace Solcre\SolcreFramework2\Hydrator;
 
-use Doctrine\Common\Inflector\Inflector;
-use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
+use Doctrine\Laminas\Hydrator\DoctrineObject;
 use ReflectionClass;
 use ReflectionProperty;
 use function in_array;
@@ -18,7 +17,7 @@ class EntityHydrator extends DoctrineObject
 
         $methods = get_class_methods($object);
         foreach ($fieldNames as $fieldName) {
-            $getter = 'get' . Inflector::classify($fieldName);
+            $getter = 'get' . \str_replace([' ', '_', '-'], '', \ucwords($fieldName, ' _-'));
             $dataFieldName = $this->computeExtractFieldName($fieldName);
 
             if (in_array($getter, $methods, true)) {
