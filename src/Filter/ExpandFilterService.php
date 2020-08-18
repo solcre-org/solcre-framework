@@ -140,7 +140,7 @@ class ExpandFilterService implements FilterInterface
         $fieldOptions = $optionsResult[2];
 
         //For each field option
-        $count = \\count($fieldOptions);
+        $count = \count($fieldOptions);
         for ($i = 0; $i < $count; $i++) {
             $options = [];
 

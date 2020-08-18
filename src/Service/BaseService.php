@@ -123,7 +123,7 @@ abstract class BaseService
     {
         $entityObj = $this->prepareEntity($data);
         $this->entityManager->persist($entityObj);
-        $this->entityManager->flush();
+        $this->entityManager->flush($entityObj);
         return $entityObj;
     }
 
@@ -166,7 +166,7 @@ abstract class BaseService
         return $this->repository->findAll();
     }
 
-    public function fetchAllPaginated($params = [], array $orderBy = []): PaginatedResult
+    public function fetchAllPaginated($params = [], array $orderBy = null): PaginatedResult
     {
         $doctrinePaginator = $this->repository->findByPaginated((array)$params, $orderBy);
 
@@ -249,11 +249,6 @@ abstract class BaseService
     public function fetchByParamsEntityClass($entityClass, array $params)
     {
         return $this->entityManager->getRepository($entityClass)->findOneBy($params);
-    }
-
-    public function update($id, $data): void
-    {
-        throw new BaseException('Method not implemented', 400);
     }
 
     public function getReference($id)

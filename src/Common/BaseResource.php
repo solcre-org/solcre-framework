@@ -122,7 +122,7 @@ class BaseResource extends AbstractResourceListener
 
         $permissionName = empty($permissionName) ? $this->getPermissionName() : $permissionName;
         $loggedUserId = $this->getLoggedUserId($event);
-        if ($permissionName === self::NO_PERMISSION || $loggedUserId === null) {
+        if (empty($permissionName) || $permissionName === self::NO_PERMISSION || $loggedUserId === null) {
             return true;
         }
 
