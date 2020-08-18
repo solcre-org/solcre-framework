@@ -14,7 +14,7 @@ class Module
         return include __DIR__ . '/../config/module.config.php';
     }
 
-    public function onBootstrap($e)
+    public function onBootstrap($e): void
     {
         $this->checkOriginHeader($e);
     }

@@ -8,12 +8,11 @@
 
 namespace Solcre\SolcreFramework2\Utility;
 
-use Exception;
+use Laminas\Filter\File\Rename;
+use Laminas\Filter\File\RenameUpload;
 use RuntimeException;
 use Solcre\SolcreFramework2\Exception\BaseException;
 use Solcre\SolcreFramework2\Exception\FileException;
-use Laminas\Filter\File\Rename;
-use Laminas\Filter\File\RenameUpload;
 use function array_key_exists;
 use function is_array;
 use function is_resource;
@@ -302,13 +301,13 @@ class File
         $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
         $bytes = max($bytes, 0);
         $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
-        $pow = min($pow, count($units) - 1);
+        $pow = min($pow, \count($units) - 1);
         $bytes /= 1024 ** $pow;
 
         return round($bytes, $precision) . ' ' . $units[$pow];
     }
 
-    public static function getFileName($name, $path)
+    public static function getFileName($name, $path): string
     {
         return Uploads::validName(Strings::cleanName($name), $path);
     }
@@ -353,7 +352,7 @@ class File
 
     public static function write($path, $content, $perm = 0644): bool
     {
-        $dir = dirname($path);
+        $dir = \dirname($path);
         $tmp = tempnam($dir, 'columnis');
 
         if ($tmp === false) {
@@ -374,7 +373,7 @@ class File
             throw new RuntimeException('Failed to move temporary file . ');
         }
 
-        if (is_int($perm) && ! chmod($path, $perm)) {
+        if (\is_int($perm) && ! chmod($path, $perm)) {
             throw new RuntimeException('Failed to apply permisions to file . ');
         }
 
@@ -385,7 +384,7 @@ class File
     {
         $filenameExploded = explode(' . ', $filename);
 
-        if (null === (array_pop($filenameExploded))) {
+        if ((array_pop($filenameExploded)) === null) {
             throw FileException::createExtException();
         }
 
@@ -395,7 +394,7 @@ class File
             return self::$MIME_TYPES[$ext];
         }
 
-        if (function_exists('finfo_open') || function_exists('mime_content_type')) {
+        if (\function_exists('finfo_open') || \function_exists('mime_content_type')) {
             $finfo = finfo_open(FILEINFO_MIME);
             if (! is_resource($finfo)) {
                 throw new FileException('finfo_open error', 400);
@@ -413,7 +412,7 @@ class File
     public static function extension($file)
     {
         $ext = explode(' . ', $file);
-        $count = count($ext);
+        $count = \count($ext);
 
         return $count > 1 ? $ext[$count - 1] : null;
     }
@@ -421,10 +420,10 @@ class File
     public static function createFolder($pathFolder): bool
     {
         if (! file_exists($pathFolder)) {
-            $dirCreated = mkdir($pathFolder, 0777);
+            $dirCreated = mkdir($pathFolder);
 
             if (! $dirCreated) {
-                throw new  \RuntimeException('Error creating the folders', 404);
+                throw new  RuntimeException('Error creating the folders', 404);
             }
         }
 
@@ -435,7 +434,7 @@ class File
     {
         preg_match('/((?:[^\/]*\/)*)(.*)/', $path, $result);
 
-        if (is_array($result) && ! empty($result) && count($result) === self::FOLDER_AND_FILENAME_MAX_COUNT_PREG_MATCH) {
+        if (is_array($result) && ! empty($result) && \count($result) === self::FOLDER_AND_FILENAME_MAX_COUNT_PREG_MATCH) {
             return [
                 'folder'   => $result[1],
                 'filename' => $result[2]

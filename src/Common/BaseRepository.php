@@ -167,12 +167,12 @@ class BaseRepository extends EntityRepository
 
     private function hasStringKeys(array $array): bool
     {
-        return count(array_filter(array_keys($array), 'is_string')) > 0;
+        return count(array_filter(array_keys($array), '\is_string')) > 0;
     }
 
     private function aliasExists(QueryBuilder $qb, string $alias): bool
     {
-        return in_array($alias, $qb->getAllAliases());
+        return in_array($alias, $qb->getAllAliases(), true);
     }
 
     private function setWhereClause(QueryBuilder $qb, $fieldValue, $alias, Andx $and): void

@@ -6,7 +6,7 @@ use Solcre\SolcreFramework2\Exception\UploadsException;
 
 class Uploads
 {
-    public static function validName($name, $folder)
+    public static function validName($name, $folder): string
     {
         $name = self::withoutCommas($name);
         $name = self::nameWithoutSpaces($name);
@@ -29,11 +29,11 @@ class Uploads
         if ($name) {
             $t = explode('.', $name);
 
-            if (count($t) === 1) {
+            if (\count($t) === 1) {
                 $ext = '';
             } else {
-                $ext = '.' . $t[count($t) - 1];
-                $t = array_slice($t, 0, count($t) - 1);
+                $ext = '.' . $t[\count($t) - 1];
+                $t = \array_slice($t, 0, \count($t) - 1);
                 $name = implode('.', $t);
             }
             $file = $name;

@@ -40,7 +40,7 @@ class Directory
 
         //abrimos el directorio
         if ($handle = opendir($path)) {
-            while (false !== ($file = readdir($handle))) {
+            while (($file = readdir($handle)) !== false) {
                 if ($file !== '.' && $file !== '..') {
                     //si es un directorio lo recorremos en caso de activar la recursividad
                     if (is_dir($path . $s . $file) && $read) {
@@ -87,7 +87,7 @@ class Directory
     {
         $files = scandir($dir);
 
-        if (! is_array($files)) {
+        if (! \is_array($files)) {
             throw DirectoryException::scandirException();
         }
 

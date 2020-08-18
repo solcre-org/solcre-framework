@@ -24,7 +24,7 @@ class FieldsFilterService implements FilterInterface
 
     public function canFilter($options): bool
     {
-        return (array_key_exists(self::FILTER_PARAMETER, $options) && ! empty($options[self::FILTER_PARAMETER]));
+        return (\array_key_exists(self::FILTER_PARAMETER, $options) && ! empty($options[self::FILTER_PARAMETER]));
     }
 
     public function filter($entity, $fields = null): void
@@ -55,7 +55,7 @@ class FieldsFilterService implements FilterInterface
         $hydrator->addFilter(
             self::FILTER_NAME,
             static function ($fieldName) use ($fields, $fixedFields) {
-                return empty($fields) || ! is_array($fields) || ! count($fields) || (bool)in_array($fieldName, $fields, true) || (bool)in_array($fieldName, $fixedFields, true);
+                return empty($fields) || ! is_array($fields) || ! \count($fields) || (bool)\in_array($fieldName, $fields, true) || (bool)\in_array($fieldName, $fixedFields, true);
             }
         );
     }
@@ -93,7 +93,7 @@ class FieldsFilterService implements FilterInterface
 
     public function prepareOptions($options): void
     {
-        if (array_key_exists(self::FILTER_PARAMETER, $options)) {
+        if (\array_key_exists(self::FILTER_PARAMETER, $options)) {
             $this->setOptions($options[self::FILTER_PARAMETER]);
         }
     }

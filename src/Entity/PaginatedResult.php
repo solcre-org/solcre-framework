@@ -2,8 +2,8 @@
 
 namespace Solcre\SolcreFramework2\Entity;
 
-use \ArrayIterator;
-use \IteratorAggregate;
+use ArrayIterator;
+use IteratorAggregate;
 use Traversable;
 
 class PaginatedResult implements IteratorAggregate
@@ -17,6 +17,13 @@ class PaginatedResult implements IteratorAggregate
      * @var array
      */
     private $additionalAttributes;
+
+    public function __construct($items, $totalCount = -1, array $additionalAttributes = [])
+    {
+        $this->totalCount = $totalCount;
+        $this->items = $items;
+        $this->additionalAttributes = $additionalAttributes;
+    }
 
     public function getTotalCount(): int
     {
@@ -45,12 +52,5 @@ class PaginatedResult implements IteratorAggregate
     public function getAdditionalAttributes(): array
     {
         return $this->additionalAttributes;
-    }
-
-    public function __construct($items, $totalCount = -1, array $additionalAttributes = [])
-    {
-        $this->totalCount = $totalCount;
-        $this->items = $items;
-        $this->additionalAttributes = $additionalAttributes;
     }
 }

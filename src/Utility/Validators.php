@@ -54,7 +54,7 @@ class Validators
 
     public static function validHtml5Video($filename): bool
     {
-        return in_array(strtolower(File::extension($filename)), ['webm', 'mp4', 'ogv', 'avi']);
+        return \in_array(strtolower(File::extension($filename)), ['webm', 'mp4', 'ogv', 'avi']);
     }
 
     public static function validFlashVideo($filename): bool
@@ -69,7 +69,7 @@ class Validators
 
     public static function validImage($filename): bool
     {
-        return in_array(strtolower(File::extension($filename)), ['bmp', 'jpg', 'jpeg', 'gif', 'png', 'ico', 'svg', 'tif']);
+        return \in_array(strtolower(File::extension($filename)), ['bmp', 'jpg', 'jpeg', 'gif', 'png', 'ico', 'svg', 'tif']);
     }
 
     public static function validTpl($filename): bool
@@ -104,7 +104,7 @@ class Validators
 
     public static function validMsWord($filename): bool
     {
-        return in_array(strtolower(File::extension($filename)), ['doc', 'docx']);
+        return \in_array(strtolower(File::extension($filename)), ['doc', 'docx']);
     }
 
     public static function validFile($filename): bool
@@ -115,7 +115,7 @@ class Validators
 
     public static function validScript($filename): bool
     {
-        return in_array(
+        return \in_array(
             strtolower(File::extension($filename)),
             ['dhtml', 'phtml', 'php3', 'php', 'php4', 'php5', 'jsp', 'jar', 'cgi', 'htaccess']
         );
@@ -133,7 +133,7 @@ class Validators
 
     public static function validArchive($filename): bool
     {
-        return in_array(strtolower(File::extension($filename)), ['zip', 'rar']);
+        return \in_array(strtolower(File::extension($filename)), ['zip', 'rar']);
     }
 
     public static function validXls($filename): bool
@@ -199,7 +199,7 @@ class Validators
 
     public static function validArray($array): bool
     {
-        return is_array($array) && count($array) > 0;
+        return \is_array($array) && \count($array) > 0;
     }
 
     public static function validDomain($dominio)
@@ -210,8 +210,8 @@ class Validators
         } else {
             $indice = 0;
         }
-        if (strpos($arrayDom[$indice], 'www.') === 0) {
-            $dominio = substr($arrayDom[$indice], 4, (strlen($arrayDom[$indice]) + 1));
+        if (strncmp($arrayDom[$indice], 'www.', 4) === 0) {
+            $dominio = substr($arrayDom[$indice], 4, (\strlen($arrayDom[$indice]) + 1));
         } else {
             $dominio = $arrayDom[$indice];
         }
@@ -221,7 +221,7 @@ class Validators
     public static function validCC($cardNumber): bool
     {
         $cardNumber = preg_replace('/\D|\s/', '', $cardNumber);  # strip any non-digits
-        $cardLength = strlen($cardNumber);
+        $cardLength = \strlen($cardNumber);
         $parity = $cardLength % 2;
         $sum = 0;
         for ($i = 0; $i < $cardLength; $i++) {

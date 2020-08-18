@@ -3,9 +3,9 @@
 namespace Solcre\SolcreFramework2\Filter\Factory;
 
 use Interop\Container\ContainerInterface;
-use Solcre\SolcreFramework2\Filter\FieldsFilterService;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Laminas\View\HelperPluginManager;
+use Solcre\SolcreFramework2\Filter\FieldsFilterService;
 
 class FieldsFilterServiceFactory implements FactoryInterface
 {
@@ -17,5 +17,7 @@ class FieldsFilterServiceFactory implements FactoryInterface
 
             return new FieldsFilterService($halPlugin);
         }
+        
+        return null;
     }
 }

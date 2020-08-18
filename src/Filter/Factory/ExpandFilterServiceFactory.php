@@ -3,8 +3,8 @@
 namespace Solcre\SolcreFramework2\Filter\Factory;
 
 use Interop\Container\ContainerInterface;
-use Solcre\SolcreFramework2\Filter\ExpandFilterService;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Solcre\SolcreFramework2\Filter\ExpandFilterService;
 
 class ExpandFilterServiceFactory implements FactoryInterface
 {

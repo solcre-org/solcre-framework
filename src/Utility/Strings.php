@@ -4,8 +4,6 @@ namespace Solcre\SolcreFramework2\Utility;
 
 use ForceUTF8\Encoding;
 use InvalidArgumentException;
-use RuntimeException;
-use Solcre\SolcreFramework2\Exception\StringsException;
 
 class Strings
 {
@@ -30,14 +28,14 @@ class Strings
 
     public static function isBcryptPassword($bscryptPassword): bool
     {
-        return (strlen($bscryptPassword) === self::BCRYPT_PASSWORD_LENGTH);
+        return (\strlen($bscryptPassword) === self::BCRYPT_PASSWORD_LENGTH);
     }
 
     public static function generateRandomPassword($lenght): string
     {
         $alphabet = 'abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789!#$%&/()?~[]';
         $pass = []; //remember to declare $pass as an array
-        $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
+        $alphaLength = \strlen($alphabet) - 1; //put the length -1 in cache
 
         for ($i = 0; $i < $lenght; $i++) {
             $n = random_int(0, $alphaLength);
@@ -51,7 +49,7 @@ class Strings
     {
         $characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
         $string = '';
-        $max = strlen($characters) - 1;
+        $max = \strlen($characters) - 1;
 
         for ($i = 0; $i < $length; $i++) {
             $string .= $characters[random_int(0, $max)];
@@ -75,7 +73,7 @@ class Strings
 
     public static function validateRut($rut): bool
     {
-        $rut = strlen((string)$rut);
+        $rut = \strlen((string)$rut);
 
         if ($rut !== self::URUGUAYAN_RUT_LENGTH) {
             throw new InvalidArgumentException('Rut param incorrect formatted', 422);
@@ -390,41 +388,12 @@ class Strings
         return preg_replace('/\s+/', '', $string);
     }
 
-    public static function encrypt($stringToEncrypt, $validateKey = self::VALIDATE_KEY): string
-    {
-        if (openssl_cipher_iv_length(self::ENCRYPTION_METHOD) === false) {
-            throw StringsException::opensslCipherIvLengthException();
-        }
-
-        $cryptoStrong = true;
-        $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length(self::ENCRYPTION_METHOD), $cryptoStrong);
-
-        if (false === $cryptoStrong || false === $iv) {
-            throw new RuntimeException('IV generation failed');
-        }
-
-        $stringEncrypted = openssl_encrypt($stringToEncrypt, self::ENCRYPTION_METHOD, $validateKey, 0, $iv);
-
-        return base64_encode($stringEncrypted . self::ENCRYPTION_GLUE . $iv);
-    }
-
-    public static function decrypt($encryptedString, $validateKey = self::VALIDATE_KEY)
-    {
-        if (base64_decode($encryptedString) === false) {
-            throw StringsException::base64DecodeException();
-        }
-
-        [$encryptedString, $iv] = explode(self::ENCRYPTION_GLUE, base64_decode($encryptedString), 2);
-
-        return openssl_decrypt($encryptedString, self::ENCRYPTION_METHOD, $validateKey, 0, $iv);
-    }
-
     public static function replaceFirstOccurrence($haystack, $needle, $replace)
     {
         $pos = strpos($haystack, $needle);
 
         if ($pos !== false && $pos === 0) {
-            return substr_replace($haystack, $replace, $pos, strlen($needle));
+            return substr_replace($haystack, $replace, $pos, \strlen($needle));
         }
 
         return null;

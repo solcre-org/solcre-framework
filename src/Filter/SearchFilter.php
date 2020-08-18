@@ -4,6 +4,8 @@ namespace Solcre\SolcreFramework2\Filter;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\Filter\SQLFilter;
+use function count;
+use function is_array;
 
 class SearchFilter extends SQLFilter
 {
@@ -22,7 +24,7 @@ class SearchFilter extends SQLFilter
                 $whereApplied = false;
 
                 //Check searchable fields
-                if (\is_array($searchableFields) && \count($searchableFields)) {
+                if (is_array($searchableFields) && count($searchableFields)) {
                     foreach ($searchableFields as $field) {
                         $like = sprintf("%s.%s LIKE '%%%s%%'", $targetTableAlias, $field, $searchTerm);
                         if ($whereApplied) {
@@ -48,11 +50,11 @@ class SearchFilter extends SQLFilter
         $fieldMappings = $metaData->fieldMappings;
 
         //Check field mappings
-        if (\is_array($fieldMappings) && \count($fieldMappings)) {
+        if (is_array($fieldMappings) && count($fieldMappings)) {
             foreach ($fieldMappings as $key => $field) {
 
                 //Check searchable options
-                if (\is_array($field) && \is_array($field['options']) && isset($field['options']['searchable']) && $field['options']['searchable']) {
+                if (is_array($field) && is_array($field['options']) && isset($field['options']['searchable']) && $field['options']['searchable']) {
                     $searchableFields[] = $field['columnName'];
                 }
             }
@@ -61,4 +63,3 @@ class SearchFilter extends SQLFilter
     }
 }
 
-?>

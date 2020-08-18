@@ -2,7 +2,7 @@
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
-use Laminas\Hydrator\ArraySerializable;
+use Laminas\Hydrator\ArraySerializableHydrator;
 use Solcre\SolcreFramework2\AbstractFactory\BaseServiceAbstractFactory;
 use Solcre\SolcreFramework2\Filter;
 use Solcre\SolcreFramework2\Filter\Factory as FilterFactory;
@@ -31,7 +31,7 @@ return [
     'api-tools-hal'   => [
         'metadata_map' => [
             PersistentCollection::class => [
-                'hydrator'     => ArraySerializable::class,
+                'hydrator'     => ArraySerializableHydrator::class,
                 'isCollection' => true,
             ],
             ArrayCollection::class      => [

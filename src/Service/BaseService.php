@@ -5,6 +5,7 @@ namespace Solcre\SolcreFramework2\Service;
 use Doctrine\ORM\EntityManager;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator;
 use Exception;
+use Laminas\Paginator\Paginator;
 use Psr\Log\LoggerInterface;
 use ReflectionClass;
 use Solcre\SolcreFramework2\Common\BaseRepository;
@@ -12,7 +13,6 @@ use Solcre\SolcreFramework2\Entity\PaginatedResult;
 use Solcre\SolcreFramework2\Exception\BaseException;
 use Solcre\SolcreFramework2\Filter\FilterInterface;
 use Solcre\SolcreFramework2\Hydrator\EntityHydrator;
-use Laminas\Paginator\Paginator;
 
 abstract class BaseService
 {
@@ -55,7 +55,7 @@ abstract class BaseService
             $pos = strrpos($className, 'Service');
 
             if ($pos !== false) {
-                $entityName = substr_replace($className, '', $pos, strlen('Service'));
+                $entityName = substr_replace($className, '', $pos, \strlen('Service'));
             }
         }
 
@@ -227,10 +227,11 @@ abstract class BaseService
 
     public function delete($id, $entityObj = null): bool
     {
+        if (empty($entityObj)) {
+            $entityObj = $this->fetch($id);
+        }
+
         try {
-            if (empty($entityObj)) {
-                $entityObj = $this->fetch($id);
-            }
             $this->entityManager->remove($entityObj);
             $this->entityManager->flush($entityObj);
 
@@ -250,7 +251,7 @@ abstract class BaseService
         return $this->entityManager->getRepository($entityClass)->findOneBy($params);
     }
 
-    public function update($id, $data)
+    public function update($id, $data): void
     {
         throw new BaseException('Method not implemented', 400);
     }

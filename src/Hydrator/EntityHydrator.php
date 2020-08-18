@@ -6,6 +6,8 @@ use Doctrine\Laminas\Hydrator\DoctrineObject;
 use ReflectionClass;
 use ReflectionProperty;
 use function in_array;
+use function str_replace;
+use function ucwords;
 
 class EntityHydrator extends DoctrineObject
 {
@@ -17,7 +19,7 @@ class EntityHydrator extends DoctrineObject
 
         $methods = get_class_methods($object);
         foreach ($fieldNames as $fieldName) {
-            $getter = 'get' . \str_replace([' ', '_', '-'], '', \ucwords($fieldName, ' _-'));
+            $getter = 'get' . str_replace([' ', '_', '-'], '', ucwords($fieldName, ' _-'));
             $dataFieldName = $this->computeExtractFieldName($fieldName);
 
             if (in_array($getter, $methods, true)) {

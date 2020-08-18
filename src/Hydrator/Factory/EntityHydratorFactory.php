@@ -4,8 +4,8 @@ namespace Solcre\SolcreFramework2\Hydrator\Factory;
 
 use Doctrine\ORM\EntityManager;
 use Interop\Container\ContainerInterface;
-use Solcre\SolcreFramework2\Hydrator\EntityHydrator;
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Solcre\SolcreFramework2\Hydrator\EntityHydrator;
 
 class EntityHydratorFactory implements FactoryInterface
 {

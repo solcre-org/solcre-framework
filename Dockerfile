@@ -7,8 +7,7 @@ RUN apt-get update \
  && docker-php-ext-configure zip --with-libzip \
  && docker-php-ext-install zip \
  && a2enmod rewrite \
- && sed -i 's!/var/www/html!/var/www/public!g' /etc/apache2/sites-available/000-default.conf \
- && mv /var/www/html /var/www/public \
+ && sed -i 's!/var/www/html!/var/www!g' /etc/apache2/sites-available/000-default.conf \
  && curl -sS https://getcomposer.org/installer \
   | php -- --install-dir=/usr/local/bin --filename=composer
 

@@ -90,10 +90,10 @@ class BaseServiceTest extends TestCase
 
     public function testDisableFilterWithIsEnabledFilter(): void
     {
-        $this->mockedEntityManager->expects($this->once())
+        $this->mockedEntityManager->expects(self::once())
             ->method('getFilters');
 
-        $this->mockedEntityManager->expects($this->once())
+        $this->mockedEntityManager->expects(self::once())
             ->method('disable');
 
         $this->baseService->disableFilter(null);
@@ -103,10 +103,10 @@ class BaseServiceTest extends TestCase
     {
         $entity = 'entity';
 
-        $this->mockedEntityManager->expects($this->once())
+        $this->mockedEntityManager->expects(self::once())
             ->method('isEntityScheduled')
             ->with(
-                $this->equalTo($entity)
+                self::equalTo($entity)
             );
 
         $this->baseService->isEntityPersisted($entity);
@@ -116,49 +116,49 @@ class BaseServiceTest extends TestCase
     {
         $entity = 'entity';
 
-        $this->assertTrue($this->baseService->isEntityPersisted($entity));
+        self::assertTrue($this->baseService->isEntityPersisted($entity));
     }
 
-    public function testGetEntityManager()
+    public function testGetEntityManager(): void
     {
-        $this->assertEquals($this->baseService->getEntityManager(), $this->mockedEntityManager);
+        self::assertEquals($this->baseService->getEntityManager(), $this->mockedEntityManager);
     }
 
-    public function testGetRepository()
+    public function testGetRepository(): void
     {
-        $this->assertEquals($this->baseService->getRepository(), $this->mockedRepository);
+        self::assertEquals($this->baseService->getRepository(), $this->mockedRepository);
     }
 
-    public function testAddFilter()
+    public function testAddFilter(): void
     {
         $filter = $this->createMock(FilterInterface::class);
 
-        $this->mockedRepository->expects($this->once())
+        $this->mockedRepository->expects(self::once())
             ->method('addFilter')
             ->with(
-                $this->equalTo($filter)
+                self::equalTo($filter)
             );
 
         $this->baseService->addFilter($filter);
     }
 
-    public function testAdd()
+    public function testAdd(): void
     {
         $mockedBaseService = $this->setupBaseServiceForAddMethod();
 
         $data = ['data'];
         $entityObj = 'entity object';
 
-        $this->mockedEntityManager->expects($this->once())
+        $this->mockedEntityManager->expects(self::once())
             ->method('persist')
             ->with(
-                $this->equalTo($entityObj)
+                self::equalTo($entityObj)
             );
 
-        $this->mockedEntityManager->expects($this->once())
+        $this->mockedEntityManager->expects(self::once())
             ->method('flush');
 
-        $mockedBaseService->expects($this->once())
+        $mockedBaseService->expects(self::once())
             ->method('prepareEntity');
 
         $mockedBaseService->add($data);
@@ -188,16 +188,16 @@ class BaseServiceTest extends TestCase
 
         $expectedReturn = ['return of repository findOneBy method'];
 
-        $this->mockedRepository->expects($this->once())
+        $this->mockedRepository->expects(self::once())
             ->method('findOneBy')
             ->with(
-                $this->equalTo($params)
+                self::equalTo($params)
             );
 
-        $this->assertEquals($this->baseService->fetchOne($id, $params), $expectedReturn);
+        self::assertEquals($this->baseService->fetchOne($id, $params), $expectedReturn);
     }
 
-    public function testFetchBy()
+    public function testFetchBy(): void
     {
         $params = [
             'id' => 1
@@ -205,43 +205,43 @@ class BaseServiceTest extends TestCase
 
         $expectedReturn = ['return of repository findOneBy method'];
 
-        $this->mockedRepository->expects($this->once())
+        $this->mockedRepository->expects(self::once())
             ->method('findOneBy')
             ->with(
-                $this->equalTo($params)
+                self::equalTo($params)
             );
 
-        $this->assertEquals($this->baseService->fetchBy($params), $expectedReturn);
+        self::assertEquals($this->baseService->fetchBy($params), $expectedReturn);
     }
 
-    public function testFetchAllWithoutParams()
+    public function testFetchAllWithoutParams(): void
     {
         $params = [];
         $expectedReturn = ['return of repository findAll method'];
 
-        $this->assertEquals($this->baseService->fetchAll($params), $expectedReturn);
+        self::assertEquals($this->baseService->fetchAll($params), $expectedReturn);
     }
 
-    public function testFetchAllWithParams()
+    public function testFetchAllWithParams(): void
     {
         $params = ['params'];
         $expectedReturn = ['return of repository findBy method'];
 
-        $this->mockedRepository->expects($this->once())
+        $this->mockedRepository->expects(self::once())
             ->method('findBy');
 
-        $this->assertEquals($this->baseService->fetchAll($params), $expectedReturn);
+        self::assertEquals($this->baseService->fetchAll($params), $expectedReturn);
     }
 
-    public function testFetchAllWithOrder()
+    public function testFetchAllWithOrder(): void
     {
         $params = [];
         $order = ['order'];
         $expectedReturn = ['return of repository findBy method'];
 
-        $this->mockedRepository->expects($this->once())
+        $this->mockedRepository->expects(self::once())
             ->method('findBy');
 
-        $this->assertEquals($this->baseService->fetchAll($params, $order), $expectedReturn);
+        self::assertEquals($this->baseService->fetchAll($params, $order), $expectedReturn);
     }
 }

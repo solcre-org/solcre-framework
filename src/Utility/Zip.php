@@ -13,7 +13,7 @@ class Zip
         if ($file !== false) {
             $zip = new ZipArchive();
             $zip->open($file, ZipArchive::OVERWRITE);
-            if (is_array($files) && count($files)) {
+            if (\is_array($files) && \count($files)) {
                 foreach ($files as $name) {
                     $zip->addFile($dir . $name, $name);
                 }
@@ -32,7 +32,7 @@ class Zip
     public static function extract($filename, $location = null, $delete = false): bool
     {
         $success = false;
-        $location = $location ?: dirname($filename);
+        $location = $location ?: \dirname($filename);
         $zip = new ZipArchive();
         if ($zip->open($filename) === true) {
             $success = $zip->extractTo($location);
@@ -48,7 +48,7 @@ class Zip
     {
         $success = false;
         $extracted = [];
-        $location = $location ?: dirname($filename) . '/';
+        $location = $location ?: \dirname($filename) . '/';
         $zip = new ZipArchive();
         if ($zip->open($filename) === true) {
             $success = true;
@@ -86,11 +86,11 @@ class Zip
     {
         if ($name) {
             $t = explode('.', $name);
-            if (count($t) === 1) {
+            if (\count($t) === 1) {
                 $ext = '';
             } else {
-                $ext = '.' . $t[count($t) - 1];
-                $t = array_slice($t, 0, count($t) - 1);
+                $ext = '.' . $t[\count($t) - 1];
+                $t = \array_slice($t, 0, \count($t) - 1);
                 $name = implode('.', $t);
             }
             $file = $name;

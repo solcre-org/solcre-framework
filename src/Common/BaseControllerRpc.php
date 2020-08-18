@@ -2,12 +2,12 @@
 
 namespace Solcre\SolcreFramework2\Common;
 
-use Psr\Log\LoggerInterface;
-use Solcre\SolcreFramework2\Interfaces\IdentityInterface;
-use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\ApiTools\ApiProblem\ApiProblem;
 use Laminas\ApiTools\ApiProblem\ApiProblemResponse;
 use Laminas\ApiTools\MvcAuth\Identity\AuthenticatedIdentity;
+use Laminas\Mvc\Controller\AbstractActionController;
+use Psr\Log\LoggerInterface;
+use Solcre\SolcreFramework2\Interfaces\IdentityInterface;
 use function is_array;
 
 class BaseControllerRpc extends AbstractActionController
@@ -34,26 +34,11 @@ class BaseControllerRpc extends AbstractActionController
         $identity = $this->getIdentity();
         if ($identity instanceof AuthenticatedIdentity) {
             $identityData = $identity->getAuthenticationIdentity();
-            if (is_array($identityData) && array_key_exists('user_id', $identityData)) {
+            if (is_array($identityData) && \array_key_exists('user_id', $identityData)) {
                 return $identityData['user_id'];
             }
         }
         return null;
-    }
-
-    protected function getParamFromRoute($paramName)
-    {
-        return $this->params()->fromRoute($paramName);
-    }
-
-    protected function getParamFromQueryParams($paramName)
-    {
-        return $this->queryParams()[$paramName] ?? null;
-    }
-
-    protected function getParamFromBodyParams($paramName)
-    {
-        return $this->bodyParams()[$paramName] ?? null;
     }
 
     protected function getAuthenticationOauthType(): ?int
@@ -69,6 +54,21 @@ class BaseControllerRpc extends AbstractActionController
     {
         $identity = $this->getIdentity();
         return $identity->getAuthenticationIdentity();
+    }
+
+    protected function getParamFromRoute($paramName)
+    {
+        return $this->params()->fromRoute($paramName);
+    }
+
+    protected function getParamFromQueryParams($paramName)
+    {
+        return $this->queryParams()[$paramName] ?? null;
+    }
+
+    protected function getParamFromBodyParams($paramName)
+    {
+        return $this->bodyParams()[$paramName] ?? null;
     }
 
     protected function getAuthenticationId(): ?int

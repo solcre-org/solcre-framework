@@ -2,9 +2,10 @@
 
 namespace Solcre\SolcreFramework2\Filter;
 
-use Solcre\SolcreFramework2\Strategy\ExpandEmbeddedStrategy;
-use Laminas\Hydrator\AbstractHydrator;
 use Laminas\ApiTools\Hal\Plugin\Hal;
+use Laminas\Hydrator\AbstractHydrator;
+use Solcre\SolcreFramework2\Strategy\ExpandEmbeddedStrategy;
+use function array_key_exists;
 use function is_array;
 use function is_object;
 
@@ -59,7 +60,7 @@ class ExpandFilterService implements FilterInterface
         //Get options
         $options = $this->getOptions();
 
-        if (is_array($options) && count($options) > 0) {
+        if (is_array($options) && \count($options) > 0) {
             //Create strategies
             foreach ($options as $fieldName => $expand) {
                 $strategy = new ExpandEmbeddedStrategy();
@@ -82,7 +83,7 @@ class ExpandFilterService implements FilterInterface
             $options = $this->getOptions();
 
             //Remove strategies
-            if (is_array($options) && count($options) > 0) {
+            if (is_array($options) && \count($options) > 0) {
                 foreach ($options as $fieldName => $expand) {
                     $hydrator->removeStrategy($fieldName);
                 }
@@ -92,7 +93,7 @@ class ExpandFilterService implements FilterInterface
 
     public function getOptions(): array
     {
-        return $this->options;
+        return $this->options ?? [];
     }
 
     public function getName(): string
@@ -128,8 +129,8 @@ class ExpandFilterService implements FilterInterface
         preg_match_all("/([^,]*?)\((.*?)\)/", $expand, $optionsResult);
 
         //Control options results
-        if (! (is_array($optionsResult[1]) && count($optionsResult[1]) > 0)
-            || ! (is_array($optionsResult[2]) && count($optionsResult[2]) > 0)
+        if (! (is_array($optionsResult[1]) && \count($optionsResult[1]) > 0)
+            || ! (is_array($optionsResult[2]) && \count($optionsResult[2]) > 0)
         ) {
             return [];
         }
@@ -139,7 +140,7 @@ class ExpandFilterService implements FilterInterface
         $fieldOptions = $optionsResult[2];
 
         //For each field option
-        $count = count($fieldOptions);
+        $count = \\count($fieldOptions);
         for ($i = 0; $i < $count; $i++) {
             $options = [];
 
@@ -147,8 +148,8 @@ class ExpandFilterService implements FilterInterface
             preg_match_all("/([a-zA-Z]*?)\:([0-9a-zA-Z]*)/", $fieldOptions[$i], $options);
 
             //Control options
-            if (! (is_array($options[1]) && count($options[1]) > 0)
-                || ! (is_array($options[2]) && count($options[2]) > 0)
+            if (! (is_array($options[1]) && \count($options[1]) > 0)
+                || ! (is_array($options[2]) && \count($options[2]) > 0)
             ) {
                 continue;
             }
@@ -161,7 +162,7 @@ class ExpandFilterService implements FilterInterface
             $result[$fieldNames[$i]] = [];
 
             //Parse options with field name
-            $count = count($optionValues);
+            $count = \count($optionValues);
             for ($j = 0; $j < $count; $j++) {
                 $result[$fieldNames[$i]][$optionNames[$j]] = $optionValues[$j];
             }

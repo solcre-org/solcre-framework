@@ -4,12 +4,12 @@ namespace Solcre\SolcreFramework2\AbstractFactory;
 
 use Doctrine\ORM\EntityManager;
 use Interop\Container\ContainerInterface;
+use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use Solcre\SolcreFramework2\Filter\FieldsFilterService;
 use Solcre\SolcreFramework2\Interfaces\IdentityAwareInterface;
 use Solcre\SolcreFramework2\Interfaces\LoggerAwareInterface;
 use Solcre\SolcreFramework2\Interfaces\PermissionAwareInterface;
 use Solcre\SolcreFramework2\Service\BaseService;
-use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use function is_subclass_of;
 
 class BaseServiceAbstractFactory implements AbstractFactoryInterface

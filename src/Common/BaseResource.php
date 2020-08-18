@@ -1,16 +1,10 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace Solcre\SolcreFramework2\Common;
 
 use Exception;
 use Laminas\ApiTools\ApiProblem\ApiProblem;
-use Laminas\ApiTools\MvcAuth\Identity\IdentityInterface;
+use Laminas\ApiTools\MvcAuth\Identity\IdentityInterface as IdentityInterfaceLaminas;
 use Laminas\ApiTools\Rest\AbstractResourceListener;
 use Laminas\ApiTools\Rest\ResourceEvent;
 use Laminas\EventManager\Event;
@@ -18,6 +12,7 @@ use Laminas\Http\Request;
 use Laminas\Router\RouteMatch;
 use Laminas\Stdlib\Parameters;
 use Solcre\SolcreFramework2\Exception\BaseException;
+use Solcre\SolcreFramework2\Interfaces\IdentityInterface;
 use Solcre\SolcreFramework2\Interfaces\PermissionInterface;
 use Solcre\SolcreFramework2\Service\BaseService;
 
@@ -36,20 +31,18 @@ class BaseResource extends AbstractResourceListener
 
     public function dispatch(ResourceEvent $event)
     {
+
+        $this->event = $event;
+
+        $this->setIdentity();
+        $this->checkPermission($event);
+
+        $request = $event->getRequest();
+        if (! $request instanceof Request) {
+            throw new BaseException('Request does not exists', 404);
+        }
+
         try {
-            $this->event = $event;
-
-            $identityService = $this->service->getIdentityService();
-            $identityService->setUserId($this->getLoggedUserId());
-            $identityService->setOauthType($this->getLoggedUserOauthType());
-
-            $this->checkPermission($event);
-
-            $request = $event->getRequest();
-            if (! $request instanceof Request) {
-                throw new BaseException('Request does not exists', 404);
-            }
-
             $method = $request->getMethod();
             if ($method === Request::METHOD_GET) {
                 $this->normalizeQueryParams($event);
@@ -76,6 +69,15 @@ class BaseResource extends AbstractResourceListener
         }
     }
 
+    private function setIdentity(): void
+    {
+        if ($this->service instanceof IdentityInterface) {
+            $identityService = $this->service->getIdentityService();
+            $identityService->setUserId($this->getLoggedUserId());
+            $identityService->setOauthType($this->getLoggedUserOauthType());
+        }
+    }
+
     public function getLoggedUserId($event = null)
     {
         $identity = $this->getIdentity();
@@ -99,13 +101,16 @@ class BaseResource extends AbstractResourceListener
         return null;
     }
 
-    private function getLoggedUserIdentity(Event $event = null): ?IdentityInterface
+    private function getLoggedUserIdentity(Event $event = null): ?IdentityInterfaceLaminas
     {
+        $identity = null;
+
         if ($event instanceof ResourceEvent) {
             $identity = $event->getIdentity();
         } else {
             $identity = $this->getIdentity();
         }
+
         return $identity;
     }
 
@@ -133,7 +138,7 @@ class BaseResource extends AbstractResourceListener
         return self::NO_PERMISSION;
     }
 
-    protected function normalizeQueryParams(ResourceEvent &$event = null): void
+    protected function normalizeQueryParams(ResourceEvent $event = null): void
     {
         if ($event === null) {
             return;
@@ -164,7 +169,7 @@ class BaseResource extends AbstractResourceListener
         }
     }
 
-    protected function normalizeBodyParams(ResourceEvent &$event = null): void
+    protected function normalizeBodyParams(ResourceEvent $event = null): void
     {
         if ($event === null) {
             return;
