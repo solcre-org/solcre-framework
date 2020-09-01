@@ -48,7 +48,7 @@ class BaseResource extends AbstractResourceListener
                 $this->normalizeQueryParams($event);
 
                 $page = $request->getQuery('page', 1);
-                $pageSize = $request->getQuery('size', 25);
+                $pageSize = $request->getQuery('size', $this->service->getItemsCountPerPage());
                 $this->service->setCurrentPage($page);
                 $this->service->setItemsCountPerPage($pageSize);
 
