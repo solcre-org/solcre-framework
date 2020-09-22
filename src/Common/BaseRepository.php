@@ -370,9 +370,15 @@ class BaseRepository extends EntityRepository
         return $searchableFields;
     }
 
-    protected function postFindBy($filtersOptions): void
+    protected function postFindBy($filtersOptions, $keepSqlFilters = false): void
     {
         $this->filter($filtersOptions);
+
+        //Disable filter if is enabled
+        if (! $keepSqlFilters && $this->_em->getFilters()->isEnabled('search')) {
+            //Disable filter
+            $this->_em->getFilters()->disable('search');
+        }
     }
 
     protected function filter(array $options): void
@@ -440,9 +446,9 @@ class BaseRepository extends EntityRepository
         return $doctrinePaginator;
     }
 
-    protected function getDoctrinePaginator($query): DoctrinePaginator
+    protected function getDoctrinePaginator($query, $fetchJoinCollection = true): DoctrinePaginator
     {
-        $ormPaginator = $this->createOrmPaginator($query, true);
+        $ormPaginator = $this->createOrmPaginator($query, $fetchJoinCollection);
         return $this->createDoctrinePaginator($ormPaginator);
     }
 
