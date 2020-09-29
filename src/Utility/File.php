@@ -411,7 +411,7 @@ class File
 
     public static function extension($file)
     {
-        $ext = explode(' . ', $file);
+        $ext = explode('.', $file);
         $count = \count($ext);
 
         return $count > 1 ? $ext[$count - 1] : null;
