@@ -4,6 +4,7 @@ namespace Solcre\SolcreFramework2\Common;
 
 use Exception;
 use Laminas\ApiTools\ApiProblem\ApiProblem;
+use Laminas\ApiTools\MvcAuth\Identity\IdentityInterface;
 use Laminas\ApiTools\MvcAuth\Identity\IdentityInterface as IdentityInterfaceLaminas;
 use Laminas\ApiTools\Rest\AbstractResourceListener;
 use Laminas\ApiTools\Rest\ResourceEvent;
@@ -12,7 +13,7 @@ use Laminas\Http\Request;
 use Laminas\Router\RouteMatch;
 use Laminas\Stdlib\Parameters;
 use Solcre\SolcreFramework2\Exception\BaseException;
-use Solcre\SolcreFramework2\Interfaces\IdentityInterface;
+use Solcre\SolcreFramework2\Interfaces\LoggerAwareInterface;
 use Solcre\SolcreFramework2\Interfaces\PermissionInterface;
 use Solcre\SolcreFramework2\Service\BaseService;
 
@@ -71,7 +72,7 @@ class BaseResource extends AbstractResourceListener
 
     private function setIdentity(): void
     {
-        if ($this->service instanceof IdentityInterface) {
+        if ($this->service instanceof LoggerAwareInterface) {
             $identityService = $this->service->getIdentityService();
             $identityService->setUserId($this->getLoggedUserId());
             $identityService->setOauthType($this->getLoggedUserOauthType());
