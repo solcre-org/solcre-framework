@@ -10,7 +10,15 @@ use Solcre\SolcreFramework2\Hydrator\EntityHydrator;
 use Solcre\SolcreFramework2\Hydrator\Factory\EntityHydratorFactory;
 
 return [
-    'service_manager' => [
+    'solcre-framework' => [
+        'cache' => [
+            'enable'  => 0,
+            'dir'     => 'data/cache/PaginatorCache',
+            'adapter' => 'filesystem',
+            'ttl'     => 3600,
+        ]
+    ],
+    'service_manager'  => [
         'factories'          => [
             Filter\FieldsFilterService::class => FilterFactory\FieldsFilterServiceFactory::class,
             Filter\ExpandFilterService::class => FilterFactory\ExpandFilterServiceFactory::class,
@@ -19,7 +27,7 @@ return [
             BaseServiceAbstractFactory::class,
         ]
     ],
-    'doctrine'        => [
+    'doctrine'         => [
         'configuration' => [
             'orm_default' => [
                 'filters' => [
@@ -28,7 +36,7 @@ return [
             ]
         ],
     ],
-    'api-tools-hal'   => [
+    'api-tools-hal'    => [
         'metadata_map' => [
             PersistentCollection::class => [
                 'hydrator'     => ArraySerializableHydrator::class,
@@ -39,7 +47,7 @@ return [
             ],
         ],
     ],
-    'api-tools-rest'  => [
+    'api-tools-rest'   => [
         'controllers' => [
             'collection_query_whitelist' => [
                 'query',
@@ -47,7 +55,7 @@ return [
             ]
         ]
     ],
-    'hydrators'       => [
+    'hydrators'        => [
         'factories' => [
             EntityHydrator::class => EntityHydratorFactory::class
         ]

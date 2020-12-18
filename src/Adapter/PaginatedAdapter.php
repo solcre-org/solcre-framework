@@ -32,7 +32,7 @@ class PaginatedAdapter implements AdapterInterface
         return $this->paginatedResult->getTotalCount();
     }
 
-    public function getItems($offset, $itemCountPerPage): array
+    public function getItems($offset, $itemCountPerPage)
     {
         return $this->paginatedResult->getItems();
     }

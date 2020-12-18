@@ -27,7 +27,10 @@ class BaseServiceAbstractFactory implements AbstractFactoryInterface
         $fieldsFilter = $container->get(FieldsFilterService::class);
         $service->addFilter($fieldsFilter);
 
-        $interfacesClasses = $container->get('config')['interfaces_classes'];
+        $config = $container->get('config');
+        $service->setConfiguration($config);
+
+        $interfacesClasses = $config['interfaces_classes'];
 
         $permissionServiceClass = $interfacesClasses[self::PERMISSION_SERVICE_CLASS] ?? null;
         if ($permissionServiceClass !== null && is_subclass_of($service, PermissionAwareInterface::class) && $container->has($permissionServiceClass)) {

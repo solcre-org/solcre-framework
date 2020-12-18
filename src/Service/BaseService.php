@@ -5,6 +5,7 @@ namespace Solcre\SolcreFramework2\Service;
 use Doctrine\ORM\EntityManager;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator;
 use Exception;
+use Laminas\Cache\StorageFactory;
 use Laminas\Paginator\Paginator;
 use Psr\Log\LoggerInterface;
 use ReflectionClass;
@@ -186,15 +187,24 @@ abstract class BaseService
         $paginator->setItemCountPerPage($pageSize);
         $paginator->setCurrentPageNumber($currentPage);
 
-        //Get array result
-        $arrayResult = [];
+        $cacheConfig = $this->configuration['solcre-framework']['cache'] ?? null;
+        if (\is_array($cacheConfig)) {
+            $isCacheEnable = $cacheConfig['enable'] ?? false;
+            if ($isCacheEnable) {
+                $cache = StorageFactory::adapterFactory($cacheConfig['adapter'], [
+                    'cache_dir' => $cacheConfig['dir'],
+                    'ttl'       => $cacheConfig['ttl'],
+                ]);
 
-        foreach ($paginator as $item) {
-            $arrayResult[] = $item;
+                $plugin = StorageFactory::pluginFactory('serializer');
+                $cache->addPlugin($plugin);
+                Paginator::setCache($cache);
+            }
         }
 
         //Fill the iterator and return it
-        return new PaginatedResult($arrayResult, $doctrinePaginator->count(), $this->additionalAttributes);
+        return new PaginatedResult($paginator->getCurrentItems(), $doctrinePaginator->count(), $this->additionalAttributes);
+
     }
 
     public function getCurrentPage(): int
