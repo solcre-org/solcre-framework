@@ -32,18 +32,17 @@ class BaseResource extends AbstractResourceListener
 
     public function dispatch(ResourceEvent $event)
     {
-
-        $this->event = $event;
-
-        $this->setIdentity();
-        $this->checkPermission($event);
-
-        $request = $event->getRequest();
-        if (! $request instanceof Request) {
-            throw new BaseException('Request does not exists', 404);
-        }
-
         try {
+            $this->event = $event;
+
+            $this->setIdentity();
+            $this->checkPermission($event);
+
+            $request = $event->getRequest();
+            if (! $request instanceof Request) {
+                throw new BaseException('Request does not exists', 404);
+            }
+
             $method = $request->getMethod();
             if ($method === Request::METHOD_GET) {
                 $this->normalizeQueryParams($event);
