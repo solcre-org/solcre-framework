@@ -28,6 +28,7 @@ class BaseRepository extends EntityRepository
     private const NOT_NULL_FILTER = '!null';
     private const NOT_IN_FIELD_NAME = 'notIn';
     private const ORDER_BY_RELATION_SEPARATOR = '.';
+    protected const TEXT_SERCHEABLES_TYPE = ['string', 'text'];
     protected $filters = [];
 
     public function addFilter(FilterInterface $filter): void
@@ -343,7 +344,7 @@ class BaseRepository extends EntityRepository
         if (is_array($searchableFields) && count($searchableFields)) {
             $or = $qb->expr()->orX();
             foreach ($searchableFields as $field) {
-                if ($field['type'] === 'string') {
+                if (\in_array($field['type'], self::TEXT_SERCHEABLES_TYPE, true)) {
                     $or->add($qb->expr()->like($tableAlias . '.' . $field['name'], ':searchTerm'));
                     $qb->setParameter('searchTerm', '%' . $searchTerm . '%');
                 }
