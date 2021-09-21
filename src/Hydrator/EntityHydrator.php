@@ -29,10 +29,10 @@ class EntityHydrator extends DoctrineObject
         return $data;
     }
 
-    private function getIgnoredProperties($object, $entityFields)
+    private function getIgnoredProperties($object, $entityFields): array
     {
-        $reflect = new ReflectionClass($object);
-        $properties = $reflect->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
+        $reflect         = new ReflectionClass($object);
+        $properties      = $reflect->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
         $propertiesArray = [];
         foreach ($properties as $property) {
             $propertiesArray[] = $property->name;

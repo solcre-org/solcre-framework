@@ -8,6 +8,7 @@ use Laminas\ApiTools\MvcAuth\Identity\AuthenticatedIdentity;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Psr\Log\LoggerInterface;
 use Solcre\SolcreFramework2\Interfaces\IdentityInterface;
+use function array_key_exists;
 use function is_array;
 
 class BaseControllerRpc extends AbstractActionController
@@ -34,7 +35,7 @@ class BaseControllerRpc extends AbstractActionController
         $identity = $this->getIdentity();
         if ($identity instanceof AuthenticatedIdentity) {
             $identityData = $identity->getAuthenticationIdentity();
-            if (is_array($identityData) && \array_key_exists('user_id', $identityData)) {
+            if (is_array($identityData) && array_key_exists('user_id', $identityData)) {
                 return $identityData['user_id'];
             }
         }

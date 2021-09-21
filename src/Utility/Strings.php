@@ -4,6 +4,7 @@ namespace Solcre\SolcreFramework2\Utility;
 
 use ForceUTF8\Encoding;
 use InvalidArgumentException;
+use function strlen;
 
 class Strings
 {
@@ -13,9 +14,9 @@ class Strings
     private const BCRYPT_PASSWORD_LENGTH = 60;
     private const URUGUAYAN_RUT_LENGTH = 12;
 
-    public static function bcryptPassword($password, $cost = 10)
+    public static function bcryptPassword($password, $cost = 10): ?string
     {
-        $salt = substr(str_replace('+', '.', base64_encode(sha1(microtime(false), true))), 0, 22);
+        $salt = substr(str_replace('+', '.', base64_encode(sha1(microtime(), true))), 0, 22);
         return crypt($password, '$2y$' . $cost . '$' . $salt);
     }
 
@@ -28,17 +29,17 @@ class Strings
 
     public static function isBcryptPassword($bscryptPassword): bool
     {
-        return (\strlen($bscryptPassword) === self::BCRYPT_PASSWORD_LENGTH);
+        return (strlen($bscryptPassword) === self::BCRYPT_PASSWORD_LENGTH);
     }
 
     public static function generateRandomPassword($lenght): string
     {
-        $alphabet = 'abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789!#$%&/()?~[]';
-        $pass = []; //remember to declare $pass as an array
-        $alphaLength = \strlen($alphabet) - 1; //put the length -1 in cache
+        $alphabet    = 'abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789!#$%&/()?~[]';
+        $pass        = []; //remember to declare $pass as an array
+        $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
 
         for ($i = 0; $i < $lenght; $i++) {
-            $n = random_int(0, $alphaLength);
+            $n      = random_int(0, $alphaLength);
             $pass[] = $alphabet[$n];
         }
 
@@ -48,8 +49,8 @@ class Strings
     public static function generateAlphaNumericString($length = 8): string
     {
         $characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
-        $string = '';
-        $max = \strlen($characters) - 1;
+        $string     = '';
+        $max        = strlen($characters) - 1;
 
         for ($i = 0; $i < $length; $i++) {
             $string .= $characters[random_int(0, $max)];
@@ -73,7 +74,7 @@ class Strings
 
     public static function validateRut($rut): bool
     {
-        $rut = \strlen((string)$rut);
+        $rut = strlen((string)$rut);
 
         if ($rut !== self::URUGUAYAN_RUT_LENGTH) {
             throw new InvalidArgumentException('Rut param incorrect formatted', 422);
@@ -393,7 +394,7 @@ class Strings
         $pos = strpos($haystack, $needle);
 
         if ($pos !== false && $pos === 0) {
-            return substr_replace($haystack, $replace, $pos, \strlen($needle));
+            return substr_replace($haystack, $replace, $pos, strlen($needle));
         }
 
         return null;

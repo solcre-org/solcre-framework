@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Laminas\Hydrator\Strategy\AbstractCollectionStrategy;
 use Laminas\Paginator\Adapter\ArrayAdapter;
 use Laminas\Paginator\Paginator;
+use function count;
 use function is_array;
 
 class ExpandEmbeddedStrategy extends AbstractCollectionStrategy
@@ -25,7 +26,7 @@ class ExpandEmbeddedStrategy extends AbstractCollectionStrategy
     public function extract($value, ?object $object = null)
     {
         //@@TODO: check value type
-        $adapter = new ArrayAdapter($value->getCollection());
+        $adapter   = new ArrayAdapter($value->getCollection());
         $paginator = new Paginator($adapter);
 
         //Load expand options
@@ -45,7 +46,7 @@ class ExpandEmbeddedStrategy extends AbstractCollectionStrategy
     {
         $expand = $this->expand;
 
-        if (is_array($expand) && \count($expand) > 0) {
+        if (is_array($expand) && count($expand) > 0) {
             foreach ($expand as $key => $value) {
                 //Load expand
                 $this->loadExpandOption($key, $value, $paginator);

@@ -9,8 +9,13 @@ namespace Solcre\SolcreFramework2\Utility;
 
 use Solcre\SolcreFramework2\Exception\ArraysException;
 use function array_key_exists;
+use function count;
 use function explode;
+use function is_array;
+use function is_object;
+use function is_string;
 use function json_encode;
+use function strlen;
 
 class Arrays
 {
@@ -20,11 +25,11 @@ class Arrays
             throw ArraysException::nonCountableException();
         }
 
-        if (\count($array) > 0) {
+        if (count($array) > 0) {
             foreach ($array as &$elem) {
-                if (\is_array($elem)) {
+                if (is_array($elem)) {
                     $elem = self::utf8Decode($elem);
-                } elseif (\is_string($elem)) {
+                } elseif (is_string($elem)) {
                     $elem = utf8_decode($elem);
                 }
             }
@@ -39,11 +44,11 @@ class Arrays
             throw ArraysException::nonCountableException();
         }
 
-        if (\count($array) > 0) {
+        if (count($array) > 0) {
             foreach ($array as &$elem) {
-                if (\is_array($elem)) {
+                if (is_array($elem)) {
                     $elem = self::utf8Encode($elem);
-                } elseif (\is_string($elem)) {
+                } elseif (is_string($elem)) {
                     $elem = utf8_encode($elem);
                 }
             }
@@ -58,11 +63,11 @@ class Arrays
             throw ArraysException::nonCountableException();
         }
 
-        if (\count($array) > 0) {
+        if (count($array) > 0) {
             foreach ($array as &$elem) {
-                if (\is_array($elem)) {
+                if (is_array($elem)) {
                     $elem = self::htmlentitiesUTF8($elem);
-                } elseif (\is_string($elem)) {
+                } elseif (is_string($elem)) {
                     $elem = htmlentities($elem, ENT_QUOTES | ENT_IGNORE, 'UTF-8');
                 }
             }
@@ -77,11 +82,11 @@ class Arrays
             throw ArraysException::nonCountableException();
         }
 
-        if (\count($array) > 0) {
+        if (count($array) > 0) {
             foreach ($array as &$elem) {
-                if (\is_array($elem)) {
+                if (is_array($elem)) {
                     $elem = self::htmlEntities($elem);
-                } elseif (\is_string($elem)) {
+                } elseif (is_string($elem)) {
                     $elem = htmlentities($elem);
                 }
             }
@@ -97,11 +102,11 @@ class Arrays
             throw ArraysException::nonCountableException();
         }
 
-        if (\count($array) > 0) {
+        if (count($array) > 0) {
             foreach ($array as &$elem) {
-                if (\is_array($elem)) {
+                if (is_array($elem)) {
                     $elem = self::htmlEntityDecode($elem);
-                } elseif (\is_string($elem)) {
+                } elseif (is_string($elem)) {
                     $elem = html_entity_decode($elem);
                 }
             }
@@ -116,11 +121,11 @@ class Arrays
             throw ArraysException::nonCountableException();
         }
 
-        if (\count($array) > 0) {
+        if (count($array) > 0) {
             foreach ($array as &$elem) {
-                if (\is_array($elem)) {
+                if (is_array($elem)) {
                     $elem = self::stripSlashes($elem);
-                } elseif (\is_string($elem)) {
+                } elseif (is_string($elem)) {
                     $elem = stripslashes($elem);
                 }
             }
@@ -135,11 +140,11 @@ class Arrays
             throw ArraysException::nonCountableException();
         }
 
-        if (\count($array) > 0) {
+        if (count($array) > 0) {
             foreach ($array as &$elem) {
-                if (\is_array($elem)) {
+                if (is_array($elem)) {
                     $elem = self::stripTags($elem);
-                } elseif (\is_string($elem)) {
+                } elseif (is_string($elem)) {
                     $elem = strip_tags($elem);
                 }
             }
@@ -154,11 +159,11 @@ class Arrays
             throw ArraysException::nonCountableException();
         }
 
-        if (\count($array) > 0) {
+        if (count($array) > 0) {
             foreach ($array as &$elem) {
-                if (\is_array($elem)) {
+                if (is_array($elem)) {
                     $elem = self::addSlashes($elem);
-                } elseif (\is_string($elem)) {
+                } elseif (is_string($elem)) {
                     $elem = addslashes($elem);
                 }
             }
@@ -173,9 +178,9 @@ class Arrays
             throw ArraysException::nonCountableException();
         }
 
-        if (\count($array) > 0) {
+        if (count($array) > 0) {
             foreach ($array as &$elem) {
-                if (\is_array($elem)) {
+                if (is_array($elem)) {
                     $elem = self::funcOver($func, $elem);
                 } else {
                     $elem = $func($elem);
@@ -192,11 +197,11 @@ class Arrays
             throw ArraysException::nonCountableException();
         }
 
-        if (\count($array) > 0) {
+        if (count($array) > 0) {
             foreach ($array as &$elem) {
-                if (\is_array($elem)) {
+                if (is_array($elem)) {
                     $elem = self::htmlEntityDecodeArray($elem);
-                } elseif (\is_string($elem)) {
+                } elseif (is_string($elem)) {
                     $elem = html_entity_decode($elem);
                 }
             }
@@ -211,9 +216,9 @@ class Arrays
             throw ArraysException::nonCountableException();
         }
 
-        if (\count($array) > 0) {
+        if (count($array) > 0) {
             foreach ($array as &$elem) {
-                if (\is_array($elem)) {
+                if (is_array($elem)) {
                     $elem = self::defaultText($elem, $value);
                 } else {
                     $elem = Strings::defaultText($elem, $value);
@@ -231,7 +236,7 @@ class Arrays
             $aProperty = '';
             $bProperty = '';
 
-            if (\is_object($a)) {
+            if (is_object($a)) {
                 $funcion = 'get' . ucfirst($propertyName);
 
                 if (method_exists($a, $funcion)) {
@@ -241,7 +246,7 @@ class Arrays
                 $aProperty = $a[$propertyName];
             }
 
-            if (\is_object($b)) {
+            if (is_object($b)) {
                 $funcion = 'get' . ucfirst($propertyName);
 
                 if (method_exists($b, $funcion)) {
@@ -260,7 +265,7 @@ class Arrays
     public static function arrayMapRecursive($func, array $arr, $userData = null): array
     {
         array_walk_recursive($arr, static function (&$v) use ($func, $userData) {
-            if (\is_array($func)) {
+            if (is_array($func)) {
                 $v = $func[0]->$func[1]($userData);
             } else {
                 $v = $func($v, $userData);
@@ -272,7 +277,7 @@ class Arrays
 
     public static function onlyDigits(array $array = null): ?array
     {
-        if (\is_array($array)) {
+        if (is_array($array)) {
             return array_filter($array, 'ctype_digit');
         }
 
@@ -281,14 +286,14 @@ class Arrays
 
     public static function arrayDepth($arr): int
     {
-        if (! \is_array($arr)) {
+        if (! is_array($arr)) {
             return 0;
         }
 
-        $arr = json_encode($arr, JSON_THROW_ON_ERROR);
-        $sum = 0;
-        $depth = 0;
-        $length = \strlen($arr);
+        $arr    = json_encode($arr, JSON_THROW_ON_ERROR);
+        $sum    = 0;
+        $depth  = 0;
+        $length = strlen($arr);
 
         for ($i = 0; $i < $length; $i++) {
             $sum += (int)($arr[$i] === '[') - (int)($arr[$i] === ']');
@@ -305,11 +310,11 @@ class Arrays
     {
         $value = null;
 
-        if (\is_array($array) && array_key_exists($key, $array) && (\count($array) > 0)) {
+        if (array_key_exists($key, $array) && (count($array) > 0)) {
             $value = $array[$key];
         }
 
-        if (! empty($filters) && \is_string($filters) && ! empty($value) && strpos($filters, '|') !== false) {
+        if (! empty($filters) && is_string($filters) && ! empty($value) && strpos($filters, '|') !== false) {
             $filters = explode('|', $filters);
         }
 
@@ -340,11 +345,11 @@ class Arrays
 
     public static function objectToArray($obj): array
     {
-        $_arr = \is_object($obj) ? get_object_vars($obj) : $obj;
-        $arr = [];
+        $_arr = is_object($obj) ? get_object_vars($obj) : $obj;
+        $arr  = [];
 
         foreach ($_arr as $key => $val) {
-            $val = (\is_array($val) || \is_object($val)) ? self::objectToArray($val) : $val;
+            $val       = (is_array($val) || is_object($val)) ? self::objectToArray($val) : $val;
             $arr[$key] = $val;
         }
 

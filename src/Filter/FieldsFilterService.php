@@ -4,16 +4,19 @@ namespace Solcre\SolcreFramework2\Filter;
 
 use Laminas\ApiTools\Hal\Plugin\Hal;
 use Laminas\Hydrator\Filter\FilterEnabledInterface;
+use function array_key_exists;
+use function count;
+use function in_array;
 use function is_array;
 use function is_object;
 use function is_string;
 
 class FieldsFilterService implements FilterInterface
 {
-    public const FILTER_PARAMETER = 'fields';
-    public const FILTER_NAME = 'fields.filter';
+    public const FILTER_PARAMETER      = 'fields';
+    public const FILTER_NAME           = 'fields.filter';
     public const QUERY_FIELDS_SPLITTER = ',';
-    public const FILTER_FIXED_FIELDS = ['id'];
+    public const FILTER_FIXED_FIELDS   = ['id'];
     protected $halPlugin;
     protected $options;
 
@@ -24,7 +27,7 @@ class FieldsFilterService implements FilterInterface
 
     public function canFilter($options): bool
     {
-        return (\array_key_exists(self::FILTER_PARAMETER, $options) && ! empty($options[self::FILTER_PARAMETER]));
+        return (array_key_exists(self::FILTER_PARAMETER, $options) && ! empty($options[self::FILTER_PARAMETER]));
     }
 
     public function filter($entity, $fields = null): void
@@ -55,7 +58,7 @@ class FieldsFilterService implements FilterInterface
         $hydrator->addFilter(
             self::FILTER_NAME,
             static function ($fieldName) use ($fields, $fixedFields) {
-                return empty($fields) || ! is_array($fields) || ! \count($fields) || (bool)\in_array($fieldName, $fields, true) || (bool)\in_array($fieldName, $fixedFields, true);
+                return empty($fields) || ! is_array($fields) || ! count($fields) || in_array($fieldName, $fields, true) || in_array($fieldName, $fixedFields, true);
             }
         );
     }
@@ -93,7 +96,7 @@ class FieldsFilterService implements FilterInterface
 
     public function prepareOptions($options): void
     {
-        if (\array_key_exists(self::FILTER_PARAMETER, $options)) {
+        if (array_key_exists(self::FILTER_PARAMETER, $options)) {
             $this->setOptions($options[self::FILTER_PARAMETER]);
         }
     }

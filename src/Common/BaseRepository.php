@@ -86,7 +86,7 @@ class BaseRepository extends EntityRepository
         return $qb->getQuery();
     }
 
-    protected function getFieldsSelect($tableAlias, $fieldsFilterQuery)
+    protected function getFieldsSelect($tableAlias, $fieldsFilterQuery): array
     {
         //Select all fields by default
         $fieldsSelect = $tableAlias;
@@ -344,7 +344,7 @@ class BaseRepository extends EntityRepository
         if (is_array($searchableFields) && count($searchableFields)) {
             $or = $qb->expr()->orX();
             foreach ($searchableFields as $field) {
-                if (\in_array($field['type'], self::TEXT_SERCHEABLES_TYPE, true)) {
+                if (in_array($field['type'], self::TEXT_SERCHEABLES_TYPE, true)) {
                     $or->add($qb->expr()->like($tableAlias . '.' . $field['name'], ':searchTerm'));
                     $qb->setParameter('searchTerm', '%' . $searchTerm . '%');
                 }

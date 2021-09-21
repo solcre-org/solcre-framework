@@ -4,8 +4,6 @@ namespace Solcre\SolcreFramework2\Service;
 
 use Doctrine\ORM\EntityManager;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator;
-use Exception;
-use Laminas\Cache\StorageFactory;
 use Laminas\Paginator\Paginator;
 use Psr\Log\LoggerInterface;
 use ReflectionClass;
@@ -14,6 +12,7 @@ use Solcre\SolcreFramework2\Entity\PaginatedResult;
 use Solcre\SolcreFramework2\Exception\BaseException;
 use Solcre\SolcreFramework2\Filter\FilterInterface;
 use Solcre\SolcreFramework2\Hydrator\EntityHydrator;
+use function strlen;
 
 abstract class BaseService
 {
@@ -44,7 +43,7 @@ abstract class BaseService
     public function getEntityName(): ?string
     {
         $namespaceName = (new ReflectionClass($this))->getNamespaceName();
-        $className = (new ReflectionClass($this))->getShortName();
+        $className     = (new ReflectionClass($this))->getShortName();
 
         if (strpos($className, 'Service') === false) {
             throw BaseException::classNameNotFoundException();
@@ -56,7 +55,7 @@ abstract class BaseService
             $pos = strrpos($className, 'Service');
 
             if ($pos !== false) {
-                $entityName = substr_replace($className, '', $pos, \strlen('Service'));
+                $entityName = substr_replace($className, '', $pos, strlen('Service'));
             }
         }
 
@@ -178,7 +177,7 @@ abstract class BaseService
     {
         //Get options
         $currentPage = $this->getCurrentPage();
-        $pageSize = $this->getItemsCountPerPage();
+        $pageSize    = $this->getItemsCountPerPage();
 
         //Here is where configures the paginator options and iterate for doctrinePaginator
         //The doctrine paginator with getIterator, rise the queries taking page size
@@ -186,21 +185,6 @@ abstract class BaseService
         $paginator = new Paginator($doctrinePaginator);
         $paginator->setItemCountPerPage($pageSize);
         $paginator->setCurrentPageNumber($currentPage);
-
-        $cacheConfig = $this->configuration['solcre-framework']['cache'] ?? null;
-        if (\is_array($cacheConfig)) {
-            $isCacheEnable = $cacheConfig['enable'] ?? false;
-            if ($isCacheEnable) {
-                $cache = StorageFactory::adapterFactory($cacheConfig['adapter'], [
-                    'cache_dir' => $cacheConfig['dir'],
-                    'ttl'       => $cacheConfig['ttl'],
-                ]);
-
-                $plugin = StorageFactory::pluginFactory('serializer');
-                $cache->addPlugin($plugin);
-                Paginator::setCache($cache);
-            }
-        }
 
         //Fill the iterator and return it
         return new PaginatedResult($paginator->getCurrentItems(), $doctrinePaginator->count(), $this->additionalAttributes);
@@ -241,14 +225,10 @@ abstract class BaseService
             $entityObj = $this->fetch($id);
         }
 
-        try {
-            $this->entityManager->remove($entityObj);
-            $this->entityManager->flush($entityObj);
+        $this->entityManager->remove($entityObj);
+        $this->entityManager->flush($entityObj);
 
-            return true;
-        } catch (Exception $e) {
-            throw $e;
-        }
+        return true;
     }
 
     public function fetch($id)

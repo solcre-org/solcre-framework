@@ -14,7 +14,11 @@ use RuntimeException;
 use Solcre\SolcreFramework2\Exception\BaseException;
 use Solcre\SolcreFramework2\Exception\FileException;
 use function array_key_exists;
+use function count;
+use function dirname;
+use function function_exists;
 use function is_array;
+use function is_int;
 use function is_resource;
 
 class File
@@ -300,8 +304,8 @@ class File
     {
         $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
         $bytes = max($bytes, 0);
-        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
-        $pow = min($pow, \count($units) - 1);
+        $pow   = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow   = min($pow, count($units) - 1);
         $bytes /= 1024 ** $pow;
 
         return round($bytes, $precision) . ' ' . $units[$pow];
@@ -352,7 +356,7 @@ class File
 
     public static function write($path, $content, $perm = 0644): bool
     {
-        $dir = \dirname($path);
+        $dir = dirname($path);
         $tmp = tempnam($dir, 'columnis');
 
         if ($tmp === false) {
@@ -373,7 +377,7 @@ class File
             throw new RuntimeException('Failed to move temporary file . ');
         }
 
-        if (\is_int($perm) && ! chmod($path, $perm)) {
+        if (is_int($perm) && ! chmod($path, $perm)) {
             throw new RuntimeException('Failed to apply permisions to file . ');
         }
 
@@ -394,7 +398,7 @@ class File
             return self::$MIME_TYPES[$ext];
         }
 
-        if (\function_exists('finfo_open') || \function_exists('mime_content_type')) {
+        if (function_exists('finfo_open') || function_exists('mime_content_type')) {
             $finfo = finfo_open(FILEINFO_MIME);
             if (! is_resource($finfo)) {
                 throw new FileException('finfo_open error', 400);
@@ -411,8 +415,8 @@ class File
 
     public static function extension($file)
     {
-        $ext = explode('.', $file);
-        $count = \count($ext);
+        $ext   = explode('.', $file);
+        $count = count($ext);
 
         return $count > 1 ? $ext[$count - 1] : null;
     }
@@ -434,7 +438,7 @@ class File
     {
         preg_match('/((?:[^\/]*\/)*)(.*)/', $path, $result);
 
-        if (is_array($result) && ! empty($result) && \count($result) === self::FOLDER_AND_FILENAME_MAX_COUNT_PREG_MATCH) {
+        if (is_array($result) && ! empty($result) && count($result) === self::FOLDER_AND_FILENAME_MAX_COUNT_PREG_MATCH) {
             return [
                 'folder'   => $result[1],
                 'filename' => $result[2]

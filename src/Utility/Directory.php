@@ -4,6 +4,7 @@ namespace Solcre\SolcreFramework2\Utility;
 
 use Solcre\SolcreFramework2\Exception\DirectoryException;
 use function array_search;
+use function is_array;
 use function preg_replace;
 use function str_replace;
 use function substr;
@@ -87,7 +88,7 @@ class Directory
     {
         $files = scandir($dir);
 
-        if (! \is_array($files)) {
+        if (! is_array($files)) {
             throw DirectoryException::scandirException();
         }
 
@@ -128,9 +129,7 @@ class Directory
     {
         $name = self::nameWithoutCommas($name);
         $name = self::nameWithoutSpaces($name);
-        $name = self::uniqueNameFolder($name, $path);
-
-        return $name;
+        return self::uniqueNameFolder($name, $path);
     }
 
     public static function nameWithoutCommas($name)

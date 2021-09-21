@@ -3,6 +3,8 @@
 namespace Solcre\SolcreFramework2\Utility;
 
 use Solcre\SolcreFramework2\Exception\UploadsException;
+use function array_slice;
+use function count;
 
 class Uploads
 {
@@ -10,8 +12,7 @@ class Uploads
     {
         $name = self::withoutCommas($name);
         $name = self::nameWithoutSpaces($name);
-        $name = self::nameUnique($name, $folder);
-        return $name;
+        return self::nameUnique($name, $folder);
     }
 
     public static function withoutCommas($name)
@@ -29,11 +30,11 @@ class Uploads
         if ($name) {
             $t = explode('.', $name);
 
-            if (\count($t) === 1) {
+            if (count($t) === 1) {
                 $ext = '';
             } else {
-                $ext = '.' . $t[\count($t) - 1];
-                $t = \array_slice($t, 0, \count($t) - 1);
+                $ext  = '.' . $t[count($t) - 1];
+                $t    = array_slice($t, 0, count($t) - 1);
                 $name = implode('.', $t);
             }
             $file = $name;
