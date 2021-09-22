@@ -60,8 +60,17 @@ abstract class BaseService
         }
 
         $entityNamespace = str_replace('Service', 'Entity', $namespaceName);
+        $entityNamespace = $entityNamespace . '\\' . $entityName . 'Entity';
+        if (\class_exists($entityNamespace)) {
+            return $entityNamespace;
+        }
 
-        return $entityNamespace . '\\' . $entityName . 'Entity';
+        $entityNamespace = $entityNamespace . '\\' . $entityName;
+        if (\class_exists($entityNamespace)) {
+            return $entityNamespace;
+        }
+
+        return null;
     }
 
 
