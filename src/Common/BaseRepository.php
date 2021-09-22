@@ -86,7 +86,7 @@ class BaseRepository extends EntityRepository
         return $qb->getQuery();
     }
 
-    protected function getFieldsSelect($tableAlias, $fieldsFilterQuery): array
+    protected function getFieldsSelect($tableAlias, $fieldsFilterQuery)
     {
         //Select all fields by default
         $fieldsSelect = $tableAlias;
