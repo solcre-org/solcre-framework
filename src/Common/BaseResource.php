@@ -10,6 +10,7 @@ use Laminas\ApiTools\Rest\AbstractResourceListener;
 use Laminas\ApiTools\Rest\ResourceEvent;
 use Laminas\EventManager\Event;
 use Laminas\Http\Request;
+use Laminas\InputFilter\InputFilterInterface;
 use Laminas\Router\RouteMatch;
 use Laminas\Stdlib\Parameters;
 use Solcre\SolcreFramework2\Exception\BaseException;
@@ -26,7 +27,7 @@ class BaseResource extends AbstractResourceListener
 
     public function __construct(BaseService $service, ?PermissionInterface $permissionService = null)
     {
-        $this->service = $service;
+        $this->service           = $service;
         $this->permissionService = $permissionService;
     }
 
@@ -47,7 +48,7 @@ class BaseResource extends AbstractResourceListener
             if ($method === Request::METHOD_GET) {
                 $this->normalizeQueryParams($event);
 
-                $page = $request->getQuery('page', 1);
+                $page     = $request->getQuery('page', 1);
                 $pageSize = $request->getQuery('size', $this->service->getItemsCountPerPage());
                 $this->service->setCurrentPage($page);
                 $this->service->setItemsCountPerPage($pageSize);
@@ -121,7 +122,7 @@ class BaseResource extends AbstractResourceListener
         }
 
         $permissionName = empty($permissionName) ? $this->getPermissionName() : $permissionName;
-        $loggedUserId = $this->getLoggedUserId($event);
+        $loggedUserId   = $this->getLoggedUserId($event);
         if (empty($permissionName) || $permissionName === self::NO_PERMISSION || $loggedUserId === null) {
             return true;
         }
@@ -176,6 +177,14 @@ class BaseResource extends AbstractResourceListener
         }
 
         $bodyParams = $event->getParam('data', []);
+
+        $inputFilter = $this->getInputFilter();
+        if ($inputFilter instanceof InputFilterInterface) {
+            $bodyParamsFiltered = $inputFilter->getValues();
+            if (\count($bodyParamsFiltered) > 0) {
+                $bodyParams = $bodyParamsFiltered;
+            }
+        }
 
         if (! empty($bodyParams)) {
             //For each qp
