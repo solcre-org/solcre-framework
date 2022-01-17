@@ -24,11 +24,11 @@ use function uniqid;
 
 class BaseRepository extends EntityRepository
 {
-    private const MINIMUM_WHERE_PARTS = 2;
-    private const NOT_NULL_FILTER = '!null';
-    private const NOT_IN_FIELD_NAME = 'notIn';
-    private const ORDER_BY_RELATION_SEPARATOR = '.';
-    protected const TEXT_SERCHEABLES_TYPE = ['string', 'text'];
+    private const   MINIMUM_WHERE_PARTS         = 2;
+    private const   NOT_NULL_FILTER             = '!null';
+    private const   NOT_IN_FIELD_NAME           = 'notIn';
+    private const   ORDER_BY_RELATION_SEPARATOR = '.';
+    protected const TEXT_SERCHEABLES_TYPE       = ['string', 'text'];
     protected $filters = [];
 
     public function addFilter(FilterInterface $filter): void
@@ -40,7 +40,7 @@ class BaseRepository extends EntityRepository
     {
         $filtersOptions = $this->preFindBy($params);
 
-        $query = $this->getFindByQuery($params, $orderBy, $filtersOptions);
+        $query  = $this->getFindByQuery($params, $orderBy, $filtersOptions, $limit);
         $result = $query->getResult();
 
         $this->postFindBy($filtersOptions);
@@ -59,7 +59,7 @@ class BaseRepository extends EntityRepository
         return $filtersOptions;
     }
 
-    protected function getFindByQuery(array $params, array $orderBy = null, array $filterOptions = []): Query
+    protected function getFindByQuery(array $params, array $orderBy = null, array $filterOptions = [], ?int $limit = null): Query
     {
         //Table alias
         $tableAlias = 'a';
@@ -76,6 +76,10 @@ class BaseRepository extends EntityRepository
         //Add order by to dql
         if (! empty($orderBy)) {
             $this->setOrderBy($orderBy, $qb, $tableAlias);
+        }
+
+        if ($limit !== null) {
+            $qb->setMaxResults($limit);
         }
 
         $searchTerm = $filterOptions['search'] ?? false;
@@ -98,7 +102,7 @@ class BaseRepository extends EntityRepository
 
             //parse selection str
             $selectedFields = ['id'];
-            $fields = $this->_em->getClassMetadata($this->_entityName)->fieldNames;
+            $fields         = $this->_em->getClassMetadata($this->_entityName)->fieldNames;
 
             //Foreach field
             foreach ($fields as $key => $fieldName) {
@@ -119,7 +123,7 @@ class BaseRepository extends EntityRepository
         unset($params['sort'], $params['size']);
         if (is_array($params) && ! empty($params)) {
             $and = $qb->expr()->andX();
-            $or = $qb->expr()->orX();
+            $or  = $qb->expr()->orX();
             foreach ($params as $fieldName => $fieldValue) {
                 $alias = $this->getAliasFromFieldInTable($tableAlias, $fieldName);
                 if (is_array($fieldValue)) {
@@ -233,7 +237,7 @@ class BaseRepository extends EntityRepository
     {
         $valueParts = explode('~', $fieldValue);
         if (is_array($valueParts) && count($valueParts) === self::MINIMUM_WHERE_PARTS) {
-            $paramKey = sprintf(':%s', $this->getUniqueKeyParam($qb));
+            $paramKey   = sprintf(':%s', $this->getUniqueKeyParam($qb));
             $expression = $qb->expr()->like($alias, $paramKey);
             $qb->setParameter($paramKey, '%' . $valueParts[1] . '%');
             $and->add($expression);
@@ -243,7 +247,7 @@ class BaseRepository extends EntityRepository
     protected function getUniqueKeyParam(QueryBuilder $qb): string
     {
         $paramName = 'value';
-        $count = 0;
+        $count     = 0;
         while ($qb->getParameter($paramName) instanceof Parameter) {
             $paramName .= $count;
             $count++;
@@ -256,14 +260,14 @@ class BaseRepository extends EntityRepository
         $valueParts = explode('|', $fieldValue);
         if (is_array($valueParts) && count($valueParts) === self::MINIMUM_WHERE_PARTS) {
             if (! empty($valueParts[0])) {
-                $paramKey = sprintf(':%s', $this->getUniqueKeyParam($qb));
+                $paramKey   = sprintf(':%s', $this->getUniqueKeyParam($qb));
                 $expression = $qb->expr()->gte($alias, $paramKey);
                 $qb->setParameter($paramKey, $valueParts[0]);
                 $and->add($expression);
             }
 
             if (! empty($valueParts[1])) {
-                $paramKey = sprintf(':%s', $this->getUniqueKeyParam($qb));
+                $paramKey   = sprintf(':%s', $this->getUniqueKeyParam($qb));
                 $expression = $qb->expr()->lte($alias, $paramKey);
                 $qb->setParameter($paramKey, $valueParts[1]);
                 $and->add($expression);
@@ -273,7 +277,7 @@ class BaseRepository extends EntityRepository
 
     private function equalWhereClause(QueryBuilder $qb, $fieldValue, $alias, Andx $and, &$paramKey, &$expression): void
     {
-        $paramKey = sprintf(':%s', $this->getUniqueKeyParam($qb));
+        $paramKey   = sprintf(':%s', $this->getUniqueKeyParam($qb));
         $expression = $qb->expr()->eq($alias, $paramKey);
         $qb->setParameter($paramKey, $fieldValue);
         $and->add($expression);
@@ -356,7 +360,7 @@ class BaseRepository extends EntityRepository
     protected function getSearchableFields(): array
     {
         $searchableFields = [];
-        $fieldMappings = $this->getClassMetadata()->fieldMappings;
+        $fieldMappings    = $this->getClassMetadata()->fieldMappings;
         if (is_array($fieldMappings) && count($fieldMappings)) {
             foreach ($fieldMappings as $key => $field) {
                 //Check searchable options
@@ -384,16 +388,16 @@ class BaseRepository extends EntityRepository
 
     protected function filter(array $options): void
     {
-        $entityName = $this->getEntityName();
-        $reflection = new ReflectionClass($entityName);
-        $params = [];
+        $entityName  = $this->getEntityName();
+        $reflection  = new ReflectionClass($entityName);
+        $params      = [];
         $constructor = $reflection->getConstructor();
         if ($constructor instanceof ReflectionMethod) {
             $params = $reflection->getConstructor()->getParameters();
         }
         if (count($this->filters) > 0 && count($params) === 0) {
             $entityName = $this->getEntityName();
-            $entity = new $entityName();
+            $entity     = new $entityName();
 
             foreach ($this->filters as $name => $filter) {
                 if ($filter instanceof FilterInterface) {
