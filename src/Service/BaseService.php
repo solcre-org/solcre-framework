@@ -167,10 +167,10 @@ abstract class BaseService
         return $this->repository->findOneBy($params, $orderBy);
     }
 
-    public function fetchAll($params = [], array $orderBy = []): array
+    public function fetchAll($params = [], array $orderBy = [], ?int $limit = null): array
     {
         if (! empty($params) || ! empty($orderBy)) {
-            return $this->repository->findBy((array)$params, $orderBy);
+            return $this->repository->findBy((array)$params, $orderBy, $limit);
         }
 
         return $this->repository->findAll();
