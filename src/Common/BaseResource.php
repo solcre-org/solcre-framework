@@ -26,7 +26,7 @@ class BaseResource extends AbstractResourceListener
 
     public function __construct(BaseService $service, ?PermissionInterface $permissionService = null)
     {
-        $this->service = $service;
+        $this->service           = $service;
         $this->permissionService = $permissionService;
     }
 
@@ -47,7 +47,7 @@ class BaseResource extends AbstractResourceListener
             if ($method === Request::METHOD_GET) {
                 $this->normalizeQueryParams($event);
 
-                $page = $request->getQuery('page', 1);
+                $page     = $request->getQuery('page', 1);
                 $pageSize = $request->getQuery('size', $this->service->getItemsCountPerPage());
                 $this->service->setCurrentPage($page);
                 $this->service->setItemsCountPerPage($pageSize);
@@ -121,7 +121,7 @@ class BaseResource extends AbstractResourceListener
         }
 
         $permissionName = empty($permissionName) ? $this->getPermissionName() : $permissionName;
-        $loggedUserId = $this->getLoggedUserId($event);
+        $loggedUserId   = $this->getLoggedUserId($event);
         if (empty($permissionName) || $permissionName === self::NO_PERMISSION || $loggedUserId === null) {
             return true;
         }
@@ -157,7 +157,7 @@ class BaseResource extends AbstractResourceListener
             foreach ($qp as $key => $value) {
                 //Check now()
                 if ($value === 'now()') {
-                    $queryParams->set($key, date('Y-m-d'));
+                    $queryParams->set($key, date('Y-m-d h:i:s'));
                 }
 
                 if ($value === 'null') {
