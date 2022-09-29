@@ -90,7 +90,7 @@ class BaseRepository extends EntityRepository
         return $qb->getQuery();
     }
 
-    protected function getFieldsSelect($tableAlias, $fieldsFilterQuery)
+    protected function getFieldsSelect($tableAlias, $fieldsFilterQuery): array
     {
         //Select all fields by default
         $fieldsSelect = $tableAlias;
@@ -218,11 +218,11 @@ class BaseRepository extends EntityRepository
             $this->isNotNullWhereClause($qb, $alias, $and, $expression);
         }
 
-        if (strpos($fieldValue, '~') !== false) {
+        if (str_contains($fieldValue, '~')) {
             $this->isLikeWhereClause($qb, $fieldValue, $alias, $and, $valueParts, $paramKey, $expression);
         }
 
-        if (strpos($fieldValue, '|') !== false) {
+        if (str_contains($fieldValue, '|')) {
             $this->compareWhereClause($qb, $fieldValue, $alias, $and, $valueParts, $paramKey, $expression);
         }
     }
@@ -308,7 +308,7 @@ class BaseRepository extends EntityRepository
         if ($this->entityHasAssociation($sortAssociationFieldName) && $this->entityAssociationHasFieldName($sortAssociationFieldName, $sortAssociationFieldToSort)) {
             $associationKey = $this->getAliasFromJoin($tableAlias, $sortAssociationFieldName, $qb);
             if ($associationKey === null) {
-                $associationKey = uniqid($sortAssociationFieldName, false);
+                $associationKey = uniqid($sortAssociationFieldName, true);
                 $qb->join($tableAlias . '.' . $sortAssociationFieldName, $associationKey);
             }
 

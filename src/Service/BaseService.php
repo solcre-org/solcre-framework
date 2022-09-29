@@ -45,7 +45,7 @@ abstract class BaseService
         $namespaceName = (new ReflectionClass($this))->getNamespaceName();
         $className     = (new ReflectionClass($this))->getShortName();
 
-        if (strpos($className, 'Service') === false) {
+        if (! str_contains($className, 'Service')) {
             throw BaseException::classNameNotFoundException();
         }
 

@@ -158,7 +158,7 @@ class Directory
         return $name;
     }
 
-    public static function getFolderDate($path)
+    public static function getFolderDate($path): string
     {
         $fileTime = filemtime($path);
 

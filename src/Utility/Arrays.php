@@ -314,7 +314,7 @@ class Arrays
             $value = $array[$key];
         }
 
-        if (! empty($filters) && is_string($filters) && ! empty($value) && strpos($filters, '|') !== false) {
+        if (! empty($filters) && is_string($filters) && ! empty($value) && str_contains($filters, '|')) {
             $filters = explode('|', $filters);
         }
 

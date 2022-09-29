@@ -268,14 +268,14 @@ class File
         return $file;
     }
 
-    public static function fileExtension($fileName)
+    public static function fileExtension($fileName): ?string
     {
         $fileNameParts = explode('.', $fileName);
 
         return array_pop($fileNameParts);
     }
 
-    public static function fileNameExtract($fullFileName)
+    public static function fileNameExtract($fullFileName): ?string
     {
         $fileName = explode('/', $fullFileName);
 
@@ -413,7 +413,7 @@ class File
         return 'application / octet - stream';
     }
 
-    public static function extension($file)
+    public static function extension($file): ?string
     {
         $ext   = explode('.', $file);
         $count = count($ext);
