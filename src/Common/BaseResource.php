@@ -182,6 +182,11 @@ class BaseResource extends AbstractResourceListener
         if ($inputFilter instanceof InputFilterInterface) {
             $bodyParamsFiltered = $inputFilter->getValues();
             if (\count($bodyParamsFiltered) > 0) {
+                foreach ($bodyParams as $key => $value) {
+                    if (! \array_key_exists($key, $bodyParamsFiltered)) {
+                        $bodyParamsFiltered[$key] = $value;
+                    }
+                }
                 $bodyParams = $bodyParamsFiltered;
             }
         }
