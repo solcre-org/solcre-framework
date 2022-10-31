@@ -195,7 +195,7 @@ class BaseResource extends AbstractResourceListener
             //For each qp
             foreach ($bodyParams as $key => $value) {
                 if ($value === 'null') {
-                    $bodyParams->$key = null;
+                    $bodyParams[$key] = null;
                 }
             }
         }
