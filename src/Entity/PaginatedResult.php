@@ -4,6 +4,7 @@ namespace Solcre\SolcreFramework2\Entity;
 
 use ArrayIterator;
 use IteratorAggregate;
+use ReturnTypeWillChange;
 use Traversable;
 
 class PaginatedResult implements IteratorAggregate
@@ -35,7 +36,7 @@ class PaginatedResult implements IteratorAggregate
         return $this->items;
     }
 
-    public function getIterator()
+    #[ReturnTypeWillChange] public function getIterator(): ArrayIterator|iterable
     {
         $items = $this->items;
 
