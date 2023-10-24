@@ -158,7 +158,7 @@ class BaseResource extends AbstractResourceListener
             foreach ($qp as $key => $value) {
                 //Check now()
                 if ($value === 'now()') {
-                    $queryParams->set($key, date('Y-m-d h:i:s'));
+                    $queryParams->set($key, date('Y-m-d H:i:s'));
                 }
 
                 if ($value === 'null') {
