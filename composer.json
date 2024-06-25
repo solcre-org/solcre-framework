@@ -8,7 +8,7 @@
   "license": "BSD-3-Clause",
   "require": {
     "php": "^8.2",
-    "doctrine/doctrine-orm-module": "^6.0",
+    "doctrine/doctrine-orm-module": "^6.1",
     "laminas-api-tools/api-tools-hal": "^1.10",
     "laminas-api-tools/api-tools-rest": "^1.8",
     "neitanod/forceutf8": "^2.0",
@@ -17,7 +17,7 @@
   },
   "require-dev": {
     "roave/security-advisories": "dev-master",
-    "phpunit/phpunit": "^10.4.1"
+    "phpunit/phpunit": "^11.2.5"
   },
   "autoload": {
     "psr-4": {
