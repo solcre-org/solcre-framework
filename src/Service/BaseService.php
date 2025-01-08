@@ -25,7 +25,7 @@ abstract class BaseService
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    public $logger;
     protected $additionalAttributes;
 
     public function __construct(EntityManager $entityManager)
@@ -43,9 +43,9 @@ abstract class BaseService
     public function getEntityName(): ?string
     {
         $namespaceName = (new ReflectionClass($this))->getNamespaceName();
-        $className     = (new ReflectionClass($this))->getShortName();
+        $className = (new ReflectionClass($this))->getShortName();
 
-        if (! str_contains($className, 'Service')) {
+        if (!str_contains($className, 'Service')) {
             throw BaseException::classNameNotFoundException();
         }
 
@@ -77,7 +77,7 @@ abstract class BaseService
 
     public function enableFilter($filterName): void
     {
-        if (! $this->entityManager->getFilters()->isEnabled($filterName)) {
+        if (!$this->entityManager->getFilters()->isEnabled($filterName)) {
             $this->entityManager->getFilters()->enable($filterName);
         }
     }
@@ -146,7 +146,7 @@ abstract class BaseService
 
         $hydrator = new EntityHydrator($this->entityManager);
 
-        if (! empty($strategies)) {
+        if (!empty($strategies)) {
             foreach ($strategies as $strategy) {
                 $hydrator->addStrategy($strategy['field'], $strategy['strategy']);
             }
@@ -169,7 +169,7 @@ abstract class BaseService
 
     public function fetchAll($params = [], array $orderBy = [], ?int $limit = null): array
     {
-        if (! empty($params) || ! empty($orderBy)) {
+        if (!empty($params) || !empty($orderBy)) {
             return $this->repository->findBy((array)$params, $orderBy, $limit);
         }
 
@@ -187,7 +187,7 @@ abstract class BaseService
     {
         //Get options
         $currentPage = $this->getCurrentPage();
-        $pageSize    = $this->getItemsCountPerPage();
+        $pageSize = $this->getItemsCountPerPage();
 
         //Here is where configures the paginator options and iterate for doctrinePaginator
         //The doctrine paginator with getIterator, rise the queries taking page size
