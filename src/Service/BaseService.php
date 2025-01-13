@@ -26,7 +26,7 @@ abstract class BaseService
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    public $logger;
     protected $additionalAttributes;
 
     public function __construct(EntityManager $entityManager)
