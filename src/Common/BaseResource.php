@@ -64,6 +64,8 @@ class BaseResource extends AbstractResourceListener
             }
 
             return parent::dispatch($event);
+        } catch (BaseException $baseException) {
+            return new ApiProblem($baseException->getCode(), $baseException->getMessage());
         } catch (\Throwable $t) {
             if ($this->service->logger instanceof LoggerInterface) {
                 $this->service->logger->error($t->getMessage());
