@@ -24,6 +24,7 @@ class BaseResource extends AbstractResourceListener
     public const NO_PERMISSION = 'permission-undefined';
 
     protected $service;
+
     protected $permissionService;
 
     public function __construct(BaseService $service, ?PermissionInterface $permissionService = null)
@@ -97,17 +98,19 @@ class BaseResource extends AbstractResourceListener
         return $identityData['user_id'] ?? null;
     }
 
-    public function getLoggedUserOauthType(Event $event = null)
+    public function getLoggedUserOauthType(?Event $event = null)
     {
         $identity = $this->getLoggedUserIdentity($event);
         if ($identity instanceof IdentityInterface) {
             $identityData = $identity->getAuthenticationIdentity();
+
             return $identityData['oauth_type'] ?? null;
         }
+
         return null;
     }
 
-    private function getLoggedUserIdentity(Event $event = null): ?IdentityInterfaceLaminas
+    private function getLoggedUserIdentity(?Event $event = null): ?IdentityInterfaceLaminas
     {
         $identity = null;
 
@@ -136,6 +139,7 @@ class BaseResource extends AbstractResourceListener
         if (!$hasPermission && $throwExceptions) {
             $this->permissionService->throwMethodNotAllowedForCurrentUserException();
         }
+
         return $hasPermission;
     }
 
@@ -144,7 +148,7 @@ class BaseResource extends AbstractResourceListener
         return self::NO_PERMISSION;
     }
 
-    protected function normalizeQueryParams(ResourceEvent $event = null): void
+    protected function normalizeQueryParams(?ResourceEvent $event = null): void
     {
         if ($event === null) {
             return;
@@ -175,7 +179,7 @@ class BaseResource extends AbstractResourceListener
         }
     }
 
-    protected function normalizeBodyParams(ResourceEvent $event = null): void
+    protected function normalizeBodyParams(?ResourceEvent $event = null): void
     {
         if ($event === null) {
             return;
@@ -190,6 +194,13 @@ class BaseResource extends AbstractResourceListener
                 foreach ($bodyParams as $key => $value) {
                     if (!\array_key_exists($key, $bodyParamsFiltered)) {
                         $bodyParamsFiltered[$key] = $value;
+                    } elseif (\is_array($value) && !empty($value)) {
+                        // Preserve original nested arrays when CollectionInputFilter returns empty items
+                        // CollectionInputFilter without input_filter config returns [0 => [], 1 => [], ...]
+                        $filteredValue = $bodyParamsFiltered[$key];
+                        if (\is_array($filteredValue) && $this->hasOnlyEmptyArrayItems($filteredValue)) {
+                            $bodyParamsFiltered[$key] = $value;
+                        }
                     }
                 }
                 $bodyParams = $bodyParamsFiltered;
@@ -222,4 +233,25 @@ class BaseResource extends AbstractResourceListener
 
         return null;
     }
+
+    /**
+     * Check if array contains only empty array items (from misconfigured CollectionInputFilter)
+     * Example: [0 => [], 1 => []] returns true
+     * Example: [0 => ['id' => 1]] returns false
+     */
+    private function hasOnlyEmptyArrayItems(array $array): bool
+    {
+        if (empty($array)) {
+            return true;
+        }
+
+        foreach ($array as $item) {
+            if (!\is_array($item) || !empty($item)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
+
